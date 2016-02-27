@@ -1,0 +1,20 @@
+[package]
+name = "metal"
+version = "0.0.1"
+authors = ["Felix Kaaman <trundmatu@gmail.com>"]
+readme = "README.md"
+keywords = ["metal", "graphics", "bindings"]
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+cocoa = "0.2.4"
+bitflags = "0.4.0"
+libc = "0.2"
+objc = "0.1.8"
+
+[dev-dependencies]
+winit = { git = "https://github.com/tomaka/winit" }
+
+[[example]]
+name = "window"
+path = "examples/window/main.rs"
