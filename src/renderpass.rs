@@ -5,7 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
+use cocoa::base::{class, id};
 use cocoa::foundation::NSUInteger;
 
 #[repr(u32)]
@@ -146,4 +146,42 @@ pub trait MTLRenderPassStencilAttachmentDescriptor : MTLRenderPassAttachmentDesc
 impl MTLRenderPassStencilAttachmentDescriptor for id {
     unsafe fn clearStencil(self) -> u32 { msg_send![self, clearStencil] }
     unsafe fn setClearStencil(self, clearStencil: u32) { msg_send![self, setClearStencil:clearStencil] }
+}
+
+pub trait MTLRenderPassColorAttachmentDescriptorArray {
+    unsafe fn objectAtIndexedSubscript(self, attachmentIndex: NSUInteger) -> id;
+    unsafe fn setObject(self, attachment: id, attachmentIndex: NSUInteger);
+}
+
+impl MTLRenderPassColorAttachmentDescriptorArray for id {
+    unsafe fn objectAtIndexedSubscript(self, attachmentIndex: NSUInteger) -> id {
+        msg_send![self, objectAtIndexedSubScript:attachmentIndex]
+    }
+
+    unsafe fn setObject(self, attachment: id, attachmentIndex: NSUInteger) {
+        msg_send![self, setObject:attachment atIndexedSubscript:attachmentIndex]
+    }
+}
+
+pub trait MTLRenderPassDescriptor {
+    unsafe fn renderPassDescriptor(_: Self) -> id {
+        msg_send![class("MTLRenderPassDescriptor"), renderPassDescriptor]
+    }
+
+    // FIXME: type
+    unsafe fn colorAttachments(self) -> id;
+    unsafe fn depthAttachment(self) -> id;
+    unsafe fn stencilAttachment(self) -> id;
+
+    unsafe fn visibilityResultBuffer(self) -> id;
+    unsafe fn renderTargetArrayLength(self) -> NSUInteger;
+}
+
+impl MTLRenderPassDescriptor for id {
+    unsafe fn colorAttachments(self) -> id { msg_send![self, colorAttachments] }
+    unsafe fn depthAttachment(self) -> id { msg_send![self, depthAttachment] }
+    unsafe fn stencilAttachment(self) -> id { msg_send![self, stencilAttachment] }
+
+    unsafe fn visibilityResultBuffer(self) -> id { msg_send![self, visibilityResultBuffer] }
+    unsafe fn renderTargetArrayLength(self) -> NSUInteger { msg_send![self, renderTargetArrayLength] }
 }
