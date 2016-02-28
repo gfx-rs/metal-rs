@@ -35,7 +35,7 @@ pub struct MTLClearColor {
 
 impl MTLClearColor {
     #[inline]
-    fn new(red: f64, green: f64, blue: f64, alpha: f64) -> Self {
+    pub fn new(red: f64, green: f64, blue: f64, alpha: f64) -> Self {
         MTLClearColor {
             red: red,
             green: green,
@@ -155,7 +155,7 @@ pub trait MTLRenderPassColorAttachmentDescriptorArray {
 
 impl MTLRenderPassColorAttachmentDescriptorArray for id {
     unsafe fn objectAtIndexedSubscript(self, attachmentIndex: NSUInteger) -> id {
-        msg_send![self, objectAtIndexedSubScript:attachmentIndex]
+        msg_send![self, objectAtIndexedSubscript:attachmentIndex]
     }
 
     unsafe fn setObject(self, attachment: id, attachmentIndex: NSUInteger) {

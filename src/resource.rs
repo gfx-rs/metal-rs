@@ -12,7 +12,6 @@ use cocoa::foundation::NSUInteger;
 #[allow(non_camel_case_types)]
 pub enum MTLPurgeableState {
     MTLPurgeableStateKeepCurrent = 1,
-    
     MTLPurgeableStateNonVolatile = 2,
     MTLPurgeableStateVolatile = 3,
     MTLPurgeableStateEmpty = 4,

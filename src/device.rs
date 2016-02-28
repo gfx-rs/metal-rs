@@ -76,7 +76,7 @@ pub trait MTLDevice {
     /// If YES, device supports MTLPixelFormatDepth24Unorm_Stencil8.
     unsafe fn depth24Stencil8PixelFormatSupported(self) -> BOOL;
 
-    /// Create and return a new command queue.   Command Queues created via this
+    /// Create and return a new command queue. Command Queues created via this
     /// method will only allow up to 64 non-completed command buffers.
     unsafe fn newCommandQueue(self) -> id;
 

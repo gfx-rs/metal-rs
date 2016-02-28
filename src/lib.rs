@@ -25,6 +25,8 @@ mod resource;
 mod drawable;
 mod buffer;
 mod renderpass;
+mod commandbuffer;
+mod commandqueue;
 
 pub use constants::*;
 pub use types::*;
@@ -34,4 +36,6 @@ pub use resource::*;
 pub use drawable::*;
 pub use buffer::*;
 pub use renderpass::*;
+pub use commandbuffer::*;
+pub use commandqueue::*;
 
