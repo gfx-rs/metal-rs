@@ -48,7 +48,10 @@ pub trait MTLCommandBuffer {
     unsafe fn status(self) -> MTLCommandBufferStatus;
     unsafe fn error(self) -> id;
 
-    // TODO: add encoders
+    unsafe fn blitCommandEncoder(self) -> id;
+    unsafe fn renderCommandEncoderWithDescriptor(self, renderPassDescriptor: id) -> id;
+    unsafe fn computeCommandEncoder(self) -> id;
+    unsafe fn parallelRenderCommandEncoderWithDescriptor(self, renderPassDescriptor: id) -> id;
 }
 
 impl MTLCommandBuffer for id {
@@ -111,5 +114,21 @@ impl MTLCommandBuffer for id {
 
     unsafe fn error(self) -> id {
         msg_send![self, error]
+    }
+
+    unsafe fn blitCommandEncoder(self) -> id {
+        msg_send![self, blitCommandEncoder]
+    }
+
+    unsafe fn renderCommandEncoderWithDescriptor(self, renderPassDescriptor: id) -> id {
+        msg_send![self, renderCommandEncoderWithDescriptor:renderPassDescriptor]
+    }
+
+    unsafe fn computeCommandEncoder(self) -> id {
+        msg_send![self, computeCommandEncoder]
+    }
+
+    unsafe fn parallelRenderCommandEncoderWithDescriptor(self, renderPassDescriptor: id) -> id {
+        msg_send![self, parallelRenderCommandEncoderWithDescriptor:renderPassDescriptor]
     }
 }
