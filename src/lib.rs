@@ -28,6 +28,9 @@ mod renderpass;
 mod commandbuffer;
 mod commandqueue;
 mod encoder;
+mod pipeline;
+mod library;
+mod argument;
 
 pub use constants::*;
 pub use types::*;
@@ -40,4 +43,7 @@ pub use renderpass::*;
 pub use commandbuffer::*;
 pub use commandqueue::*;
 pub use encoder::*;
+pub use pipeline::*;
+pub use library::*;
+pub use argument::*;
 
