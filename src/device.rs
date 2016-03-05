@@ -103,6 +103,14 @@ pub trait MTLDevice {
     /// Create a new sampler.
     unsafe fn newSamplerStateWithDescriptor(self, descriptor: id) -> id;
 
+    unsafe fn newDefaultLibrary(self) -> id;
+
+    unsafe fn newLibraryWithFile_error(self, filepath: id, error: *mut id) -> id;
+
+    unsafe fn newLibraryWithSource_options_error(self, source: id, options: id, error: *mut id) -> id;
+
+    unsafe fn newLibraryWithSource_options_completionHandler(self, source: id, options: id, completionHandler: MTLNewLibraryCompletionHandler) -> id;
+
     /// Returns TRUE if the feature set is supported by this MTLDevice.
     unsafe fn supportsFeatureSet(self, featureSet: MTLFeatureSet) -> BOOL;
 
@@ -167,6 +175,27 @@ impl MTLDevice for id {
 
     unsafe fn newSamplerStateWithDescriptor(self, descriptor: id) -> id {
         msg_send![self, newSamplerWithDescriptor:descriptor]
+    }
+
+    unsafe fn newDefaultLibrary(self) -> id {
+        msg_send![self, newDefaultLibrary]
+    }
+
+    unsafe fn newLibraryWithFile_error(self, filepath: id, error: *mut id) -> id {
+        msg_send![self, newLibraryWithFile:filepath
+                        error:error]
+    }
+
+    unsafe fn newLibraryWithSource_options_error(self, source: id, options: id, error: *mut id) -> id {
+        msg_send![self, newLibraryWithSource:source
+                        options:options
+                        error:error]
+    }
+
+    unsafe fn newLibraryWithSource_options_completionHandler(self, source: id, options: id, completionHandler: MTLNewLibraryCompletionHandler) -> id {
+        msg_send![self, newLibraryWithSource:source
+                        options:options
+                        completionHandler:completionHandler]
     }
 
     unsafe fn supportsFeatureSet(self, featureSet: MTLFeatureSet) -> BOOL {
