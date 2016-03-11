@@ -7,21 +7,31 @@
 
 use cocoa::base::{class, id};
 use cocoa::foundation::NSUInteger;
+use objc::Message;
+use objc::runtime::{Object, Class, BOOL, YES, NO};
+use objc_id::{Id, ShareId};
+use objc_foundation::{INSObject, NSString, INSString};
+
+use std::mem;
+use std::ptr;
+
+use texture::MTLTexture;
+use buffer::MTLBuffer;
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLLoadAction {
-    MTLLoadActionDontCare = 0,
-    MTLLoadActionLoad = 1,
-    MTLLoadActionClear = 2,
+    DontCare = 0,
+    Load = 1,
+    Clear = 2,
 }
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLStoreAction {
-    MTLStoreActionDontCare = 0,
-    MTLStoreActionStore = 1,
-    MTLStoreActionMultisampleResolve = 2,
+    DontCare = 0,
+    Store = 1,
+    MultisampleResolve = 2,
 }
 
 #[repr(C)]
@@ -45,143 +55,311 @@ impl MTLClearColor {
     }
 }
 
-/// A MTLRenderPassAttachmentDescriptor object is used to configure an
-/// individual render target of a framebuffer.
-pub trait MTLRenderPassAttachmentDescriptor {
-    unsafe fn texture(self) -> id;
-    unsafe fn setTexture(self, texture: id);
+pub enum MTLRenderPassAttachmentDescriptor {}
 
-    unsafe fn level(self) -> NSUInteger;
-    unsafe fn setLevel(self, level: NSUInteger);
-
-    unsafe fn slice(self) -> NSUInteger;
-    unsafe fn setSlice(self, slice: NSUInteger);
-
-    unsafe fn depthPlane(self) -> NSUInteger;
-    unsafe fn setDepthPlane(self, depthPlane: NSUInteger);
-
-    unsafe fn resolveTexture(self) -> id;
-    unsafe fn setResolveTexture(self, resolveTexture: id);
-
-    unsafe fn resolveLevel(self) -> NSUInteger;
-    unsafe fn setResolveLevel(self, resolveLevel: NSUInteger);
-
-    unsafe fn resolveSlice(self) -> NSUInteger;
-    unsafe fn setResolveSlice(self, resolveSlice: NSUInteger);
-
-    unsafe fn resolveDepthPlane(self) -> NSUInteger;
-    unsafe fn setResolveDepthPlane(self, resolveDepthPlane: NSUInteger);
-
-    unsafe fn loadAction(self) -> MTLLoadAction;
-    unsafe fn setLoadAction(self, loadAction: MTLLoadAction);
-
-    unsafe fn storeAction(self) -> MTLStoreAction;
-    unsafe fn setStoreAction(self, storeAction: MTLStoreAction);
-}
-
-impl MTLRenderPassAttachmentDescriptor for id {
-    unsafe fn texture(self) -> id { msg_send![self, texture] }
-    unsafe fn setTexture(self, texture: id) { msg_send![self, setTexture:texture] }
-
-    unsafe fn level(self) -> NSUInteger { msg_send![self, level] }
-    unsafe fn setLevel(self, level: NSUInteger) { msg_send![self, setLevel:level] }
-
-    unsafe fn slice(self) -> NSUInteger { msg_send![self, slice] }
-    unsafe fn setSlice(self, slice: NSUInteger) { msg_send![self, setSlice:slice] }
-
-    unsafe fn depthPlane(self) -> NSUInteger { msg_send![self, depthPlane] }
-    unsafe fn setDepthPlane(self, depthPlane: NSUInteger) { msg_send![self, setDepthPlane:depthPlane] }
-
-    unsafe fn resolveTexture(self) -> id { msg_send![self, resolveTexture] }
-    unsafe fn setResolveTexture(self, resolveTexture: id) { msg_send![self, setResolveTexture:resolveTexture] }
-
-    unsafe fn resolveLevel(self) -> NSUInteger { msg_send![self, resolveLevel] }
-    unsafe fn setResolveLevel(self, resolveLevel: NSUInteger) { msg_send![self, setResolveLevel:resolveLevel] }
-
-    unsafe fn resolveSlice(self) -> NSUInteger { msg_send![self, resolveSlice] }
-    unsafe fn setResolveSlice(self, resolveSlice: NSUInteger) { msg_send![self, setResolveSlice:resolveSlice] }
-
-    unsafe fn resolveDepthPlane(self) -> NSUInteger { msg_send![self, resolveDepthPlane] }
-    unsafe fn setResolveDepthPlane(self, resolveDepthPlane: NSUInteger) { msg_send![self, setResolveDepthPlane:resolveDepthPlane] }
-
-    unsafe fn loadAction(self) -> MTLLoadAction { msg_send![self, loadAction] }
-    unsafe fn setLoadAction(self, loadAction: MTLLoadAction) { msg_send![self, setLoadAction:loadAction] }
-
-    unsafe fn storeAction(self) -> MTLStoreAction { msg_send![self, storeAction] }
-    unsafe fn setStoreAction(self, storeAction: MTLStoreAction) { msg_send![self, setStoreAction:storeAction] }
-}
-
-/// A MTLRenderPassColorAttachmentDescriptor object is used to configure an
-/// individual render target whose texture has a color-renderable pixel format.
-pub trait MTLRenderPassColorAttachmentDescriptor : MTLRenderPassAttachmentDescriptor {
-    unsafe fn clearColor(self) -> MTLClearColor;
-    unsafe fn setClearColor(self, clearColor: MTLClearColor);
-}
-
-impl MTLRenderPassColorAttachmentDescriptor for id {
-    unsafe fn clearColor(self) -> MTLClearColor { msg_send![self, clearColor] }
-    unsafe fn setClearColor(self, clearColor: MTLClearColor) { msg_send![self, setClearColor:clearColor] }
-}
-
-/// A MTLRenderPassDepthAttachmentDescriptor object is used to configure an
-/// individual render target whose texture has a depth-renderable pixel format.
-pub trait MTLRenderPassDepthAttachmentDescriptor : MTLRenderPassAttachmentDescriptor {
-    unsafe fn clearDepth(self) -> f64;
-    unsafe fn setClearDepth(self, clearDepth: f64);
-}
-
-impl MTLRenderPassDepthAttachmentDescriptor for id {
-    unsafe fn clearDepth(self) -> f64 { msg_send![self, clearDepth] }
-    unsafe fn setClearDepth(self, clearDepth: f64) { msg_send![self, setClearDepth:clearDepth] }
-}
-
-/// A MTLRenderPassStencilAttachmentDescriptor object is used to configure an
-/// individual render target that has a texture with a stencil-renderable pixel
-/// format.
-pub trait MTLRenderPassStencilAttachmentDescriptor : MTLRenderPassAttachmentDescriptor {
-    unsafe fn clearStencil(self) -> u32;
-    unsafe fn setClearStencil(self, clearStencil: u32);
-}
-
-impl MTLRenderPassStencilAttachmentDescriptor for id {
-    unsafe fn clearStencil(self) -> u32 { msg_send![self, clearStencil] }
-    unsafe fn setClearStencil(self, clearStencil: u32) { msg_send![self, setClearStencil:clearStencil] }
-}
-
-pub trait MTLRenderPassColorAttachmentDescriptorArray {
-    unsafe fn objectAtIndexedSubscript(self, attachmentIndex: NSUInteger) -> id;
-    unsafe fn setObject(self, attachment: id, attachmentIndex: NSUInteger);
-}
-
-impl MTLRenderPassColorAttachmentDescriptorArray for id {
-    unsafe fn objectAtIndexedSubscript(self, attachmentIndex: NSUInteger) -> id {
-        msg_send![self, objectAtIndexedSubscript:attachmentIndex]
+pub trait IMTLRenderPassAttachmentDescriptor : INSObject {
+    fn texture(&self) -> MTLTexture {
+        unsafe {
+            msg_send![self, texture]
+        }
     }
 
-    unsafe fn setObject(self, attachment: id, attachmentIndex: NSUInteger) {
-        msg_send![self, setObject:attachment atIndexedSubscript:attachmentIndex]
+    fn set_texture(&self, texture: MTLTexture) {
+        unsafe {
+            msg_send![self, setTexture:texture]
+        }
+    }
+
+    fn level(&self) -> u64 {
+        unsafe {
+            msg_send![self, level]
+        }
+    }
+
+    fn set_level(&self, level: u64) {
+        unsafe {
+            msg_send![self, setLevel:level]
+        }
+    }
+
+    fn slice(&self) -> u64 {
+        unsafe {
+            msg_send![self, slice]
+        }
+    }
+
+    fn set_slice(&self, slice: u64) {
+        unsafe {
+            msg_send![self, setSlice:slice]
+        }
+    }
+
+    fn depth_plane(&self) -> u64 {
+        unsafe {
+            msg_send![self, depthPlane]
+        }
+    }
+
+    fn set_depth_plane(&self, depth_plane: u64) {
+        unsafe {
+            msg_send![self, setDepthPlane:depth_plane]
+        }
+    }
+
+    fn resolve_texture(&self) -> MTLTexture {
+        unsafe {
+            msg_send![self, resolveTexture]
+        }
+    }
+
+    fn set_resolve_texture(&self, resolve_texture: MTLTexture) {
+        unsafe {
+            msg_send![self, setResolveTexture:resolve_texture]
+        }
+    }
+
+
+    fn resolve_level(&self) -> u64 {
+        unsafe {
+            msg_send![self, resolveLevel]
+        }
+    }
+
+    fn set_resolve_level(&self, resolve_level: u64) {
+        unsafe {
+            msg_send![self, setResolveLevel:resolve_level]
+        }
+    }
+
+    fn resolve_slice(&self) -> u64 {
+        unsafe {
+            msg_send![self, resolveSlice]
+        }
+    }
+
+    fn set_resolve_slice(&self, resolve_slice: u64) {
+        unsafe {
+            msg_send![self, setResolveSlice:resolve_slice]
+        }
+    }
+
+
+    fn resolve_depth_plane(&self) -> u64 {
+        unsafe {
+            msg_send![self, resolveDepthPlane]
+        }
+    }
+
+    fn set_resolve_depth_plane(&self, resolve_depth_plane: u64) {
+        unsafe {
+            msg_send![self, setResolveDepthPlane:resolve_depth_plane]
+        }
+    }
+
+    fn load_action(&self) -> MTLLoadAction {
+        unsafe {
+            msg_send![self, loadAction]
+        }
+    }
+
+    fn set_load_action(&self, load_action: MTLLoadAction) {
+        unsafe {
+            msg_send![self, setLoadAction:load_action]
+        }
+    }
+
+    fn store_action(&self) -> MTLStoreAction {
+        unsafe {
+            msg_send![self, storeAction]
+        }
+    }
+
+    fn set_store_action(&self, store_action: MTLStoreAction) {
+        unsafe {
+            msg_send![self, setStoreAction:store_action]
+        }
     }
 }
 
-pub trait MTLRenderPassDescriptor {
-    unsafe fn renderPassDescriptor(_: Self) -> id {
-        msg_send![class("MTLRenderPassDescriptor"), renderPassDescriptor]
+impl INSObject for MTLRenderPassAttachmentDescriptor {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPassAttachmentDescriptor").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPassAttachmentDescriptor { }
+
+impl IMTLRenderPassAttachmentDescriptor for MTLRenderPassAttachmentDescriptor { }
+
+pub enum MTLRenderPassColorAttachmentDescriptor {}
+
+pub trait IMTLRenderPassColorAttachmentDescriptor : IMTLRenderPassAttachmentDescriptor {
+    fn clear_color(&self) -> MTLClearColor {
+        unsafe {
+            msg_send![self, clearColor]
+        }
     }
 
-    // FIXME: type
-    unsafe fn colorAttachments(self) -> id;
-    unsafe fn depthAttachment(self) -> id;
-    unsafe fn stencilAttachment(self) -> id;
-
-    unsafe fn visibilityResultBuffer(self) -> id;
-    unsafe fn renderTargetArrayLength(self) -> NSUInteger;
+    fn set_clear_color(&self, clear_color: MTLClearColor) {
+        unsafe {
+            msg_send![self, setClearColor:clear_color]
+        }
+    }
 }
 
-impl MTLRenderPassDescriptor for id {
-    unsafe fn colorAttachments(self) -> id { msg_send![self, colorAttachments] }
-    unsafe fn depthAttachment(self) -> id { msg_send![self, depthAttachment] }
-    unsafe fn stencilAttachment(self) -> id { msg_send![self, stencilAttachment] }
-
-    unsafe fn visibilityResultBuffer(self) -> id { msg_send![self, visibilityResultBuffer] }
-    unsafe fn renderTargetArrayLength(self) -> NSUInteger { msg_send![self, renderTargetArrayLength] }
+impl INSObject for MTLRenderPassColorAttachmentDescriptor {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPassColorAttachmentDescriptor").unwrap()
+    }
 }
+
+unsafe impl Message for MTLRenderPassColorAttachmentDescriptor { }
+
+impl IMTLRenderPassColorAttachmentDescriptor for MTLRenderPassColorAttachmentDescriptor { }
+impl IMTLRenderPassAttachmentDescriptor for MTLRenderPassColorAttachmentDescriptor { }
+
+pub enum MTLRenderPassDepthAttachmentDescriptor {}
+
+pub trait IMTLRenderPassDepthAttachmentDescriptor : IMTLRenderPassAttachmentDescriptor {
+    fn clear_depth(&self) -> f64 {
+        unsafe {
+            msg_send![self, clearDepth]
+        }
+    }
+
+    fn set_clear_depth(&self, clear_depth: f64) {
+        unsafe {
+            msg_send![self, setClearDepth:clear_depth]
+        }
+    }
+}
+
+impl INSObject for MTLRenderPassDepthAttachmentDescriptor {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPassDepthAttachmentDescriptor").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPassDepthAttachmentDescriptor { }
+
+impl IMTLRenderPassDepthAttachmentDescriptor for MTLRenderPassDepthAttachmentDescriptor { }
+impl IMTLRenderPassAttachmentDescriptor for MTLRenderPassDepthAttachmentDescriptor { }
+
+pub enum MTLRenderPassStencilAttachmentDescriptor {}
+
+pub trait IMTLRenderPassStencilAttachmentDescriptor : IMTLRenderPassAttachmentDescriptor {
+    fn clear_stencil(&self) -> u32 {
+        unsafe {
+            msg_send![self, clearStencil]
+        }
+    }
+
+    fn set_clear_stencil(&self, clear_stencil: u32) {
+        unsafe {
+            msg_send![self, setClearStencil:clear_stencil]
+        }
+    }
+
+}
+
+impl INSObject for MTLRenderPassStencilAttachmentDescriptor {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPassStencilAttachmentDescriptor").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPassStencilAttachmentDescriptor { }
+
+impl IMTLRenderPassStencilAttachmentDescriptor for MTLRenderPassStencilAttachmentDescriptor { }
+impl IMTLRenderPassAttachmentDescriptor for MTLRenderPassStencilAttachmentDescriptor { }
+
+pub enum MTLRenderPassColorAttachmentDescriptorArray {}
+
+pub trait IMTLRenderPassColorAttachmentDescriptorArray : INSObject {
+    fn object_at(&self, index: usize) -> MTLRenderPassColorAttachmentDescriptor {
+        unsafe {
+            msg_send![self, objectAtIndexedSubscript:index]
+        }
+    }
+
+    fn set_object_at(&self, index: usize, attachment: MTLRenderPassColorAttachmentDescriptor) {
+        unsafe {
+            msg_send![self, setObject:attachment
+                   atIndexedSubscript:index]
+        }
+    }
+}
+
+impl INSObject for MTLRenderPassColorAttachmentDescriptorArray {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPassColorAttachmentDescriptorArray").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPassColorAttachmentDescriptorArray { }
+
+impl IMTLRenderPassColorAttachmentDescriptorArray for MTLRenderPassColorAttachmentDescriptorArray { }
+
+
+pub enum MTLRenderPassDescriptor {}
+
+pub trait IMTLRenderPassDescriptor<'a> : INSObject {
+    fn render_pass_descriptor() -> MTLRenderPassDescriptor {
+        unsafe {
+            msg_send![Self::class(), renderPassDescriptor]
+        }
+    }
+
+    fn color_attachments(&self) -> MTLRenderPassColorAttachmentDescriptorArray {
+        unsafe {
+            msg_send![self, colorAttachments]
+        }
+    }
+
+    fn depth_attachment(&self) -> MTLRenderPassDepthAttachmentDescriptor {
+        unsafe {
+            msg_send![self, depthAttachment]
+        }
+    }
+
+    fn set_depth_attachment(&self, depth_attachment: Option<&MTLRenderPassDepthAttachmentDescriptor>) {
+        unsafe {
+            msg_send![self, setDepthAttachment:depth_attachment.unwrap_or(mem::transmute(0 as *const MTLRenderPassStencilAttachmentDescriptor))]
+        }
+    }
+
+    fn stencil_attachment(&self) -> MTLRenderPassStencilAttachmentDescriptor {
+        unsafe {
+            msg_send![self, stencilAttachment]
+        }
+    }
+
+    fn set_stencil_attachment(&self, stencil_attachment: Option<&MTLRenderPassStencilAttachmentDescriptor>) {
+        unsafe {
+            msg_send![self, setStencilAttachment:stencil_attachment.unwrap_or(mem::transmute(0 as *const MTLRenderPassStencilAttachmentDescriptor))]
+        }
+    }
+
+    fn visibility_result_buffer(&'a self) -> &'a MTLBuffer {
+        unsafe {
+            msg_send![self, visibilityResultBuffer]
+        }
+    }
+
+    fn render_target_array_length(&self) -> u64 {
+        unsafe {
+            msg_send![self, renderTargetArrayLength]
+        }
+    }
+}
+
+impl INSObject for MTLRenderPassDescriptor {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPassDescriptor").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPassDescriptor { }
+
+impl<'a> IMTLRenderPassDescriptor<'a> for MTLRenderPassDescriptor { }
+

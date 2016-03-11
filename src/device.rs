@@ -5,42 +5,32 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::{id, BOOL};
-use cocoa::foundation::{NSUInteger, NSString};
+use cocoa::base::id;
+use cocoa::foundation::{NSUInteger};
+use objc::Message;
+use objc::runtime::{Object, Class, BOOL, YES, NO};
+use objc_id::{Id, ShareId};
+use objc_foundation::{INSObject, NSString, INSString};
 
 use resource::MTLResourceOptions;
+
+use commandqueue::MTLCommandQueue;
+use pipeline::{MTLRenderPipelineState, MTLRenderPipelineDescriptor};
+use library::MTLLibrary;
 use types::{MTLSize};
+use buffer::MTLBuffer;
 
 use libc;
-
-#[link(name = "Metal", kind = "framework")]
-extern {
-    /// Returns a reference to the preferred system default Metal device.
-    ///
-    /// On Mac OS X systems that support automatic graphics switching, calling
-    /// this API to get a Metal device will cause the system to switch to the
-    /// high power GPU. On other systems that support more than one GPU it will
-    /// return the GPU that is associated with the main display.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use metal::MTLCreateSystemDefaultDevice;
-    ///
-    /// let device = MTLCreateSystemDefaultDevice();
-    /// ```
-    pub fn MTLCreateSystemDefaultDevice() -> id;
-}
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLFeatureSet {
-    MTLFeatureSet_iOS_GPUFamily1_v1 = 0,
-    MTLFeatureSet_iOS_GPUFamily2_v1 = 1,
-    MTLFeatureSet_iOS_GPUFamily1_v2 = 2,
-    MTLFeatureSet_iOS_GPUFamily2_v2 = 3,
-    MTLFeatureSet_iOS_GPUFamily3_v1 = 4,
-    MTLFeatureSet_OSX_GPUFamily1_v1 = 10000,
+    iOS_GPUFamily1_v1 = 0,
+    iOS_GPUFamily2_v1 = 1,
+    iOS_GPUFamily1_v2 = 2,
+    iOS_GPUFamily2_v2 = 3,
+    iOS_GPUFamily3_v1 = 4,
+    OSX_GPUFamily1_v1 = 10000,
 }
 
 bitflags! {
@@ -51,159 +41,118 @@ bitflags! {
     }
 }
 
+#[link(name = "Metal", kind = "framework")]
+extern {
+    fn MTLCreateSystemDefaultDevice() -> *mut MTLDevice;
+}
+
+pub fn create_system_default_device() -> Id<MTLDevice> {
+    unsafe {
+        Id::from_ptr(MTLCreateSystemDefaultDevice())
+    }
+}
+
 type MTLNewLibraryCompletionHandler = extern fn(library: id, error: id);
 type MTLNewRenderPipelineStateCompletionHandler = extern fn(renderPipelineState: id, error: id);
 type MTLNewRenderPipelineStateWithReflectionCompletionHandler = extern fn(renderPipelineState: id, reflection: id, error: id);
 type MTLNewComputePipelineStateCompletionHandler = extern fn(computePipelineState: id, error: id);
 type MTLNewComputePipelineStateWithReflectionCompletionHandler = extern fn(computePipelineState: id, reflection: id, error: id);
 
-/// MTLDevice represents a processor capable of data parallel computations
-pub trait MTLDevice {
-    /// The full name of the vendor device.
-    unsafe fn name(self) -> id;
+pub enum MTLDevice {}
 
-    /// The maximum number of threads along each dimension.
-    unsafe fn maxThreadsPerThreadgroup(self) -> MTLSize;
-
-    /// On systems that support automatic graphics switching, this will return
-    /// YES for the the low power device.
-    unsafe fn lowPower(self) -> BOOL;
-
-    /// On systems that include more that one GPU, this will return YES for any
-    /// device that does not support any displays. Only available on Mac OS X.
-    unsafe fn headless(self) -> BOOL;
-
-    /// If YES, device supports MTLPixelFormatDepth24Unorm_Stencil8.
-    unsafe fn depth24Stencil8PixelFormatSupported(self) -> BOOL;
-
-    /// Create and return a new command queue. Command Queues created via this
-    /// method will only allow up to 64 non-completed command buffers.
-    unsafe fn newCommandQueue(self) -> id;
-
-    /// Create and return a new command queue with a given upper bound on
-    /// non-completed command buffers.
-    unsafe fn newCommandQueueWithMaxCommandBufferCount(self, maxCommandBufferCount: NSUInteger) -> id;
-
-    /// Create a buffer by allocating new memory.
-    unsafe fn newBufferWithLength_options_(self, length: NSUInteger, options: MTLResourceOptions) -> id;
-
-    /// Create a buffer by allocating new memory and specifing the initial
-    /// contents to be copied into it.
-    unsafe fn newBufferWithBytes_length_options_(self, pointer: *mut libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> id;
-
-    /// Create a buffer by wrapping an existing part of the address space.
-    unsafe fn newBufferWithBytesNoCopy_length_options_deallocator(self, pointer: *mut libc::c_void, length: NSUInteger, options: MTLResourceOptions, deallocator: extern fn(pointer: *mut libc::c_void, length: NSUInteger)) -> id;
-
-    /// Create a depth/stencil test state object.
-    unsafe fn newDepthStencilStateWithDescriptor(self, descriptor: id) -> id;
-
-    /// Allocate a new texture with privately owned storage.
-    unsafe fn newTextureWithDescriptor(self, descriptor: id) -> id;
-
-    /// Create a new sampler.
-    unsafe fn newSamplerStateWithDescriptor(self, descriptor: id) -> id;
-
-    unsafe fn newDefaultLibrary(self) -> id;
-
-    unsafe fn newLibraryWithFile_error(self, filepath: id, error: *mut id) -> id;
-
-    unsafe fn newLibraryWithSource_options_error(self, source: id, options: id, error: *mut id) -> id;
-
-    unsafe fn newLibraryWithSource_options_completionHandler(self, source: id, options: id, completionHandler: MTLNewLibraryCompletionHandler) -> id;
-
-    /// Returns TRUE if the feature set is supported by this MTLDevice.
-    unsafe fn supportsFeatureSet(self, featureSet: MTLFeatureSet) -> BOOL;
-
-    /// Query device if it support textures with a given sampleCount.
-    unsafe fn supportsTextureSampleCount(self, sampleCount: NSUInteger) -> BOOL;
-}
-
-impl MTLDevice for id {
-    unsafe fn name(self) -> id {
-        msg_send![self, name]
+pub trait IMTLDevice<'a> : INSObject {
+    fn name(&'a self) -> &'a str {
+        unsafe {
+            let name: &'a NSString = msg_send![self, name];
+            name.as_str()
+        }
     }
 
-    unsafe fn maxThreadsPerThreadgroup(self) -> MTLSize {
-        msg_send![self, maxThreadsPerThreadgroup]
+    fn max_threads_per_threadgroup(&self) -> MTLSize {
+        unsafe {
+            msg_send![self, maxThreadsPerThreadgroup]
+        }
     }
 
-    unsafe fn lowPower(self) -> BOOL {
-        msg_send![self, isLowPower]
+    fn is_low_power(&self) -> bool {
+        unsafe {
+            match msg_send![self, isLowPower] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
     }
 
-    unsafe fn headless(self) -> BOOL {
-        msg_send![self, isHeadless]
+    fn is_headless(&self) -> bool {
+        unsafe {
+            match msg_send![self, isHeadless] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
     }
 
-    unsafe fn depth24Stencil8PixelFormatSupported(self) -> BOOL {
-        msg_send![self, isDepth24Stencil8PixelFormatSupported]
+    fn supports_feature_set(&self, feature: MTLFeatureSet) -> bool {
+        unsafe {
+            match msg_send![self, supportsFeatureSet:feature] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
     }
 
-    unsafe fn newCommandQueue(self) -> id {
-        msg_send![self, newCommandQueue]
+    fn supports_sample_count(&self, count: u64) -> bool {
+        unsafe {
+            match msg_send![self, supportsTextureSampleCount:count] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
     }
 
-    unsafe fn newCommandQueueWithMaxCommandBufferCount(self, maxCommandBufferCount: NSUInteger) -> id {
-        msg_send![self, newCommandQueueWithMaxCommandBufferCount:maxCommandBufferCount]
+    fn new_command_queue(&self) -> Id<MTLCommandQueue> {
+        unsafe {
+            Id::from_ptr(msg_send![self, newCommandQueue])
+        }
     }
 
-    unsafe fn newBufferWithLength_options_(self, length: NSUInteger, options: MTLResourceOptions) -> id {
-        msg_send![self, newBufferWithLength:length
-                        options:options.bits()]
+    fn new_default_library(&self) -> Id<MTLLibrary> {
+        unsafe {
+            Id::from_ptr(msg_send![self, newDefaultLibrary])
+        }
     }
 
-    unsafe fn newBufferWithBytes_length_options_(self, pointer: *mut libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> id {
-        msg_send![self, newBufferWithBytes:pointer
-                        length:length
-                        options:options.bits()]
+    fn new_render_pipeline_state(&self, descriptor: MTLRenderPipelineDescriptor) -> Result<&MTLRenderPipelineState, ()> {
+        unsafe {
+            let pipeline_state: *const MTLRenderPipelineState = msg_send![self, newRenderPipelineStateWithDescriptor:descriptor];
+
+            match pipeline_state.is_null() {
+                true => Err(()),
+                false => Ok(&*pipeline_state)
+            }
+        }
     }
 
-    unsafe fn newBufferWithBytesNoCopy_length_options_deallocator(self, pointer: *mut libc::c_void, length: NSUInteger, options: MTLResourceOptions, deallocator: extern fn(pointer: *mut libc::c_void, length: NSUInteger)) -> id {
-        msg_send![self, newBufferWithBytesNoCopy:pointer
-                        length:length
-                        options:options.bits()
-                        deallocator:deallocator]
-    }
-
-    unsafe fn newDepthStencilStateWithDescriptor(self, descriptor: id) -> id {
-        msg_send![self, newDepthStencilStateWithDescriptor:descriptor]
-    }
-
-    unsafe fn newTextureWithDescriptor(self, descriptor: id) -> id {
-        msg_send![self, newTextureWithDescriptor:descriptor]
-    }
-
-    unsafe fn newSamplerStateWithDescriptor(self, descriptor: id) -> id {
-        msg_send![self, newSamplerWithDescriptor:descriptor]
-    }
-
-    unsafe fn newDefaultLibrary(self) -> id {
-        msg_send![self, newDefaultLibrary]
-    }
-
-    unsafe fn newLibraryWithFile_error(self, filepath: id, error: *mut id) -> id {
-        msg_send![self, newLibraryWithFile:filepath
-                        error:error]
-    }
-
-    unsafe fn newLibraryWithSource_options_error(self, source: id, options: id, error: *mut id) -> id {
-        msg_send![self, newLibraryWithSource:source
-                        options:options
-                        error:error]
-    }
-
-    unsafe fn newLibraryWithSource_options_completionHandler(self, source: id, options: id, completionHandler: MTLNewLibraryCompletionHandler) -> id {
-        msg_send![self, newLibraryWithSource:source
-                        options:options
-                        completionHandler:completionHandler]
-    }
-
-    unsafe fn supportsFeatureSet(self, featureSet: MTLFeatureSet) -> BOOL {
-        msg_send![self, supportsFeatureSet:featureSet]
-    }
-
-    unsafe fn supportsTextureSampleCount(self, sampleCount: NSUInteger) -> BOOL {
-        msg_send![self, supportsTextureSampleCount:sampleCount]
+    fn new_buffer(&self, bytes: *const libc::c_void, length: usize, options: MTLResourceOptions) -> MTLBuffer {
+        unsafe {
+            msg_send![self, newBufferWithBytes:bytes
+                                        length:length
+                                       options:options]
+        }
     }
 }
+
+impl INSObject for MTLDevice {
+    fn class() -> &'static Class {
+        Class::get("MTLDevice").unwrap()
+    }
+}
+
+unsafe impl Message for MTLDevice { }
+
+impl<'a> IMTLDevice<'a> for MTLDevice { }
 

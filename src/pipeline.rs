@@ -5,39 +5,47 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::{id, BOOL};
+use cocoa::base::id;
 use cocoa::foundation::NSUInteger;
+use objc::Message;
+use objc::runtime::{Object, Class, BOOL, YES, NO};
+use objc_id::{Id, ShareId};
+use objc_foundation::{INSObject, NSObject, INSString, NSString,
+                      INSArray, NSArray};
 
 use constants::MTLPixelFormat;
+use renderpass::MTLRenderPassColorAttachmentDescriptor;
+use library::MTLFunction;
+use argument::MTLArgument;
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLBlendFactor {
-    MTLBlendFactorZero = 0,
-    MTLBlendFactorOne = 1,
-    MTLBlendFactorSourceColor = 2,
-    MTLBlendFactorOneMinusSourceColor = 3,
-    MTLBlendFactorSourceAlpha = 4,
-    MTLBlendFactorOneMinusSourceAlpha = 5,
-    MTLBlendFactorDestinationColor = 6,
-    MTLBlendFactorOneMinusDestinationColor = 7,
-    MTLBlendFactorDestinationAlpha = 8,
-    MTLBlendFactorOneMinusDestinationAlpha = 9,
-    MTLBlendFactorSourceAlphaSaturated = 10,
-    MTLBlendFactorBlendColor = 11,
-    MTLBlendFactorOneMinusBlendColor = 12,
-    MTLBlendFactorBlendAlpha = 13,
-    MTLBlendFactorOneMinusBlendAlpha = 14,
+    Zero = 0,
+    One = 1,
+    SourceColor = 2,
+    OneMinusSourceColor = 3,
+    SourceAlpha = 4,
+    OneMinusSourceAlpha = 5,
+    DestinationColor = 6,
+    OneMinusDestinationColor = 7,
+    DestinationAlpha = 8,
+    OneMinusDestinationAlpha = 9,
+    SourceAlphaSaturated = 10,
+    BlendColor = 11,
+    OneMinusBlendColor = 12,
+    BlendAlpha = 13,
+    OneMinusBlendAlpha = 14,
 }
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLBlendOperation {
-    MTLBlendOperationAdd = 0,
-    MTLBlendOperationSubtract = 1,
-    MTLBlendOperationReverseSubtract = 2,
-    MTLBlendOperationMin = 3,
-    MTLBlendOperationMax = 4,
+    Add = 0,
+    Subtract = 1,
+    ReverseSubtract = 2,
+    Min = 3,
+    Max = 4,
 }
 
 bitflags! {
@@ -54,188 +62,382 @@ bitflags! {
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLPrimitiveTopologyClass {
-    MTLPrimitiveTopologyClassUnspecified = 0,
-    MTLPrimitiveTopologyClassPoint = 1,
-    MTLPrimitiveTopologyClassLine = 2,
-    MTLPrimitiveTopologyClassTriangle = 3,
+    Unspecified = 0,
+    Point = 1,
+    Line = 2,
+    Triangle = 3,
 }
 
-pub trait MTLRenderPipelineColorAttachmentDescriptor {
-    unsafe fn pixelFormat(self) -> MTLPixelFormat;
-    unsafe fn setPixelFormat(self, pixelFormat: MTLPixelFormat);
+pub enum MTLRenderPipelineColorAttachmentDescriptor {}
 
-    unsafe fn isBlendingEnabled(self) -> BOOL;
-    unsafe fn setBlendingEnabled(self, blendingEnabled: BOOL);
-
-    unsafe fn sourceRGBBlendFactor(self) -> MTLBlendFactor;
-    unsafe fn setSourceRGBBlendFactor(self, sourceRGBBlendFactor: MTLBlendFactor);
-
-    unsafe fn destinationRGBBlendFactor(self) -> MTLBlendFactor;
-    unsafe fn setDestinationRGBBlendFactor(self, destinationRGBBlendFactor: MTLBlendFactor);
-
-    unsafe fn rgbBlendOperation(self) -> MTLBlendOperation;
-    unsafe fn setRgbBlendOperation(self, rgbBlendOperation: MTLBlendOperation);
-
-    unsafe fn sourceAlphaBlendFactor(self) -> MTLBlendFactor;
-    unsafe fn setSourceAlphaBlendFactor(self, sourceAlphaBlendFactor: MTLBlendFactor);
-
-    unsafe fn destinationAlphaBlendFactor(self) -> MTLBlendFactor;
-    unsafe fn setDestinationAlphaBlendFactor(self, destinationAlphaBlendFactor: MTLBlendFactor);
-
-    unsafe fn alphaBlendOperation(self) -> MTLBlendOperation;
-    unsafe fn setAlphaBlendOperation(self, alphaBlendOperation: MTLBlendOperation);
-
-    unsafe fn writeMask(self) -> MTLColorWriteMask;
-    unsafe fn setWriteMask(self, writeMask: MTLColorWriteMask);
-}
-
-impl MTLRenderPipelineColorAttachmentDescriptor for id {
-    unsafe fn pixelFormat(self) -> MTLPixelFormat { msg_send![self, pixelFormat] }
-    unsafe fn setPixelFormat(self, pixelFormat: MTLPixelFormat) { msg_send![self, setPixelFormat:pixelFormat] }
-
-    unsafe fn isBlendingEnabled(self) -> BOOL { msg_send![self, isBlendingEnabled] }
-    unsafe fn setBlendingEnabled(self, blendingEnabled: BOOL) { msg_send![self, setBlendingEnabled:blendingEnabled] }
-
-    unsafe fn sourceRGBBlendFactor(self) -> MTLBlendFactor { msg_send![self, sourceRGBBlendFactor] }
-    unsafe fn setSourceRGBBlendFactor(self, sourceRGBBlendFactor: MTLBlendFactor) { msg_send![self, setSourceRGBBlendFactor:sourceRGBBlendFactor] }
-
-    unsafe fn destinationRGBBlendFactor(self) -> MTLBlendFactor { msg_send![self, destinationRGBBlendFactor] }
-    unsafe fn setDestinationRGBBlendFactor(self, destinationRGBBlendFactor: MTLBlendFactor) { msg_send![self, setDestinationRGBBlendFactor:destinationRGBBlendFactor] }
-
-    unsafe fn rgbBlendOperation(self) -> MTLBlendOperation { msg_send![self, rgbBlendOperation] }
-    unsafe fn setRgbBlendOperation(self, rgbBlendOperation: MTLBlendOperation) { msg_send![self, setRgbBlendOperation:rgbBlendOperation] }
-
-    unsafe fn sourceAlphaBlendFactor(self) -> MTLBlendFactor { msg_send![self, sourceAlphaBlendFactor] }
-    unsafe fn setSourceAlphaBlendFactor(self, sourceAlphaBlendFactor: MTLBlendFactor) { msg_send![self, setSourceAlphaBlendFactor:sourceAlphaBlendFactor] }
-
-    unsafe fn destinationAlphaBlendFactor(self) -> MTLBlendFactor { msg_send![self, destinationAlphaBlendFactor] }
-    unsafe fn setDestinationAlphaBlendFactor(self, destinationAlphaBlendFactor: MTLBlendFactor) { msg_send![self, setDestinationAlphaFactor:destinationAlphaBlendFactor] }
-
-    unsafe fn alphaBlendOperation(self) -> MTLBlendOperation { msg_send![self, alphaBlendOperation] }
-    unsafe fn setAlphaBlendOperation(self, alphaBlendOperation: MTLBlendOperation) { msg_send![self, setAlphaBlendOperation:alphaBlendOperation] }
-
-    unsafe fn writeMask(self) -> MTLColorWriteMask { msg_send![self, writeMask] }
-    unsafe fn setWriteMask(self, writeMask: MTLColorWriteMask) { msg_send![self, setWriteMask:writeMask] }
-}
-
-pub trait MTLRenderPipelineReflection {
-    unsafe fn vertexArguments(self) -> id;
-    unsafe fn fragmentArguments(self) -> id;
-}
-
-impl MTLRenderPipelineReflection for id {
-    unsafe fn vertexArguments(self) -> id { msg_send![self, vertexArguments] }
-    unsafe fn fragmentArguments(self) -> id { msg_send![self, fragmentArguments] }
-}
-
-pub trait MTLRenderPipelineDescriptor {
-    unsafe fn label(self) -> id;
-    unsafe fn setLabel(self, label: id);
-
-    unsafe fn vertexFunction(self) -> id;
-    unsafe fn setVertexFunction(self, vertexFunction: id);
-
-    unsafe fn fragmentFunction(self) -> id;
-    unsafe fn setFragmentFunction(self, fragmentFunction: id);
-
-    unsafe fn vertexDescriptor(self) -> id;
-    unsafe fn setVertexDescriptor(self, vertexDescriptor: id);
-
-    unsafe fn sampleCount(self) -> NSUInteger;
-    unsafe fn setSampleCount(self, sampleCount: NSUInteger);
-
-    unsafe fn isAlphaToCoverageEnabled(self) -> BOOL;
-    unsafe fn setAlphaToCoverageEnabled(self, alphaToCoverageEnabled: BOOL);
-
-    unsafe fn isAlphaToOneEnabled(self) -> BOOL;
-    unsafe fn setAlphaToOneEnabled(self, alphaToOneEnabled: BOOL);
-
-    unsafe fn isRasterizationEnabled(self) -> BOOL;
-    unsafe fn setRasterizationEnabled(self, rasterizationEnabled: BOOL);
-
-    unsafe fn colorAttachments(self) -> id;
-    unsafe fn setColorAttachments(self, colorAttachments: id);
-
-    unsafe fn depthAttachmentPixelFormat(self) -> MTLPixelFormat;
-    unsafe fn setDepthAttachmentPixelFormat(self, depthAttachmentPixelFormat: MTLPixelFormat);
-
-    unsafe fn stencilAttachmentPixelFormat(self) -> MTLPixelFormat;
-    unsafe fn setStencilAttachmentPixelFormat(self, stencilAttachmentPixelFormat: MTLPixelFormat);
-
-    unsafe fn inputPrimitiveTopology(self) -> MTLPrimitiveTopologyClass;
-    unsafe fn setInputPrimitiveTopology(self, inputPrimitiveTopology: MTLPrimitiveTopologyClass);
-}
-
-impl MTLRenderPipelineDescriptor for id {
-    unsafe fn label(self) -> id { msg_send![self, label] }
-    unsafe fn setLabel(self, label: id) { msg_send![self, setLabel:label] }
-
-    unsafe fn vertexFunction(self) -> id { msg_send![self, vertexFunction] }
-    unsafe fn setVertexFunction(self, vertexFunction: id) { msg_send![self, setVertexFunction:vertexFunction] }
-
-    unsafe fn fragmentFunction(self) -> id { msg_send![self, fragmentFunction] }
-    unsafe fn setFragmentFunction(self, fragmentFunction: id) { msg_send![self, setFragmentFunction:fragmentFunction] }
-
-    unsafe fn vertexDescriptor(self) -> id { msg_send![self, vertexDescriptor] }
-    unsafe fn setVertexDescriptor(self, vertexDescriptor: id) { msg_send![self, setVertexDescriptor:vertexDescriptor] }
-
-    unsafe fn sampleCount(self) -> NSUInteger { msg_send![self, sampleCount] }
-    unsafe fn setSampleCount(self, sampleCount: NSUInteger) { msg_send![self, setSampleCount:sampleCount] }
-
-    unsafe fn isAlphaToCoverageEnabled(self) -> BOOL { msg_send![self, isAlphaToCoverageEnabled] }
-    unsafe fn setAlphaToCoverageEnabled(self, alphaToCoverageEnabled: BOOL) { msg_send![self, setAlphaToCoverageEnabled:alphaToCoverageEnabled] }
-
-    unsafe fn isAlphaToOneEnabled(self) -> BOOL { msg_send![self, isAlphaToOneEnabled] }
-    unsafe fn setAlphaToOneEnabled(self, alphaToOneEnabled: BOOL) { msg_send![self, setAlphaToOneEnabled:alphaToOneEnabled] }
-
-    unsafe fn isRasterizationEnabled(self) -> BOOL { msg_send![self, isRasterizationEnabled] }
-    unsafe fn setRasterizationEnabled(self, rasterizationEnabled: BOOL) { msg_send![self, setRasterizationEnabled:rasterizationEnabled] }
-
-    unsafe fn colorAttachments(self) -> id { msg_send![self, colorAttachments] }
-    unsafe fn setColorAttachments(self, colorAttachments: id) { msg_send![self, setColorAttachments:colorAttachments] }
-
-    unsafe fn depthAttachmentPixelFormat(self) -> MTLPixelFormat { msg_send![self, depthAttachmentPixelFormat] }
-    unsafe fn setDepthAttachmentPixelFormat(self, depthAttachmentPixelFormat: MTLPixelFormat) { msg_send![self, setDepthAttachmentPixelFormat:depthAttachmentPixelFormat] }
-
-    unsafe fn stencilAttachmentPixelFormat(self) -> MTLPixelFormat { msg_send![self, stencilAttachmentPixelFormat] }
-    unsafe fn setStencilAttachmentPixelFormat(self, stencilAttachmentPixelFormat: MTLPixelFormat) { msg_send![self, setStencilAttachmentPixelFormat:stencilAttachmentPixelFormat] }
-
-    unsafe fn inputPrimitiveTopology(self) -> MTLPrimitiveTopologyClass { msg_send![self, inputPrimitiveTopology] }
-    unsafe fn setInputPrimitiveTopology(self, inputPrimitiveTopology: MTLPrimitiveTopologyClass) { msg_send![self, setInputPrimitiveTopology:inputPrimitiveTopology] }
-}
-
-pub trait MTLRenderPipelineState {
-    unsafe fn label(self) -> id;
-    unsafe fn setLabel(self, label: id);
-
-    unsafe fn device(self) -> id;
-}
-
-impl MTLRenderPipelineState for id {
-    unsafe fn label(self) -> id {
-        msg_send![self, label]
+pub trait IMTLRenderPipelineColorAttachmentDescriptor : INSObject {
+    fn pixel_format(&self) -> MTLPixelFormat {
+        unsafe {
+            msg_send![self, pixelFormat]
+        }
     }
 
-    unsafe fn setLabel(self, label: id) {
-        msg_send![self, setLabel:label]
+    fn set_pixel_format(&self, pixel_format: MTLPixelFormat) {
+        unsafe {
+            msg_send![self, setPixelFormat:pixel_format]
+        }
     }
 
-    unsafe fn device(self) -> id {
-        msg_send![self, device]
+    fn is_blending_enabled(&self) -> bool {
+        unsafe {
+            match msg_send![self, isBlendingEnabled] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
+    }
+
+    fn set_blending_enabled(&self, enabled: bool) {
+        unsafe {
+            msg_send![self, setBlendingEnabled:enabled]
+        }
+    }
+
+    fn source_rgb_blend_factor(&self) -> MTLBlendFactor {
+        unsafe {
+            msg_send![self, sourceRGBBlendFactor]
+        }
+    }
+
+    fn set_source_rgb_blend_factor(&self, blend_factor: MTLBlendFactor) {
+        unsafe {
+            msg_send![self, setSourceRGBBlendFactor:blend_factor]
+        }
+    }
+
+    fn destination_rgb_blend_factor(&self) -> MTLBlendFactor {
+        unsafe {
+            msg_send![self, destinationRGBBlendFactor]
+        }
+    }
+
+    fn set_destination_rgb_blend_factor(&self, blend_factor: MTLBlendFactor) {
+        unsafe {
+            msg_send![self, setDestinationRGBBlendFactor:blend_factor]
+        }
+    }
+
+    fn rgb_blend_operation(&self) -> MTLBlendOperation {
+        unsafe {
+            msg_send![self, rgbBlendOperation]
+        }
+    }
+
+    fn set_rgb_blend_operation(&self, blend_operation: MTLBlendOperation) {
+        unsafe {
+            msg_send![self, setRgbBlendOperation:blend_operation]
+        }
+    }
+
+    fn source_alpha_blend_factor(&self) -> MTLBlendFactor {
+        unsafe {
+            msg_send![self, sourceAlphaBlendFactor]
+        }
+    }
+
+    fn set_source_alpha_blend_factor(&self, blend_factor: MTLBlendFactor) {
+        unsafe {
+            msg_send![self, setSourceAlphaBlendFactor:blend_factor]
+        }
+    }
+
+    fn destination_alpha_blend_factor(&self) -> MTLBlendFactor {
+        unsafe {
+            msg_send![self, destinationAlphaBlendFactor]
+        }
+    }
+
+    fn set_destination_alpha_blend_factor(&self, blend_factor: MTLBlendFactor) {
+        unsafe {
+            msg_send![self, setDestinationAlphaBlendFactor:blend_factor]
+        }
+    }
+
+    fn alpha_blend_operation(&self) -> MTLBlendOperation {
+        unsafe {
+            msg_send![self, alphaBlendOperation]
+        }
+    }
+
+    fn set_alpha_blend_operation(&self, blend_operation: MTLBlendOperation) {
+        unsafe {
+            msg_send![self, setAlphaBlendOperation:blend_operation]
+        }
+    }
+
+    fn write_mask(&self) -> MTLColorWriteMask {
+        unsafe {
+            msg_send![self, writeMask]
+        }
+    }
+
+    fn set_write_mask(&self, mask: MTLColorWriteMask) {
+        unsafe {
+            msg_send![self, setWriteMask:mask]
+        }
     }
 }
 
-pub trait MTLRenderPipelineColorAttachmentDescriptorArray {
-    unsafe fn objectAtIndexedSubscript(self, attachmentIndex: NSUInteger) -> id;
-    unsafe fn setObject_atIndexedSubscript(self, attachment: id, attachmentIndex: NSUInteger);
-}
-
-impl MTLRenderPipelineColorAttachmentDescriptorArray for id {
-    unsafe fn objectAtIndexedSubscript(self, attachmentIndex: NSUInteger) -> id {
-        msg_send![self, objectAtIndexedSubscript:attachmentIndex]
-    }
-
-    unsafe fn setObject_atIndexedSubscript(self, attachment: id, attachmentIndex: NSUInteger) {
-        msg_send![self, setObject:attachment atIndexedSubscript:attachmentIndex]
+impl INSObject for MTLRenderPipelineColorAttachmentDescriptor {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPipelineColorAttachmentDescriptor").unwrap()
     }
 }
+
+unsafe impl Message for MTLRenderPipelineColorAttachmentDescriptor { }
+impl IMTLRenderPipelineColorAttachmentDescriptor for MTLRenderPipelineColorAttachmentDescriptor { }
+
+pub enum MTLRenderPipelineReflection { }
+pub trait IMTLRenderPipelineReflection : INSObject {
+    fn vertex_arguments(&self) -> NSArray<MTLArgument> {
+        unsafe {
+            msg_send![self, vertexArguments]
+        }
+    }
+
+    fn fragment_arguments(&self) -> NSArray<MTLArgument> {
+        unsafe {
+            msg_send![self, fragmentArguments]
+        }
+    }
+}
+
+impl INSObject for MTLRenderPipelineReflection {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPipelineReflection").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPipelineReflection { }
+impl IMTLRenderPipelineReflection for MTLRenderPipelineReflection { }
+
+pub enum MTLRenderPipelineDescriptor { }
+pub trait IMTLRenderPipelineDescriptor<'a> : INSObject {
+    fn new() -> MTLRenderPipelineDescriptor {
+        unsafe {
+            let obj: *mut MTLRenderPipelineDescriptor = msg_send![Self::class(), alloc];
+            msg_send![obj, init]
+        }
+    }
+
+    fn label(&'a self) -> &'a str {
+        unsafe {
+            let label: &'a NSString = msg_send![self, label];
+            label.as_str()
+        }
+    }
+
+    fn set_label(&self, label: &str) {
+        unsafe {
+            let nslabel = NSString::from_str(label);
+            msg_send![self, setLabel:nslabel]
+        }
+    }
+
+    fn vertex_function(&self) -> MTLFunction {
+        unsafe {
+            msg_send![self, vertexFunction]
+        }
+    }
+
+    fn set_vertex_function(&self, function: &MTLFunction) {
+        unsafe {
+            msg_send![self, setVertexFunction:function]
+        }
+    }
+
+    fn fragment_function(&self) -> MTLFunction {
+        unsafe {
+            msg_send![self, fragmentFunction]
+        }
+    }
+
+    fn set_fragment_function(&self, function: &MTLFunction) {
+        unsafe {
+            msg_send![self, setFragmentFunction:function]
+        }
+    }
+
+
+    fn vertex_descriptor(&self) -> id {
+        unsafe {
+            msg_send![self, vertexDescriptor]
+        }
+    }
+
+    fn set_vertex_descriptor(&self, descriptor: id) {
+        unsafe {
+            msg_send![self, setVertexDescriptor:descriptor]
+        }
+    }
+
+    fn sample_count(&self) -> u64 {
+        unsafe {
+            msg_send![self, sampleCount]
+        }
+    }
+
+    fn set_sample_count(&self, count: u64) {
+        unsafe {
+            msg_send![self, setSampleCount:count]
+        }
+    }
+
+    fn is_alpha_to_coverage_enabled(&self) -> bool {
+        unsafe {
+            match msg_send![self, isAlphaToCoverageEnabled] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
+    }
+
+    fn set_alpha_to_coverage_enabled(&self, enabled: bool) {
+        unsafe {
+            msg_send![self, setAlphaToCoverageEnabled:enabled]
+        }
+    }
+
+    fn is_alpha_to_one_enabled(&self) -> bool {
+        unsafe {
+            match msg_send![self, isAlphaToOneEnabled] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
+    }
+
+    fn set_alpha_to_one_enabled(&self, enabled: bool) {
+        unsafe {
+            msg_send![self, setAlphaToOneEnabled:enabled]
+        }
+    }
+
+    fn is_rasterization_enabled(&self) -> bool {
+        unsafe {
+            match msg_send![self, isRasterizationEnabled] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
+    }
+
+    fn set_rasterization_enabled(&self, enabled: bool) {
+        unsafe {
+            msg_send![self, setRasterizationEnabled:enabled]
+        }
+    }
+
+    fn color_attachments(&self) -> MTLRenderPipelineColorAttachmentDescriptorArray {
+        unsafe {
+            msg_send![self, colorAttachments]
+        }
+    }
+
+    fn depth_attachment_pixel_format(&self) -> MTLPixelFormat {
+        unsafe {
+            msg_send![self, depthAttachmentPixelFormat]
+        }
+    }
+
+    fn set_depth_attachment_pixel_format(&self, pixel_format: MTLPixelFormat) {
+        unsafe {
+            msg_send![self, setDepthAttachmentPixelFormat:pixel_format]
+        }
+    }
+
+    fn stencil_attachment_pixel_format(&self) -> MTLPixelFormat {
+        unsafe {
+            msg_send![self, stencilAttachmentPixelFormat]
+        }
+    }
+
+    fn set_stencil_attachment_pixel_format(&self, pixel_format: MTLPixelFormat) {
+        unsafe {
+            msg_send![self, setStencilAttachmentPixelFormat:pixel_format]
+        }
+    }
+
+    fn input_primitive_topology(&self) -> MTLPrimitiveTopologyClass {
+        unsafe {
+            msg_send![self, inputPrimitiveTopology]
+        }
+    }
+
+    fn set_input_primitive_topology(&self, topology: MTLPrimitiveTopologyClass) {
+        unsafe {
+            msg_send![self, setInputPrimitiveTopology:topology]
+        }
+    }
+}
+
+impl INSObject for MTLRenderPipelineDescriptor {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPipelineDescriptor").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPipelineDescriptor { }
+impl<'a> IMTLRenderPipelineDescriptor<'a> for MTLRenderPipelineDescriptor { }
+
+pub enum MTLRenderPipelineState { }
+pub trait IMTLRenderPipelineState<'a> : INSObject {
+    fn label(&'a self) -> &'a str {
+        unsafe {
+            let label: &'a NSString = msg_send![self, label];
+            label.as_str()
+        }
+    }
+
+    fn set_label(&self, label: &str) {
+        unsafe {
+            let nslabel = NSString::from_str(label);
+            msg_send![self, setLabel:nslabel]
+        }
+    }
+}
+
+impl INSObject for MTLRenderPipelineState {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPipelineState").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPipelineState { }
+impl<'a> IMTLRenderPipelineState<'a> for MTLRenderPipelineState { }
+
+pub enum MTLRenderPipelineColorAttachmentDescriptorArray { }
+pub trait IMTLRenderPipelineColorAttachmentDescriptorArray : INSObject {
+    fn object_at(&self, index: usize) -> MTLRenderPipelineColorAttachmentDescriptor {
+        unsafe {
+            msg_send![self, objectAtIndexedSubscript:index]
+        }
+    }
+
+    fn set_object_at(&self, index: usize, attachment: MTLRenderPipelineColorAttachmentDescriptor) {
+        unsafe {
+            msg_send![self, setObject:attachment
+                   atIndexedSubscript:index]
+        }
+    }
+}
+
+impl INSObject for MTLRenderPipelineColorAttachmentDescriptorArray {
+    fn class() -> &'static Class {
+        Class::get("MTLRenderPipelineColorAttachmentDescriptorArray").unwrap()
+    }
+}
+
+unsafe impl Message for MTLRenderPipelineColorAttachmentDescriptorArray { }
+
+impl IMTLRenderPipelineColorAttachmentDescriptorArray for MTLRenderPipelineColorAttachmentDescriptorArray { }
+

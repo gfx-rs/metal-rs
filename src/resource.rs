@@ -7,29 +7,33 @@
 
 use cocoa::base::id;
 use cocoa::foundation::NSUInteger;
+use objc::Message;
+use objc::runtime::{Object, Class, BOOL, YES, NO};
+use objc_id::{Id, ShareId};
+use objc_foundation::{INSObject, NSString, INSString};
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLPurgeableState {
-    MTLPurgeableStateKeepCurrent = 1,
-    MTLPurgeableStateNonVolatile = 2,
-    MTLPurgeableStateVolatile = 3,
-    MTLPurgeableStateEmpty = 4,
+    KeepCurrent = 1,
+    NonVolatile = 2,
+    Volatile = 3,
+    Empty = 4,
 }
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLCPUCacheMode {
-    MTLCPUCacheModeDefaultCache = 0,
-    MTLCPUCacheModeWriteCombined = 1,
+    DefaultCache = 0,
+    WriteCombined = 1,
 }
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLStorageMode {
-    MTLStorageModeShared  = 0,
-    MTLStorageModeManaged = 1,
-    MTLStorageModePrivate = 2,
+    Shared  = 0,
+    Managed = 1,
+    Private = 2,
 }
 
 const MTLResourceCPUCacheModeShift: NSUInteger = 0;
@@ -39,12 +43,12 @@ const MTLResourceStorageModeMask: NSUInteger = (0xf << MTLResourceStorageModeShi
 
 bitflags! {
     flags MTLResourceOptions: NSUInteger {
-        const MTLResourceCPUCacheModeDefaultCache  = (MTLCPUCacheMode::MTLCPUCacheModeDefaultCache as NSUInteger) << MTLResourceCPUCacheModeShift,
-        const MTLResourceCPUCacheModeWriteCombined = (MTLCPUCacheMode::MTLCPUCacheModeWriteCombined as NSUInteger) << MTLResourceCPUCacheModeShift,
+        const MTLResourceCPUCacheModeDefaultCache  = (MTLCPUCacheMode::DefaultCache as NSUInteger) << MTLResourceCPUCacheModeShift,
+        const MTLResourceCPUCacheModeWriteCombined = (MTLCPUCacheMode::WriteCombined as NSUInteger) << MTLResourceCPUCacheModeShift,
 
-        const MTLResourceStorageModeShared  = (MTLStorageMode::MTLStorageModeShared as NSUInteger)  << MTLResourceStorageModeShift,
-        const MTLResourceStorageModeManaged = (MTLStorageMode::MTLStorageModeManaged as NSUInteger) << MTLResourceStorageModeShift,
-        const MTLResourceStorageModePrivate = (MTLStorageMode::MTLStorageModePrivate as NSUInteger) << MTLResourceStorageModeShift,
+        const MTLResourceStorageModeShared  = (MTLStorageMode::Shared as NSUInteger)  << MTLResourceStorageModeShift,
+        const MTLResourceStorageModeManaged = (MTLStorageMode::Managed as NSUInteger) << MTLResourceStorageModeShift,
+        const MTLResourceStorageModePrivate = (MTLStorageMode::Private as NSUInteger) << MTLResourceStorageModeShift,
 
         // Deprecated spellings
         const MTLResourceOptionCPUCacheModeDefault       = MTLResourceCPUCacheModeDefaultCache.bits,
@@ -52,38 +56,49 @@ bitflags! {
     }
 }
 
-pub trait MTLResource {
-    unsafe fn label(self) -> id;
-    unsafe fn setLabel(self, label: id);
+pub enum MTLResource {}
 
-    unsafe fn device(self) -> id;
-    unsafe fn cpuCacheMode(self) -> MTLCPUCacheMode;
-    unsafe fn storageMode(self) -> MTLStorageMode;
-    unsafe fn setPurgeableState(self, state: MTLPurgeableState) -> MTLPurgeableState;
+pub trait IMTLResource<'a> : INSObject {
+    fn label(&'a self) -> &'a str {
+        unsafe {
+            let label: &'a NSString = msg_send![self, label];
+            label.as_str()
+        }
+    }
+
+    fn set_label(&self, label: &str) {
+        unsafe {
+            let nslabel = NSString::from_str(label);
+            msg_send![self, setLabel:nslabel]
+        }
+    }
+
+    fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
+        unsafe {
+            msg_send![self, cpuCacheMode]
+        }
+    }
+
+    fn storage_mode(&self) -> MTLStorageMode {
+        unsafe {
+            msg_send![self, storageMode]
+        }
+    }
+ 
+    fn set_purgeable_state(&self, state: MTLPurgeableState) -> MTLPurgeableState {
+        unsafe {
+            msg_send![self, setPurgeableState:state]
+        }
+    }
 }
 
-impl MTLResource for id {
-    unsafe fn label(self) -> id {
-        msg_send![self, label]
-    }
-
-    unsafe fn setLabel(self, label: id) {
-        msg_send![self, setLabel:label]
-    }
-
-    unsafe fn device(self) -> id {
-        msg_send![self, device]
-    }
-
-    unsafe fn cpuCacheMode(self) -> MTLCPUCacheMode {
-        msg_send![self, cpuCacheMode]
-    }
-
-    unsafe fn storageMode(self) -> MTLStorageMode {
-        msg_send![self, storageMode]
-    }
-
-    unsafe fn setPurgeableState(self, state: MTLPurgeableState) -> MTLPurgeableState {
-        msg_send![self, setPurgeableState:state]
+impl INSObject for MTLResource {
+    fn class() -> &'static Class {
+        Class::get("MTLResource").unwrap()
     }
 }
+
+unsafe impl Message for MTLResource { }
+
+impl<'a> IMTLResource<'a> for MTLResource { }
+

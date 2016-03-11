@@ -7,20 +7,28 @@
 
 use cocoa::base::id;
 use cocoa::foundation::NSTimeInterval;
+use objc::Message;
+use objc::runtime::{Object, Class, BOOL, YES, NO};
+use objc_id::{Id, ShareId};
+use objc_foundation::{INSObject, NSString, INSString};
 
-pub trait MTLDrawable {
-    unsafe fn present(self);
+pub enum MTLDrawable {}
 
-    // FIXME: wrong type
-    unsafe fn presentAtTime(self, presentationTime: NSTimeInterval);
-}
-
-impl MTLDrawable for id {
-    unsafe fn present(self) {
-        msg_send![self, present]
-    }
-
-    unsafe fn presentAtTime(self, presentationTime: NSTimeInterval) {
-        msg_send![self, presentAtTime:presentationTime]
+pub trait IMTLDrawable : INSObject {
+    fn present(&self) {
+        unsafe {
+            msg_send![self, present]
+        }
     }
 }
+
+impl INSObject for MTLDrawable {
+    fn class() -> &'static Class {
+        Class::get("MTLDrawable").unwrap()
+    }
+}
+
+unsafe impl Message for MTLDrawable { }
+
+impl IMTLDrawable for MTLDrawable { }
+

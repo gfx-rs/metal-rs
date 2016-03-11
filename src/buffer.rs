@@ -7,34 +7,52 @@
 
 use cocoa::base::id;
 use cocoa::foundation::{NSUInteger, NSRange};
-
-use texture::MTLTextureDescriptor;
+use objc::Message;
+use objc::runtime::{Object, Class, BOOL, YES, NO};
+use objc_id::{Id, ShareId};
+use objc_foundation::{INSObject, NSString, INSString};
 
 use libc;
 
-pub trait MTLBuffer {
-    unsafe fn length(self) -> NSUInteger;
-    unsafe fn contents(self) -> *mut libc::c_void;
-    unsafe fn didModifyRange(self, range: NSRange);
+use texture::{MTLTexture, MTLTextureDescriptor};
 
-    unsafe fn newTextureWithDescriptor_offset_bytesPerRow_(self, descriptor: *const MTLTextureDescriptor, offset: NSUInteger, bytesPerRow: NSUInteger) -> id;
+pub enum MTLBuffer {}
+
+pub trait IMTLBuffer<'a> : INSObject {
+    fn length(&self) -> u64 {
+        unsafe {
+            msg_send![self, length]
+        }
+    }
+
+    fn contents(&self) -> *mut libc::c_void {
+        unsafe {
+            msg_send![self, contents]
+        }
+    }
+
+    fn invalidate_range(&self, range: NSRange) {
+        unsafe {
+            msg_send![self, didModifyRange:range]
+        }
+    }
+
+    fn new_texture_from_contents(&self, descriptor: MTLTextureDescriptor, offset: u64, stride: u64) -> &'a MTLTexture {
+        unsafe {
+            msg_send![self, newTextureWithDescriptor:descriptor
+                                              offset:offset
+                                         bytesPerRow:stride]
+        }
+    }
 }
 
-impl MTLBuffer for id {
-    unsafe fn length(self) -> NSUInteger {
-        msg_send![self, length]
+impl INSObject for MTLBuffer {
+    fn class() -> &'static Class {
+        Class::get("MTLBuffer").unwrap()
     }
-
-    unsafe fn contents(self) -> *mut libc::c_void {
-        msg_send![self, contents]
-    }
-    
-    unsafe fn didModifyRange(self, range: NSRange) {
-        msg_send![self, didModifyRange:range]
-    }
-
-    unsafe fn newTextureWithDescriptor_offset_bytesPerRow_(self, descriptor: *const MTLTextureDescriptor, offset: NSUInteger, bytesPerRow: NSUInteger) -> id {
-        msg_send![self, newTextureWithDescriptor:descriptor offset:offset bytesPerRow:bytesPerRow]
-    }
-
 }
+
+unsafe impl Message for MTLBuffer { }
+
+impl<'a> IMTLBuffer<'a> for MTLBuffer { }
+

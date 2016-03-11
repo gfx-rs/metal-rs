@@ -1,39 +1,50 @@
+// Copyright 2016 metal-rs developers
+//
+// Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
+// http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
+// http://opensource.org/licenses/MIT>, at your option. This file may not be
+// copied, modified, or distributed except according to those terms.
+
 use cocoa::base::id;
+use cocoa::foundation::{NSUInteger};
+use objc::Message;
+use objc::runtime::{Object, Class, BOOL, YES, NO};
+use objc_id::{Id, ShareId};
+use objc_foundation::{INSObject, NSString, INSString};
 
-pub trait MTLCommandQueue {
-    unsafe fn label(self) -> id;
-    unsafe fn setLabel(self, label: id);
+use commandbuffer::MTLCommandBuffer;
 
-    unsafe fn device(self) -> id;
+pub enum MTLCommandQueue {}
 
-    unsafe fn commandBuffer(self) -> id;
-    unsafe fn commandBufferWithUnretainedReferences(self) -> id;
-
-    unsafe fn insertDebugCaptureBoundary(self);
-}
-
-impl MTLCommandQueue for id {
-    unsafe fn label(self) -> id {
-        msg_send![self, label]
+pub trait IMTLCommandQueue<'a> : INSObject {
+    fn label(&'a self) -> &'a str {
+        unsafe {
+            let label: &'a NSString = msg_send![self, label];
+            label.as_str()
+        }
     }
 
-    unsafe fn setLabel(self, label: id) {
-        msg_send![self, setLabel:label]
+    fn set_label(&self, label: &str) {
+        unsafe {
+            let nslabel = NSString::from_str(label);
+            msg_send![self, setLabel:nslabel]
+        }
     }
 
-    unsafe fn device(self) -> id {
-        msg_send![self, device]
-    }
-
-    unsafe fn commandBuffer(self) -> id {
-        msg_send![self, commandBuffer]
-    }
-
-    unsafe fn commandBufferWithUnretainedReferences(self) -> id {
-        msg_send![self, commandBufferWithRetainedReferences]
-    }
-
-    unsafe fn insertDebugCaptureBoundary(self) {
-        msg_send![self, insertDebugCaptureBoundary]
+    fn new_command_buffer(&self) -> MTLCommandBuffer {
+        unsafe {
+            msg_send![self, newCommandBuffer]
+        }
     }
 }
+
+impl INSObject for MTLCommandQueue {
+    fn class() -> &'static Class {
+        Class::get("MTLCommandQueue").unwrap()
+    }
+}
+
+unsafe impl Message for MTLCommandQueue { }
+
+impl<'a> IMTLCommandQueue<'a> for MTLCommandQueue { }
+

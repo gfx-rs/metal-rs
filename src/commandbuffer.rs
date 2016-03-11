@@ -1,134 +1,127 @@
-use cocoa::base::{id, BOOL};
+// Copyright 2016 metal-rs developers
+//
+// Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
+// http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
+// http://opensource.org/licenses/MIT>, at your option. This file may not be
+// copied, modified, or distributed except according to those terms.
+
+use cocoa::base::id;
 use cocoa::foundation::{NSUInteger, NSTimeInterval};
+use objc::Message;
+use objc::runtime::{Object, Class, BOOL, YES, NO};
+use objc_id::{Id, ShareId};
+use objc_foundation::{INSObject, NSString, INSString};
+use block::Block;
+
+use renderpass::MTLRenderPassDescriptor;
+use encoder::MTLRenderCommandEncoder;
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLCommandBufferStatus {
-    MTLCommandBufferStatusNotEnqueued = 0,
-    MTLCommandBufferStatusEnqueued = 1,
-    MTLCommandBufferStatusCommitted = 2,
-    MTLCommandBufferStatusScheduled = 3,
-    MTLCommandBufferStatusCompleted = 4,
-    MTLCommandBufferStatusError = 5,
+    NotEnqueued = 0,
+    Enqueued = 1,
+    Committed = 2,
+    Scheduled = 3,
+    Completed = 4,
+    Error = 5,
 }
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLCommandBufferError {
-    MTLCommandBufferErrorNone = 0,
-    MTLCommandBufferErrorInternal = 1,
-    MTLCommandBufferErrorTimeout = 2,
-    MTLCommandBufferErrorPageFault = 3,
-    MTLCommandBufferErrorBlacklisted = 4,
-    MTLCommandBufferErrorNotPermitted = 7,
-    MTLCommandBufferErrorOutOfMemory = 8,
-    MTLCommandBufferErrorInvalidResource = 9,
+    None = 0,
+    Internal = 1,
+    Timeout = 2,
+    PageFault = 3,
+    Blacklisted = 4,
+    NotPermitted = 7,
+    OutOfMemory = 8,
+    InvalidResource = 9,
 }
 
-type MTLCommandBufferHandler = extern fn(commandbuffer: id);
+type MTLCommandBufferHandler = Block<(MTLCommandBuffer), ()>;
 
-pub trait MTLCommandBuffer {
-    unsafe fn device(self) -> id;
-    unsafe fn commandQueue(self) -> id;
-    unsafe fn retainedReferences(self) -> BOOL;
-    unsafe fn label(self) -> id;
-    unsafe fn setLabel(self, label: id);
+pub enum MTLCommandBuffer {}
 
-    unsafe fn enqueue(self);
-    unsafe fn commit(self);
+pub trait IMTLCommandBuffer<'a> : INSObject {
+    fn label(&'a self) -> &'a str {
+        unsafe {
+            let label: &'a NSString = msg_send![self, label];
+            label.as_str()
+        }
+    }
 
-    unsafe fn addScheduledHandler(self, block: MTLCommandBufferHandler);
-    unsafe fn presentDrawable(self, drawable: id);
-    unsafe fn presentDrawable_atTime(self, drawable: id, presentationTime: NSTimeInterval);
-    unsafe fn waitUntilScheduled(self);
+    fn set_label(&self, label: &str) {
+        unsafe {
+            let nslabel = NSString::from_str(label);
+            msg_send![self, setLabel:nslabel]
+        }
+    }
     
-    unsafe fn addCompletedHandler(self, block: MTLCommandBufferHandler);
-    unsafe fn waitUntilCompleted(self);
+    fn enqueue(&self) {
+        unsafe {
+            msg_send![self, enqueue]
+        }
+    }
 
-    unsafe fn status(self) -> MTLCommandBufferStatus;
-    unsafe fn error(self) -> id;
 
-    unsafe fn blitCommandEncoder(self) -> id;
-    unsafe fn renderCommandEncoderWithDescriptor(self, renderPassDescriptor: id) -> id;
-    unsafe fn computeCommandEncoder(self) -> id;
-    unsafe fn parallelRenderCommandEncoderWithDescriptor(self, renderPassDescriptor: id) -> id;
+    fn commit(&self) {
+        unsafe {
+            msg_send![self, commit]
+        }
+    }
+
+    fn status(&self) -> MTLCommandBufferStatus {
+        unsafe {
+            msg_send![self, status]
+        }
+    }
+
+    fn present_drawable(&self, drawable: id) {
+        unsafe {
+            msg_send![self, presentDrawable:drawable]
+        }
+    }
+
+    fn wait_until_completed(&self) {
+        unsafe {
+            msg_send![self, waitUntilCompleted]
+        }
+    }
+
+    fn new_blit_command_encoder(&self) -> id {
+        unsafe {
+            msg_send![self, blitCommandEncoder]
+        }
+    }
+
+    fn new_compute_command_encoder(&self) -> id {
+        unsafe {
+            msg_send![self, blitCommandEncoder]
+        }
+    }
+
+    fn new_render_command_encoder(&self, descriptor: &MTLRenderPassDescriptor) -> MTLRenderCommandEncoder {
+        unsafe {
+            msg_send![self, renderCommandEncoderWithDescriptor:descriptor]
+        }
+    }
+
+    fn new_parallel_render_command_encoder(&self) -> id {
+        unsafe {
+            msg_send![self, blitCommandEncoder]
+        }
+    }
 }
 
-impl MTLCommandBuffer for id {
-    unsafe fn device(self) -> id {
-        msg_send![self, device]
-    }
-
-    unsafe fn commandQueue(self) -> id {
-        msg_send![self, device]
-    }
-
-    unsafe fn retainedReferences(self) -> BOOL {
-        msg_send![self, retainedReferences]
-    }
-    
-    unsafe fn label(self) -> id {
-        msg_send![self, label]
-    }
-
-    unsafe fn setLabel(self, label: id) {
-        msg_send![self, setLabel:label]
-    }
-
-    unsafe fn enqueue(self) {
-        msg_send![self, enqueue]
-    }
-
-    unsafe fn commit(self) {
-        msg_send![self, commit]
-    }
-
-    unsafe fn addScheduledHandler(self, block: MTLCommandBufferHandler) {
-        msg_send![self, addScheduledHandler:block]
-    }
-
-    unsafe fn presentDrawable(self, drawable: id) {
-        msg_send![self, presentDrawable:drawable]
-    }
-
-    unsafe fn presentDrawable_atTime(self, drawable: id, presentationTime: NSTimeInterval) {
-        msg_send![self, presentDrawable:drawable
-                        atTime:presentationTime]
-    }
-
-    unsafe fn waitUntilScheduled(self) {
-        msg_send![self, waitUntilScheduled]
-    }
-    
-    unsafe fn addCompletedHandler(self, block: MTLCommandBufferHandler) {
-        msg_send![self, addCompletedHandler:block]
-    }
-
-    unsafe fn waitUntilCompleted(self) {
-        msg_send![self, waitUntilCompleted]
-    }
-
-    unsafe fn status(self) -> MTLCommandBufferStatus {
-        msg_send![self, status]
-    }
-
-    unsafe fn error(self) -> id {
-        msg_send![self, error]
-    }
-
-    unsafe fn blitCommandEncoder(self) -> id {
-        msg_send![self, blitCommandEncoder]
-    }
-
-    unsafe fn renderCommandEncoderWithDescriptor(self, renderPassDescriptor: id) -> id {
-        msg_send![self, renderCommandEncoderWithDescriptor:renderPassDescriptor]
-    }
-
-    unsafe fn computeCommandEncoder(self) -> id {
-        msg_send![self, computeCommandEncoder]
-    }
-
-    unsafe fn parallelRenderCommandEncoderWithDescriptor(self, renderPassDescriptor: id) -> id {
-        msg_send![self, parallelRenderCommandEncoderWithDescriptor:renderPassDescriptor]
+impl INSObject for MTLCommandBuffer {
+    fn class() -> &'static Class {
+        Class::get("MTLCommandBuffer").unwrap()
     }
 }
+
+unsafe impl Message for MTLCommandBuffer { }
+
+impl<'a> IMTLCommandBuffer<'a> for MTLCommandBuffer { }
+
