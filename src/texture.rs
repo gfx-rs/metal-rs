@@ -237,7 +237,7 @@ pub trait IMTLTexture<'a> : INSObject {
         }
     }
 
-    unsafe fn buffer(&self) -> Option<&MTLBuffer> {
+    fn buffer(&self) -> Option<&MTLBuffer> {
         unsafe {
             let buf: *const MTLBuffer = msg_send![self, buffer];
 
@@ -248,13 +248,13 @@ pub trait IMTLTexture<'a> : INSObject {
         }
     }
 
-    unsafe fn buffer_offset(&self) -> u64 {
+    fn buffer_offset(&self) -> u64 {
         unsafe {
             msg_send![self, bufferOffset]
         }
     }
 
-    unsafe fn buffer_stride(&self) -> u64 {
+    fn buffer_stride(&self) -> u64 {
         unsafe {
             msg_send![self, bufferBytesPerRow]
         }

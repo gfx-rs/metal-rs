@@ -219,13 +219,6 @@ impl IMTLRenderPipelineReflection for MTLRenderPipelineReflection { }
 
 pub enum MTLRenderPipelineDescriptor { }
 pub trait IMTLRenderPipelineDescriptor<'a> : INSObject {
-    fn new() -> MTLRenderPipelineDescriptor {
-        unsafe {
-            let obj: *mut MTLRenderPipelineDescriptor = msg_send![Self::class(), alloc];
-            msg_send![obj, init]
-        }
-    }
-
     fn label(&'a self) -> &'a str {
         unsafe {
             let label: &'a NSString = msg_send![self, label];

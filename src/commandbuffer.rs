@@ -102,7 +102,7 @@ pub trait IMTLCommandBuffer<'a> : INSObject {
         }
     }
 
-    fn new_render_command_encoder(&self, descriptor: &MTLRenderPassDescriptor) -> MTLRenderCommandEncoder {
+    fn new_render_command_encoder(&self, descriptor: &ShareId<MTLRenderPassDescriptor>) -> MTLRenderCommandEncoder {
         unsafe {
             msg_send![self, renderCommandEncoderWithDescriptor:descriptor]
         }

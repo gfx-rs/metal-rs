@@ -104,7 +104,7 @@ pub trait IMTLDevice<'a> : INSObject {
         }
     }
 
-    fn supports_sample_count(&self, count: u64) -> bool {
+    fn supports_sample_count(&self, count: NSUInteger) -> bool {
         unsafe {
             match msg_send![self, supportsTextureSampleCount:count] {
                 YES => true,
@@ -126,7 +126,7 @@ pub trait IMTLDevice<'a> : INSObject {
         }
     }
 
-    fn new_render_pipeline_state(&self, descriptor: MTLRenderPipelineDescriptor) -> Result<&MTLRenderPipelineState, ()> {
+    fn new_render_pipeline_state(&self, descriptor: &MTLRenderPipelineDescriptor) -> Result<&MTLRenderPipelineState, ()> {
         unsafe {
             let pipeline_state: *const MTLRenderPipelineState = msg_send![self, newRenderPipelineStateWithDescriptor:descriptor];
 
@@ -137,7 +137,7 @@ pub trait IMTLDevice<'a> : INSObject {
         }
     }
 
-    fn new_buffer(&self, bytes: *const libc::c_void, length: usize, options: MTLResourceOptions) -> MTLBuffer {
+    fn new_buffer(&self, bytes: *const libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> MTLBuffer {
         unsafe {
             msg_send![self, newBufferWithBytes:bytes
                                         length:length

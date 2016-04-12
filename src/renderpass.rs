@@ -10,7 +10,7 @@ use cocoa::foundation::NSUInteger;
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc_foundation::{INSCopying, INSObject, NSString, INSString};
 
 use std::mem;
 use std::ptr;
@@ -58,13 +58,13 @@ impl MTLClearColor {
 pub enum MTLRenderPassAttachmentDescriptor {}
 
 pub trait IMTLRenderPassAttachmentDescriptor : INSObject {
-    fn texture(&self) -> MTLTexture {
+    fn texture(&self) -> &MTLTexture {
         unsafe {
             msg_send![self, texture]
         }
     }
 
-    fn set_texture(&self, texture: MTLTexture) {
+    fn set_texture(&self, texture: &MTLTexture) {
         unsafe {
             msg_send![self, setTexture:texture]
         }
@@ -304,15 +304,9 @@ impl IMTLRenderPassColorAttachmentDescriptorArray for MTLRenderPassColorAttachme
 pub enum MTLRenderPassDescriptor {}
 
 pub trait IMTLRenderPassDescriptor<'a> : INSObject {
-    fn render_pass_descriptor() -> MTLRenderPassDescriptor {
+    fn color_attachments(&self) -> Id<MTLRenderPassColorAttachmentDescriptorArray> {
         unsafe {
-            msg_send![Self::class(), renderPassDescriptor]
-        }
-    }
-
-    fn color_attachments(&self) -> MTLRenderPassColorAttachmentDescriptorArray {
-        unsafe {
-            msg_send![self, colorAttachments]
+            Id::from_retained_ptr(msg_send![self, colorAttachments])
         }
     }
 
@@ -363,3 +357,6 @@ unsafe impl Message for MTLRenderPassDescriptor { }
 
 impl<'a> IMTLRenderPassDescriptor<'a> for MTLRenderPassDescriptor { }
 
+impl INSCopying for MTLRenderPassDescriptor {
+    type Output = MTLRenderPassDescriptor;
+}
