@@ -163,9 +163,14 @@ impl CAMetalLayer {
         }
     }
 
-    pub fn next_drawable(& self) -> CAMetalDrawable {
+    pub fn next_drawable(&self) -> Option<CAMetalDrawable> {
         unsafe {
-            msg_send![self.0, nextDrawable]
+            let drawable: CAMetalDrawable = msg_send![self.0, nextDrawable];
+
+            match drawable.is_null() {
+                true => None,
+                false => Some(drawable)
+            }
         }
     } 
 }
