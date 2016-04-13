@@ -1,9 +1,10 @@
-use cocoa::base::{id};
 use cocoa::foundation::{NSUInteger};
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString};
+
+use super::{id, NSObjectPrototype, NSObjectProtocol};
 
 use libc;
 
@@ -103,163 +104,167 @@ pub struct MTLDrawIndexedPrimitivesIndirectArguments {
     pub baseInstance: u32
 }
 
-pub enum MTLCommandEncoder {}
-pub trait IMTLCommandEncoder<'a> : INSObject {
-    fn label(&'a self) -> &'a str {
+pub enum MTLCommandEncoderPrototype {}
+pub type MTLCommandEncoder = id<
+    (MTLCommandEncoderPrototype,
+        (NSObjectPrototype, ()))>;
+
+impl<'a> MTLCommandEncoder {
+    pub fn label(&'a self) -> &'a str {
         unsafe {
-            let label: &'a NSString = msg_send![self, label];
+            let label: &'a NSString = msg_send![self.0, label];
             label.as_str()
         }
     }
 
-    fn set_label(&self, label: &str) {
+    pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self.0, setLabel:nslabel]
         }
     }
 
-    fn end_encoding(&self) {
+    pub fn end_encoding(&self) {
         unsafe {
-            msg_send![self, endEncoding]
+            msg_send![self.0, endEncoding]
         }
-    }
+    } 
 }
 
-impl INSObject for MTLCommandEncoder {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLCommandEncoder {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLCommandEncoder").unwrap()
     }
 }
 
-unsafe impl Message for MTLCommandEncoder { }
+pub enum MTLRenderCommandEncoderPrototype {}
+pub type MTLRenderCommandEncoder = id<
+    (MTLRenderCommandEncoderPrototype,
+        (MTLCommandEncoderPrototype,
+            (NSObjectPrototype, ())))>;
 
-impl<'a> IMTLCommandEncoder<'a> for MTLCommandEncoder { }
-
-pub enum MTLRenderCommandEncoder {}
-
-pub trait IMTLRenderCommandEncoder<'a> : IMTLCommandEncoder<'a> {
+impl MTLRenderCommandEncoder {
     // Setting Graphics Rendering State
 
-    fn set_render_pipeline_state(&self, pipeline_state: id) {
+    pub fn set_render_pipeline_state(&self, pipeline_state: id) {
         unsafe {
-            msg_send![self, setRenderPipelineState:pipeline_state]
+            msg_send![self.0, setRenderPipelineState:pipeline_state]
         }
     }
 
-    fn set_viewport(&self, viewport: MTLViewport) {
+    pub fn set_viewport(&self, viewport: MTLViewport) {
         unsafe {
-            msg_send![self, setViewport:viewport]
+            msg_send![self.0, setViewport:viewport]
         }
     }
 
-    fn set_front_facing_winding(&self, winding: MTLWinding) {
+    pub fn set_front_facing_winding(&self, winding: MTLWinding) {
         unsafe {
-            msg_send![self, setFrontFacingWinding:winding]
+            msg_send![self.0, setFrontFacingWinding:winding]
         }
     }
 
-    fn set_cull_mode(&self, mode: MTLCullMode) {
+    pub fn set_cull_mode(&self, mode: MTLCullMode) {
         unsafe {
-            msg_send![self, setCullMode:mode]
+            msg_send![self.0, setCullMode:mode]
         }
     }
 
-    fn set_depth_clip_mode(&self, mode: MTLDepthClipMode) {
+    pub fn set_depth_clip_mode(&self, mode: MTLDepthClipMode) {
         unsafe {
-            msg_send![self, setDepthClipMode:mode]
+            msg_send![self.0, setDepthClipMode:mode]
         }
     }
 
-    fn set_depth_bias(&self, bias: f32, scale: f32, clamp: f32) {
+    pub fn set_depth_bias(&self, bias: f32, scale: f32, clamp: f32) {
         unsafe {
-            msg_send![self, setDepthBias:bias
+            msg_send![self.0, setDepthBias:bias
                               slopeScale:scale
                                    clamp:clamp]
         }
     }
 
-    fn set_scissor_rect(&self, rect: MTLScissorRect) {
+    pub fn set_scissor_rect(&self, rect: MTLScissorRect) {
         unsafe {
-            msg_send![self, setScissorRect:rect]
+            msg_send![self.0, setScissorRect:rect]
         }
     }
 
-    fn set_triangle_fill_mode(&self, mode: MTLTriangleFillMode) {
+    pub fn set_triangle_fill_mode(&self, mode: MTLTriangleFillMode) {
         unsafe {
-            msg_send![self, setTriangleFillMode:mode]
+            msg_send![self.0, setTriangleFillMode:mode]
         }
     }
 
-    fn set_blend_color(&self, red: f32, green: f32, blue: f32, alpha: f32) {
+    pub fn set_blend_color(&self, red: f32, green: f32, blue: f32, alpha: f32) {
         unsafe {
-            msg_send![self, setBlendColorRed:red
+            msg_send![self.0, setBlendColorRed:red
                                        green:green
                                         blue:blue
                                        alpha:alpha]
         }
     }
 
-    fn set_depth_stencil_state(&self, depth_stencil_state: id) {
+    pub fn set_depth_stencil_state(&self, depth_stencil_state: id) {
         unsafe {
-            msg_send![self, setDepthStencilState:depth_stencil_state]
+            msg_send![self.0, setDepthStencilState:depth_stencil_state]
         }
     }
 
-    fn set_stencil_reference_value(&self, value: u32) {
+    pub fn set_stencil_reference_value(&self, value: u32) {
         unsafe {
-            msg_send![self, setStencilReferenceValue:value]
+            msg_send![self.0, setStencilReferenceValue:value]
         }
     }
 
-    fn set_stencil_front_back_reference_value(&self, front: u32, back: u32) {
+    pub fn set_stencil_front_back_reference_value(&self, front: u32, back: u32) {
         unsafe {
-            msg_send![self, setStencilFrontReferenceValue:front
+            msg_send![self.0, setStencilFrontReferenceValue:front
                                        backReferenceValue:back]
         }
     }
 
-    fn set_visibility_result_mode(&self, offset: u64, mode: MTLVisibilityResultMode) {
+    pub fn set_visibility_result_mode(&self, offset: u64, mode: MTLVisibilityResultMode) {
         unsafe {
-            msg_send![self, setVisibilityResultMode:mode
+            msg_send![self.0, setVisibilityResultMode:mode
                                              offset:offset]
         }
     }
 
     // Specifying Resources for a Vertex Shader Function
 
-    fn set_vertex_bytes(&self, index: u64, length: u64, bytes: *const libc::c_void) {
+    pub fn set_vertex_bytes(&self, index: u64, length: u64, bytes: *const libc::c_void) {
         unsafe {
-            msg_send![self, setVertexBytes:bytes
+            msg_send![self.0, setVertexBytes:bytes
                                     length:length
                                    atIndex:index]
         }
     }
 
-    fn set_vertex_buffer(&self, index: u64, offset: u64, buffer: MTLBuffer) {
+    pub fn set_vertex_buffer(&self, index: u64, offset: u64, buffer: MTLBuffer) {
         unsafe {
-            msg_send![self, setVertexBuffer:buffer
+            msg_send![self.0, setVertexBuffer:buffer
                                      offset:offset
                                     atIndex:index]
         }
     }
 
-    fn set_vertex_texture(&self, index: u64, texture: MTLTexture) {
+    pub fn set_vertex_texture(&self, index: u64, texture: MTLTexture) {
         unsafe {
-            msg_send![self, setVertexTexture:texture
+            msg_send![self.0, setVertexTexture:texture
                                      atIndex:index]
         }
     }
 
-    fn set_vertex_sampler_state(&self, index: u64, sampler: id) {
+    pub fn set_vertex_sampler_state(&self, index: u64, sampler: id) {
         unsafe {
-            msg_send![self, setVertexSamplerState:sampler                                                              atIndex:index]
+            msg_send![self.0, setVertexSamplerState:sampler                                                              atIndex:index]
         }
     }
 
-    fn set_vertex_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: id) {
+    pub fn set_vertex_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: id) {
         unsafe {
-            msg_send![self, setVertexSamplerState:sampler
+            msg_send![self.0, setVertexSamplerState:sampler
                                       lodMinClamp:lod_min_clamp
                                       lodMaxClamp:lod_max_clamp
                                           atIndex:index]
@@ -268,38 +273,38 @@ pub trait IMTLRenderCommandEncoder<'a> : IMTLCommandEncoder<'a> {
 
     // Specifying Resources for a Fragment Shader Function
 
-    fn set_fragment_bytes(&self, index: u64, length: u64, bytes: *const libc::c_void) {
+    pub fn set_fragment_bytes(&self, index: u64, length: u64, bytes: *const libc::c_void) {
         unsafe {
-            msg_send![self, setFragmentBytes:bytes
+            msg_send![self.0, setFragmentBytes:bytes
                                     length:length
                                    atIndex:index]
         }
     }
 
-    fn set_fragment_buffer(&self, index: u64, offset: u64, buffer: MTLBuffer) {
+    pub fn set_fragment_buffer(&self, index: u64, offset: u64, buffer: MTLBuffer) {
         unsafe {
-            msg_send![self, setFragmentBuffer:buffer
+            msg_send![self.0, setFragmentBuffer:buffer
                                      offset:offset
                                     atIndex:index]
         }
     }
 
-    fn set_fragment_texture(&self, index: u64, texture: MTLTexture) {
+    pub fn set_fragment_texture(&self, index: u64, texture: MTLTexture) {
         unsafe {
-            msg_send![self, setFragmentTexture:texture
+            msg_send![self.0, setFragmentTexture:texture
                                      atIndex:index]
         }
     }
 
-    fn set_fragment_sampler_state(&self, index: u64, sampler: id) {
+    pub fn set_fragment_sampler_state(&self, index: u64, sampler: id) {
         unsafe {
-            msg_send![self, setFragmentSamplerState:sampler                                                              atIndex:index]
+            msg_send![self.0, setFragmentSamplerState:sampler                                                              atIndex:index]
         }
     }
 
-    fn set_fragment_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: id) {
+    pub fn set_fragment_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: id) {
         unsafe {
-            msg_send![self, setFragmentSamplerState:sampler
+            msg_send![self.0, setFragmentSamplerState:sampler
                                       lodMinClamp:lod_min_clamp
                                       lodMaxClamp:lod_max_clamp
                                           atIndex:index]
@@ -308,26 +313,26 @@ pub trait IMTLRenderCommandEncoder<'a> : IMTLCommandEncoder<'a> {
 
     // Drawing Geometric Primitives
 
-    fn draw_primitives(&self, primitive_type: MTLPrimitiveType, vertex_start: u64, vertex_count: u64) {
+    pub fn draw_primitives(&self, primitive_type: MTLPrimitiveType, vertex_start: u64, vertex_count: u64) {
         unsafe {
-            msg_send![self, drawPrimitives:primitive_type
+            msg_send![self.0, drawPrimitives:primitive_type
                                vertexStart:vertex_start
                                vertexCount:vertex_count]
         }
     }
 
-    fn draw_primitives_instanced(&self, primitive_type: MTLPrimitiveType, vertex_start: u64, vertex_count: u64, instance_count: u64) {
+    pub fn draw_primitives_instanced(&self, primitive_type: MTLPrimitiveType, vertex_start: u64, vertex_count: u64, instance_count: u64) {
         unsafe {
-            msg_send![self, drawPrimitives:primitive_type
+            msg_send![self.0, drawPrimitives:primitive_type
                                vertexStart:vertex_start
                                vertexCount:vertex_count
                              instanceCount:instance_count]
         }
     }
 
-    fn draw_indexed_primitives(&self, primitive_type: MTLPrimitiveType, index_count: u64, index_type: MTLIndexType, index_buffer: MTLBuffer, index_buffer_offset: u64) {
+    pub fn draw_indexed_primitives(&self, primitive_type: MTLPrimitiveType, index_count: u64, index_type: MTLIndexType, index_buffer: MTLBuffer, index_buffer_offset: u64) {
         unsafe {
-            msg_send![self, drawIndexedPrimitives:primitive_type
+            msg_send![self.0, drawIndexedPrimitives:primitive_type
                                        indexCount:index_count
                                         indexType:index_type
                                       indexBuffer:index_buffer
@@ -335,9 +340,9 @@ pub trait IMTLRenderCommandEncoder<'a> : IMTLCommandEncoder<'a> {
         }
     }
 
-    fn draw_indexed_primitives_instanced(&self, primitive_type: MTLPrimitiveType, index_count: u64, index_type: MTLIndexType, index_buffer: MTLBuffer, index_buffer_offset: u64, instance_count: u64) {
+    pub fn draw_indexed_primitives_instanced(&self, primitive_type: MTLPrimitiveType, index_count: u64, index_type: MTLIndexType, index_buffer: MTLBuffer, index_buffer_offset: u64, instance_count: u64) {
         unsafe {
-            msg_send![self, drawIndexedPrimitives:primitive_type
+            msg_send![self.0, drawIndexedPrimitives:primitive_type
                                        indexCount:index_count
                                         indexType:index_type
                                       indexBuffer:index_buffer
@@ -353,17 +358,12 @@ pub trait IMTLRenderCommandEncoder<'a> : IMTLCommandEncoder<'a> {
     // fn setVertexTextures_withRange(self, textures: *const id, range: NSRange);
     // fn setVertexSamplerStates_withRange(self, samplers: *const id, range: NSRange);
     // fn setVertexSamplerStates_lodMinClamps_lodMaxClamps_withRange(self, samplers: *const id, lodMinClamps: *const f32, lodMaxClamps: *const f32, range: NSRange);
-
+ 
 }
 
-impl INSObject for MTLRenderCommandEncoder {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLRenderCommandEncoder {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLRenderCommandEncoder").unwrap()
     }
 }
-
-unsafe impl Message for MTLRenderCommandEncoder { }
-
-impl<'a> IMTLRenderCommandEncoder<'a> for MTLRenderCommandEncoder { }
-impl<'a> IMTLCommandEncoder<'a> for MTLRenderCommandEncoder { }
 

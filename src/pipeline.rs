@@ -5,7 +5,6 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
 use cocoa::foundation::NSUInteger;
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
@@ -13,12 +12,14 @@ use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSObject, INSString, NSString,
                       INSArray, NSArray};
 
+use super::{id, NSObjectPrototype, NSObjectProtocol};
+
 use constants::MTLPixelFormat;
 use renderpass::MTLRenderPassColorAttachmentDescriptor;
 use library::MTLFunction;
 use argument::MTLArgument;
 
-#[repr(u32)]
+#[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLBlendFactor {
     Zero = 0,
@@ -38,7 +39,7 @@ pub enum MTLBlendFactor {
     OneMinusBlendAlpha = 14,
 }
 
-#[repr(u32)]
+#[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLBlendOperation {
     Add = 0,
@@ -59,7 +60,7 @@ bitflags! {
     }
 }
 
-#[repr(u32)]
+#[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLPrimitiveTopologyClass {
     Unspecified = 0,
@@ -68,24 +69,26 @@ pub enum MTLPrimitiveTopologyClass {
     Triangle = 3,
 }
 
-pub enum MTLRenderPipelineColorAttachmentDescriptor {}
 
-pub trait IMTLRenderPipelineColorAttachmentDescriptor : INSObject {
-    fn pixel_format(&self) -> MTLPixelFormat {
+pub enum MTLRenderPipelineColorAttachmentDescriptorPrototype {}
+pub type MTLRenderPipelineColorAttachmentDescriptor = id<(MTLRenderPipelineColorAttachmentDescriptorPrototype, (NSObjectPrototype, ()))>;
+
+impl MTLRenderPipelineColorAttachmentDescriptor {
+    pub fn pixel_format(&self) -> MTLPixelFormat {
         unsafe {
-            msg_send![self, pixelFormat]
+            msg_send![self.0, pixelFormat]
         }
     }
 
-    fn set_pixel_format(&self, pixel_format: MTLPixelFormat) {
+    pub fn set_pixel_format(&self, pixel_format: MTLPixelFormat) {
         unsafe {
-            msg_send![self, setPixelFormat:pixel_format]
+            msg_send![self.0, setPixelFormat:pixel_format]
         }
     }
 
-    fn is_blending_enabled(&self) -> bool {
+    pub fn is_blending_enabled(&self) -> bool {
         unsafe {
-            match msg_send![self, isBlendingEnabled] {
+            match msg_send![self.0, isBlendingEnabled] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -93,198 +96,208 @@ pub trait IMTLRenderPipelineColorAttachmentDescriptor : INSObject {
         }
     }
 
-    fn set_blending_enabled(&self, enabled: bool) {
+    pub fn set_blending_enabled(&self, enabled: bool) {
         unsafe {
-            msg_send![self, setBlendingEnabled:enabled]
+            msg_send![self.0, setBlendingEnabled:enabled]
         }
     }
 
-    fn source_rgb_blend_factor(&self) -> MTLBlendFactor {
+    pub fn source_rgb_blend_factor(&self) -> MTLBlendFactor {
         unsafe {
-            msg_send![self, sourceRGBBlendFactor]
+            msg_send![self.0, sourceRGBBlendFactor]
         }
     }
 
-    fn set_source_rgb_blend_factor(&self, blend_factor: MTLBlendFactor) {
+    pub fn set_source_rgb_blend_factor(&self, blend_factor: MTLBlendFactor) {
         unsafe {
-            msg_send![self, setSourceRGBBlendFactor:blend_factor]
+            msg_send![self.0, setSourceRGBBlendFactor:blend_factor]
         }
     }
 
-    fn destination_rgb_blend_factor(&self) -> MTLBlendFactor {
+    pub fn destination_rgb_blend_factor(&self) -> MTLBlendFactor {
         unsafe {
-            msg_send![self, destinationRGBBlendFactor]
+            msg_send![self.0, destinationRGBBlendFactor]
         }
     }
 
-    fn set_destination_rgb_blend_factor(&self, blend_factor: MTLBlendFactor) {
+    pub fn set_destination_rgb_blend_factor(&self, blend_factor: MTLBlendFactor) {
         unsafe {
-            msg_send![self, setDestinationRGBBlendFactor:blend_factor]
+            msg_send![self.0, setDestinationRGBBlendFactor:blend_factor]
         }
     }
 
-    fn rgb_blend_operation(&self) -> MTLBlendOperation {
+    pub fn rgb_blend_operation(&self) -> MTLBlendOperation {
         unsafe {
-            msg_send![self, rgbBlendOperation]
+            msg_send![self.0, rgbBlendOperation]
         }
     }
 
-    fn set_rgb_blend_operation(&self, blend_operation: MTLBlendOperation) {
+    pub fn set_rgb_blend_operation(&self, blend_operation: MTLBlendOperation) {
         unsafe {
-            msg_send![self, setRgbBlendOperation:blend_operation]
+            msg_send![self.0, setRgbBlendOperation:blend_operation]
         }
     }
 
-    fn source_alpha_blend_factor(&self) -> MTLBlendFactor {
+    pub fn source_alpha_blend_factor(&self) -> MTLBlendFactor {
         unsafe {
-            msg_send![self, sourceAlphaBlendFactor]
+            msg_send![self.0, sourceAlphaBlendFactor]
         }
     }
 
-    fn set_source_alpha_blend_factor(&self, blend_factor: MTLBlendFactor) {
+    pub fn set_source_alpha_blend_factor(&self, blend_factor: MTLBlendFactor) {
         unsafe {
-            msg_send![self, setSourceAlphaBlendFactor:blend_factor]
+            msg_send![self.0, setSourceAlphaBlendFactor:blend_factor]
         }
     }
 
-    fn destination_alpha_blend_factor(&self) -> MTLBlendFactor {
+    pub fn destination_alpha_blend_factor(&self) -> MTLBlendFactor {
         unsafe {
-            msg_send![self, destinationAlphaBlendFactor]
+            msg_send![self.0, destinationAlphaBlendFactor]
         }
     }
 
-    fn set_destination_alpha_blend_factor(&self, blend_factor: MTLBlendFactor) {
+    pub fn set_destination_alpha_blend_factor(&self, blend_factor: MTLBlendFactor) {
         unsafe {
-            msg_send![self, setDestinationAlphaBlendFactor:blend_factor]
+            msg_send![self.0, setDestinationAlphaBlendFactor:blend_factor]
         }
     }
 
-    fn alpha_blend_operation(&self) -> MTLBlendOperation {
+    pub fn alpha_blend_operation(&self) -> MTLBlendOperation {
         unsafe {
-            msg_send![self, alphaBlendOperation]
+            msg_send![self.0, alphaBlendOperation]
         }
     }
 
-    fn set_alpha_blend_operation(&self, blend_operation: MTLBlendOperation) {
+    pub fn set_alpha_blend_operation(&self, blend_operation: MTLBlendOperation) {
         unsafe {
-            msg_send![self, setAlphaBlendOperation:blend_operation]
+            msg_send![self.0, setAlphaBlendOperation:blend_operation]
         }
     }
 
-    fn write_mask(&self) -> MTLColorWriteMask {
+    pub fn write_mask(&self) -> MTLColorWriteMask {
         unsafe {
-            msg_send![self, writeMask]
+            msg_send![self.0, writeMask]
         }
     }
 
-    fn set_write_mask(&self, mask: MTLColorWriteMask) {
+    pub fn set_write_mask(&self, mask: MTLColorWriteMask) {
         unsafe {
-            msg_send![self, setWriteMask:mask]
+            msg_send![self.0, setWriteMask:mask]
         }
     }
 }
 
-impl INSObject for MTLRenderPipelineColorAttachmentDescriptor {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLRenderPipelineColorAttachmentDescriptor {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineColorAttachmentDescriptor").unwrap()
     }
 }
 
-unsafe impl Message for MTLRenderPipelineColorAttachmentDescriptor { }
-impl IMTLRenderPipelineColorAttachmentDescriptor for MTLRenderPipelineColorAttachmentDescriptor { }
+pub enum MTLRenderPipelineReflectionPrototype {}
+pub type MTLRenderPipelineReflection = id<(MTLRenderPipelineReflectionPrototype, (NSObjectPrototype, ()))>;
 
-pub enum MTLRenderPipelineReflection { }
-pub trait IMTLRenderPipelineReflection : INSObject {
-    fn vertex_arguments(&self) -> NSArray<MTLArgument> {
+impl MTLRenderPipelineReflection {
+    pub fn vertex_arguments(&self) -> NSArray<MTLArgument> {
         unsafe {
-            msg_send![self, vertexArguments]
+            msg_send![self.0, vertexArguments]
         }
     }
 
-    fn fragment_arguments(&self) -> NSArray<MTLArgument> {
+    pub fn fragment_arguments(&self) -> NSArray<MTLArgument> {
         unsafe {
-            msg_send![self, fragmentArguments]
+            msg_send![self.0, fragmentArguments]
         }
-    }
+    } 
 }
 
-impl INSObject for MTLRenderPipelineReflection {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLRenderPipelineReflection {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineReflection").unwrap()
     }
 }
 
-unsafe impl Message for MTLRenderPipelineReflection { }
-impl IMTLRenderPipelineReflection for MTLRenderPipelineReflection { }
+pub enum MTLRenderPipelineDescriptorPrototype {}
+pub type MTLRenderPipelineDescriptor = id<(MTLRenderPipelineDescriptorPrototype, (NSObjectPrototype, ()))>;
 
-pub enum MTLRenderPipelineDescriptor { }
-pub trait IMTLRenderPipelineDescriptor<'a> : INSObject {
-    fn label(&'a self) -> &'a str {
+impl<'a> MTLRenderPipelineDescriptor {
+    pub fn alloc() -> Self {
         unsafe {
-            let label: &'a NSString = msg_send![self, label];
+            msg_send![Self::class(), alloc]
+        }
+    }
+
+    pub fn init(&self) -> Self {
+        unsafe {
+            msg_send![self.0, init]
+        }
+    }
+
+    pub fn label(&'a self) -> &'a str {
+        unsafe {
+            let label: &'a NSString = msg_send![self.0, label];
             label.as_str()
         }
     }
 
-    fn set_label(&self, label: &str) {
+    pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self.0, setLabel:nslabel]
         }
     }
 
-    fn vertex_function(&self) -> MTLFunction {
+    pub fn vertex_function(&self) -> MTLFunction {
         unsafe {
-            msg_send![self, vertexFunction]
+            msg_send![self.0, vertexFunction]
         }
     }
 
-    fn set_vertex_function(&self, function: &MTLFunction) {
+    pub fn set_vertex_function(&self, function: MTLFunction) {
         unsafe {
-            msg_send![self, setVertexFunction:function]
+            msg_send![self.0, setVertexFunction:function]
         }
     }
 
-    fn fragment_function(&self) -> MTLFunction {
+    pub fn fragment_function(&self) -> MTLFunction {
         unsafe {
-            msg_send![self, fragmentFunction]
+            msg_send![self.0, fragmentFunction]
         }
     }
 
-    fn set_fragment_function(&self, function: &MTLFunction) {
+    pub fn set_fragment_function(&self, function: MTLFunction) {
         unsafe {
-            msg_send![self, setFragmentFunction:function]
+            msg_send![self.0, setFragmentFunction:function]
         }
     }
 
 
-    fn vertex_descriptor(&self) -> id {
+    pub fn vertex_descriptor(&self) -> id {
         unsafe {
-            msg_send![self, vertexDescriptor]
+            msg_send![self.0, vertexDescriptor]
         }
     }
 
-    fn set_vertex_descriptor(&self, descriptor: id) {
+    pub fn set_vertex_descriptor(&self, descriptor: id) {
         unsafe {
-            msg_send![self, setVertexDescriptor:descriptor]
+            msg_send![self.0, setVertexDescriptor:descriptor]
         }
     }
 
-    fn sample_count(&self) -> u64 {
+    pub fn sample_count(&self) -> u64 {
         unsafe {
-            msg_send![self, sampleCount]
+            msg_send![self.0, sampleCount]
         }
     }
 
-    fn set_sample_count(&self, count: u64) {
+    pub fn set_sample_count(&self, count: u64) {
         unsafe {
-            msg_send![self, setSampleCount:count]
+            msg_send![self.0, setSampleCount:count]
         }
     }
 
-    fn is_alpha_to_coverage_enabled(&self) -> bool {
+    pub fn is_alpha_to_coverage_enabled(&self) -> bool {
         unsafe {
-            match msg_send![self, isAlphaToCoverageEnabled] {
+            match msg_send![self.0, isAlphaToCoverageEnabled] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -292,15 +305,15 @@ pub trait IMTLRenderPipelineDescriptor<'a> : INSObject {
         }
     }
 
-    fn set_alpha_to_coverage_enabled(&self, enabled: bool) {
+    pub fn set_alpha_to_coverage_enabled(&self, enabled: bool) {
         unsafe {
-            msg_send![self, setAlphaToCoverageEnabled:enabled]
+            msg_send![self.0, setAlphaToCoverageEnabled:enabled]
         }
     }
 
-    fn is_alpha_to_one_enabled(&self) -> bool {
+    pub fn is_alpha_to_one_enabled(&self) -> bool {
         unsafe {
-            match msg_send![self, isAlphaToOneEnabled] {
+            match msg_send![self.0, isAlphaToOneEnabled] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -308,15 +321,15 @@ pub trait IMTLRenderPipelineDescriptor<'a> : INSObject {
         }
     }
 
-    fn set_alpha_to_one_enabled(&self, enabled: bool) {
+    pub fn set_alpha_to_one_enabled(&self, enabled: bool) {
         unsafe {
-            msg_send![self, setAlphaToOneEnabled:enabled]
+            msg_send![self.0, setAlphaToOneEnabled:enabled]
         }
     }
 
-    fn is_rasterization_enabled(&self) -> bool {
+    pub fn is_rasterization_enabled(&self) -> bool {
         unsafe {
-            match msg_send![self, isRasterizationEnabled] {
+            match msg_send![self.0, isRasterizationEnabled] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -324,113 +337,107 @@ pub trait IMTLRenderPipelineDescriptor<'a> : INSObject {
         }
     }
 
-    fn set_rasterization_enabled(&self, enabled: bool) {
+    pub fn set_rasterization_enabled(&self, enabled: bool) {
         unsafe {
-            msg_send![self, setRasterizationEnabled:enabled]
+            msg_send![self.0, setRasterizationEnabled:enabled]
         }
     }
 
-    fn color_attachments(&self) -> MTLRenderPipelineColorAttachmentDescriptorArray {
+    pub fn color_attachments(&self) -> MTLRenderPipelineColorAttachmentDescriptorArray {
         unsafe {
-            msg_send![self, colorAttachments]
+            msg_send![self.0, colorAttachments]
         }
     }
 
-    fn depth_attachment_pixel_format(&self) -> MTLPixelFormat {
+    pub fn depth_attachment_pixel_format(&self) -> MTLPixelFormat {
         unsafe {
-            msg_send![self, depthAttachmentPixelFormat]
+            msg_send![self.0, depthAttachmentPixelFormat]
         }
     }
 
-    fn set_depth_attachment_pixel_format(&self, pixel_format: MTLPixelFormat) {
+    pub fn set_depth_attachment_pixel_format(&self, pixel_format: MTLPixelFormat) {
         unsafe {
-            msg_send![self, setDepthAttachmentPixelFormat:pixel_format]
+            msg_send![self.0, setDepthAttachmentPixelFormat:pixel_format]
         }
     }
 
-    fn stencil_attachment_pixel_format(&self) -> MTLPixelFormat {
+    pub fn stencil_attachment_pixel_format(&self) -> MTLPixelFormat {
         unsafe {
-            msg_send![self, stencilAttachmentPixelFormat]
+            msg_send![self.0, stencilAttachmentPixelFormat]
         }
     }
 
-    fn set_stencil_attachment_pixel_format(&self, pixel_format: MTLPixelFormat) {
+    pub fn set_stencil_attachment_pixel_format(&self, pixel_format: MTLPixelFormat) {
         unsafe {
-            msg_send![self, setStencilAttachmentPixelFormat:pixel_format]
+            msg_send![self.0, setStencilAttachmentPixelFormat:pixel_format]
         }
     }
 
-    fn input_primitive_topology(&self) -> MTLPrimitiveTopologyClass {
+    pub fn input_primitive_topology(&self) -> MTLPrimitiveTopologyClass {
         unsafe {
-            msg_send![self, inputPrimitiveTopology]
+            msg_send![self.0, inputPrimitiveTopology]
         }
     }
 
-    fn set_input_primitive_topology(&self, topology: MTLPrimitiveTopologyClass) {
+    pub fn set_input_primitive_topology(&self, topology: MTLPrimitiveTopologyClass) {
         unsafe {
-            msg_send![self, setInputPrimitiveTopology:topology]
+            msg_send![self.0, setInputPrimitiveTopology:topology]
         }
     }
 }
 
-impl INSObject for MTLRenderPipelineDescriptor {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLRenderPipelineDescriptor {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineDescriptor").unwrap()
     }
 }
 
-unsafe impl Message for MTLRenderPipelineDescriptor { }
-impl<'a> IMTLRenderPipelineDescriptor<'a> for MTLRenderPipelineDescriptor { }
+pub enum MTLRenderPipelineStatePrototype {}
+pub type MTLRenderPipelineState = id<(MTLRenderPipelineStatePrototype, (NSObjectPrototype, ()))>;
 
-pub enum MTLRenderPipelineState { }
-pub trait IMTLRenderPipelineState<'a> : INSObject {
-    fn label(&'a self) -> &'a str {
+impl<'a> MTLRenderPipelineState {
+    pub fn label(&'a self) -> &'a str {
         unsafe {
-            let label: &'a NSString = msg_send![self, label];
+            let label: &'a NSString = msg_send![self.0, label];
             label.as_str()
         }
     }
 
-    fn set_label(&self, label: &str) {
+    pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self.0, setLabel:nslabel]
         }
-    }
+    } 
 }
 
-impl INSObject for MTLRenderPipelineState {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLRenderPipelineState {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineState").unwrap()
     }
 }
 
-unsafe impl Message for MTLRenderPipelineState { }
-impl<'a> IMTLRenderPipelineState<'a> for MTLRenderPipelineState { }
+pub enum MTLRenderPipelineColorAttachmentDescriptorArrayPrototype {}
+pub type MTLRenderPipelineColorAttachmentDescriptorArray = id<(MTLRenderPipelineColorAttachmentDescriptorArrayPrototype, (NSObjectPrototype, ()))>;
 
-pub enum MTLRenderPipelineColorAttachmentDescriptorArray { }
-pub trait IMTLRenderPipelineColorAttachmentDescriptorArray : INSObject {
-    fn object_at(&self, index: usize) -> MTLRenderPipelineColorAttachmentDescriptor {
+impl MTLRenderPipelineColorAttachmentDescriptorArray {
+    pub fn object_at(&self, index: usize) -> MTLRenderPipelineColorAttachmentDescriptor {
         unsafe {
-            msg_send![self, objectAtIndexedSubscript:index]
+            msg_send![self.0, objectAtIndexedSubscript:index]
         }
     }
 
-    fn set_object_at(&self, index: usize, attachment: MTLRenderPipelineColorAttachmentDescriptor) {
+    pub fn set_object_at(&self, index: usize, attachment: MTLRenderPipelineColorAttachmentDescriptor) {
         unsafe {
-            msg_send![self, setObject:attachment
-                   atIndexedSubscript:index]
+            msg_send![self.0, setObject:attachment
+                     atIndexedSubscript:index]
         }
-    }
+    } 
 }
 
-impl INSObject for MTLRenderPipelineColorAttachmentDescriptorArray {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLRenderPipelineColorAttachmentDescriptorArray {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineColorAttachmentDescriptorArray").unwrap()
     }
 }
-
-unsafe impl Message for MTLRenderPipelineColorAttachmentDescriptorArray { }
-
-impl IMTLRenderPipelineColorAttachmentDescriptorArray for MTLRenderPipelineColorAttachmentDescriptorArray { }
 

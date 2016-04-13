@@ -5,46 +5,44 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
 use cocoa::foundation::{NSUInteger};
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString};
 
+use super::{id, NSObjectPrototype, NSObjectProtocol};
+
 use commandbuffer::MTLCommandBuffer;
 
-pub enum MTLCommandQueue {}
+pub enum MTLCommandQueuePrototype {}
+pub type MTLCommandQueue = id<(MTLCommandQueuePrototype, (NSObjectPrototype, ()))>;
 
-pub trait IMTLCommandQueue<'a> : INSObject {
-    fn label(&'a self) -> &'a str {
+impl<'a> MTLCommandQueue {
+    pub fn label(&'a self) -> &'a str {
         unsafe {
-            let label: &'a NSString = msg_send![self, label];
+            let label: &'a NSString = msg_send![self.0, label];
             label.as_str()
         }
     }
 
-    fn set_label(&self, label: &str) {
+    pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self.0, setLabel:nslabel]
         }
     }
 
-    fn new_command_buffer(&self) -> MTLCommandBuffer {
+    pub fn new_command_buffer(&self) -> MTLCommandBuffer {
         unsafe {
-            msg_send![self, newCommandBuffer]
+            msg_send![self.0, commandBuffer]
         }
-    }
+    } 
 }
 
-impl INSObject for MTLCommandQueue {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLCommandQueue {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLCommandQueue").unwrap()
     }
 }
-
-unsafe impl Message for MTLCommandQueue { }
-
-impl<'a> IMTLCommandQueue<'a> for MTLCommandQueue { }
 

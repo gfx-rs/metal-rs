@@ -5,54 +5,52 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
 use cocoa::foundation::{NSUInteger, NSRange};
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString};
 
+use super::{id, NSObjectPrototype, NSObjectProtocol};
+
 use libc;
 
 use texture::{MTLTexture, MTLTextureDescriptor};
 
-pub enum MTLBuffer {}
+pub enum MTLBufferPrototype {}
+pub type MTLBuffer = id<(MTLBufferPrototype, (NSObjectPrototype, ()))>;
 
-pub trait IMTLBuffer<'a> : INSObject {
+impl MTLBuffer {
     fn length(&self) -> u64 {
         unsafe {
-            msg_send![self, length]
+            msg_send![self.0, length]
         }
     }
 
     fn contents(&self) -> *mut libc::c_void {
         unsafe {
-            msg_send![self, contents]
+            msg_send![self.0, contents]
         }
     }
 
     fn invalidate_range(&self, range: NSRange) {
         unsafe {
-            msg_send![self, didModifyRange:range]
+            msg_send![self.0, didModifyRange:range]
         }
     }
 
-    fn new_texture_from_contents(&self, descriptor: MTLTextureDescriptor, offset: u64, stride: u64) -> &'a MTLTexture {
+    fn new_texture_from_contents(&self, descriptor: MTLTextureDescriptor, offset: u64, stride: u64) -> MTLTexture {
         unsafe {
-            msg_send![self, newTextureWithDescriptor:descriptor
+            msg_send![self.0, newTextureWithDescriptor:descriptor
                                               offset:offset
                                          bytesPerRow:stride]
         }
-    }
+    } 
 }
 
-impl INSObject for MTLBuffer {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLBuffer {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLBuffer").unwrap()
     }
 }
-
-unsafe impl Message for MTLBuffer { }
-
-impl<'a> IMTLBuffer<'a> for MTLBuffer { }
 

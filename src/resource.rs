@@ -5,14 +5,15 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
 use cocoa::foundation::NSUInteger;
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString};
 
-#[repr(u32)]
+use super::{id, NSObjectPrototype, NSObjectProtocol};
+
+#[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLPurgeableState {
     KeepCurrent = 1,
@@ -21,14 +22,14 @@ pub enum MTLPurgeableState {
     Empty = 4,
 }
 
-#[repr(u32)]
+#[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLCPUCacheMode {
     DefaultCache = 0,
     WriteCombined = 1,
 }
 
-#[repr(u32)]
+#[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLStorageMode {
     Shared  = 0,
@@ -56,12 +57,14 @@ bitflags! {
     }
 }
 
-pub enum MTLResource {}
 
-pub trait IMTLResource<'a> : INSObject {
+pub enum MTLResourcePrototype {}
+pub type MTLResource = id<(MTLResourcePrototype, (NSObjectPrototype, ()))>;
+
+impl<'a> MTLResource {
     fn label(&'a self) -> &'a str {
         unsafe {
-            let label: &'a NSString = msg_send![self, label];
+            let label: &'a NSString = msg_send![self.0, label];
             label.as_str()
         }
     }
@@ -69,36 +72,32 @@ pub trait IMTLResource<'a> : INSObject {
     fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self.0, setLabel:nslabel]
         }
     }
 
     fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
         unsafe {
-            msg_send![self, cpuCacheMode]
+            msg_send![self.0, cpuCacheMode]
         }
     }
 
     fn storage_mode(&self) -> MTLStorageMode {
         unsafe {
-            msg_send![self, storageMode]
+            msg_send![self.0, storageMode]
         }
     }
  
     fn set_purgeable_state(&self, state: MTLPurgeableState) -> MTLPurgeableState {
         unsafe {
-            msg_send![self, setPurgeableState:state]
+            msg_send![self.0, setPurgeableState:state]
         }
     }
 }
 
-impl INSObject for MTLResource {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLResource {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLResource").unwrap()
     }
 }
-
-unsafe impl Message for MTLResource { }
-
-impl<'a> IMTLResource<'a> for MTLResource { }
 

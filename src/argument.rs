@@ -5,16 +5,17 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
 use cocoa::foundation::NSUInteger;
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString, NSArray};
 
+use super::{id, NSObjectPrototype, NSObjectProtocol};
+
 use texture::MTLTextureType;
 
-#[repr(u32)]
+#[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLDataType {
     None = 0,
@@ -109,57 +110,50 @@ pub enum MTLArgumentAccess {
     WriteOnly  = 2,
 }
 
-pub enum MTLStructMember {}
 
-pub trait IMTLStructMember<'a> : INSObject {
+pub enum MTLStructMemberPrototype {}
+pub type MTLStructMember = id<(MTLStructMemberPrototype, (NSObjectPrototype, ()))>;
+
+impl<'a> MTLStructMember {
     fn name(&'a self) -> &'a str {
         unsafe {
-            let name: &'a NSString = msg_send![self, name];
+            let name: &'a NSString = msg_send![self.0, name];
             name.as_str()
         }
     }
 
     fn offset(&self) -> u64 {
         unsafe {
-            msg_send![self, offset]
+            msg_send![self.0, offset]
         }
     }
 
     fn data_type(&self) -> MTLDataType {
         unsafe {
-            msg_send![self, dataType]
+            msg_send![self.0, dataType]
         }
     }
 
     fn struct_type(&self) -> MTLStructType {
         unsafe {
-            msg_send![self, structType]
+            msg_send![self.0, structType]
         }
     }
 
     fn arrayType(&self) -> MTLArrayType {
         unsafe {
-            msg_send![self, arrayType]
+            msg_send![self.0, arrayType]
         }
     }
 }
 
-impl INSObject for MTLStructMember {
-    fn class() -> &'static Class {
-        Class::get("MTLStructMember").unwrap()
-    }
-}
+pub enum MTLStructTypePrototype {}
+pub type MTLStructType = id<(MTLStructTypePrototype, (NSObjectPrototype, ()))>;
 
-unsafe impl Message for MTLStructMember { }
-
-impl<'a> IMTLStructMember<'a> for MTLStructMember { }
-
-pub enum MTLStructType {}
-
-pub trait IMTLStructType<'a> : INSObject {
+impl<'a> MTLStructType {
     fn members(&self) -> NSArray<MTLStructMember> {
         unsafe {
-            msg_send![self, members]
+            msg_send![self.0, members]
         }
     }
 
@@ -167,96 +161,90 @@ pub trait IMTLStructType<'a> : INSObject {
         let nsname = NSString::from_str(name);
 
         unsafe {
-            msg_send![self, memberByName:nsname]
+            msg_send![self.0, memberByName:nsname]
         }
     }
 }
 
-impl INSObject for MTLStructType {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLStructType {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLStructType").unwrap()
     }
 }
 
-unsafe impl Message for MTLStructType { }
+pub enum MTLArrayTypePrototype {}
+pub type MTLArrayType = id<(MTLArrayTypePrototype, (NSObjectPrototype, ()))>;
 
-impl<'a> IMTLStructType<'a> for MTLStructType { }
-
-pub enum MTLArrayType {}
-
-pub trait IMTLArrayType : INSObject {
+impl MTLArrayType {
     fn array_length(&self) -> u64 {
         unsafe {
-            msg_send![self, arrayLength]
+            msg_send![self.0, arrayLength]
         }
     }
 
     fn stride(&self) -> u64 {
         unsafe {
-            msg_send![self, stride]
+            msg_send![self.0, stride]
         }
     }
 
     fn element_type(&self) -> MTLDataType {
         unsafe {
-            msg_send![self, elementType]
+            msg_send![self.0, elementType]
         }
     }
 
     fn element_struct_type(&self) -> MTLStructType {
         unsafe {
-            msg_send![self, elementStructType]
+            msg_send![self.0, elementStructType]
         }
     }
 
     fn element_array_type(&self) -> MTLArrayType {
         unsafe {
-            msg_send![self, elementArrayType]
+            msg_send![self.0, elementArrayType]
         }
     }
 }
 
-impl INSObject for MTLArrayType {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLArrayType {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLArrayType").unwrap()
     }
 }
 
-unsafe impl Message for MTLArrayType { }
+pub enum MTLArgumentPrototype {}
+pub type MTLArgument = id<(MTLArgumentPrototype, (NSObjectPrototype, ()))>;
 
-impl IMTLArrayType for MTLArrayType { }
-
-pub enum MTLArgument {}
-
-pub trait IMTLArgument<'a> : INSObject {
+impl<'a> MTLArgument {
     fn name(&'a self) -> &'a str {
         unsafe {
-            let name: &'a NSString = msg_send![self, name];
+            let name: &'a NSString = msg_send![self.0, name];
             name.as_str()
         }
     }
 
     fn type_(&self) -> MTLArgumentType {
         unsafe {
-            msg_send![self, type]
+            msg_send![self.0, type]
         }
     }
 
     fn access(&self) -> MTLArgumentAccess {
         unsafe {
-            msg_send![self, access]
+            msg_send![self.0, access]
         }
     }
 
     fn index(&self) -> u64 {
         unsafe {
-            msg_send![self, index]
+            msg_send![self.0, index]
         }
     }
 
     fn is_active(&self) -> bool {
         unsafe {
-            match msg_send![self, isActive] {
+            match msg_send![self.0, isActive] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -266,61 +254,56 @@ pub trait IMTLArgument<'a> : INSObject {
     
     fn buffer_alignment(&self) -> u64 {
         unsafe {
-            msg_send![self, bufferAlignment]
+            msg_send![self.0, bufferAlignment]
         }
     }
 
     fn buffer_data_size(&self) -> u64 {
         unsafe {
-            msg_send![self, bufferDataSize]
+            msg_send![self.0, bufferDataSize]
         }
     }
 
     fn buffer_data_type(&self) -> MTLDataType {
         unsafe {
-            msg_send![self, bufferDataType]
+            msg_send![self.0, bufferDataType]
         }
     }
 
     fn buffer_struct_type(&self) -> MTLStructType {
         unsafe {
-            msg_send![self, bufferStructType]
+            msg_send![self.0, bufferStructType]
         }
     }
 
     fn threadgroup_memory_alignment(&self) -> u64 {
         unsafe {
-            msg_send![self, threadgroupMemoryAlignment]
+            msg_send![self.0, threadgroupMemoryAlignment]
         }
     }
 
     fn threadgroup_memory_data_size(&self) -> u64 {
         unsafe {
-            msg_send![self, threadgroupMemoryDataSize]
+            msg_send![self.0, threadgroupMemoryDataSize]
         }
     }
 
     fn texture_type(&self) -> MTLTextureType {
         unsafe {
-            msg_send![self, textureType]
+            msg_send![self.0, textureType]
         }
     }
 
     fn texture_data_type(&self) -> MTLDataType {
         unsafe {
-            msg_send![self, textureDataType]
+            msg_send![self.0, textureDataType]
         }
     }
 }
 
-
-impl INSObject for MTLArgument {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLArgument {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLArgument").unwrap()
     }
 }
-
-unsafe impl Message for MTLArgument { }
-
-impl<'a> IMTLArgument<'a> for MTLArgument { }
 

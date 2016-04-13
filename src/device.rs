@@ -5,15 +5,15 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
 use cocoa::foundation::{NSUInteger};
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString};
 
-use resource::MTLResourceOptions;
+use super::{id, NSObjectPrototype, NSObjectProtocol};
 
+use resource::MTLResourceOptions;
 use commandqueue::MTLCommandQueue;
 use pipeline::{MTLRenderPipelineState, MTLRenderPipelineDescriptor};
 use library::MTLLibrary;
@@ -21,6 +21,9 @@ use types::{MTLSize};
 use buffer::MTLBuffer;
 
 use libc;
+
+use std::marker::PhantomData;
+use std::any::Any;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -43,12 +46,12 @@ bitflags! {
 
 #[link(name = "Metal", kind = "framework")]
 extern {
-    fn MTLCreateSystemDefaultDevice() -> *mut MTLDevice;
+    fn MTLCreateSystemDefaultDevice() -> *mut Object;
 }
 
-pub fn create_system_default_device() -> Id<MTLDevice> {
+pub fn create_system_default_device() -> MTLDevice {
     unsafe {
-        Id::from_ptr(MTLCreateSystemDefaultDevice())
+        id(MTLCreateSystemDefaultDevice(), PhantomData)
     }
 }
 
@@ -58,25 +61,27 @@ type MTLNewRenderPipelineStateWithReflectionCompletionHandler = extern fn(render
 type MTLNewComputePipelineStateCompletionHandler = extern fn(computePipelineState: id, error: id);
 type MTLNewComputePipelineStateWithReflectionCompletionHandler = extern fn(computePipelineState: id, reflection: id, error: id);
 
-pub enum MTLDevice {}
 
-pub trait IMTLDevice<'a> : INSObject {
-    fn name(&'a self) -> &'a str {
+pub enum MTLDevicePrototype {}
+pub type MTLDevice = id<(MTLDevicePrototype, (NSObjectPrototype, ()))>;
+
+impl<'a> MTLDevice {
+    pub fn name(&'a self) -> &'a str {
         unsafe {
-            let name: &'a NSString = msg_send![self, name];
+            let name: &'a NSString = msg_send![self.0, name];
             name.as_str()
         }
     }
 
-    fn max_threads_per_threadgroup(&self) -> MTLSize {
+    pub fn max_threads_per_threadgroup(&self) -> MTLSize {
         unsafe {
-            msg_send![self, maxThreadsPerThreadgroup]
+            msg_send![self.0, maxThreadsPerThreadgroup]
         }
     }
 
-    fn is_low_power(&self) -> bool {
+    pub fn is_low_power(&self) -> bool {
         unsafe {
-            match msg_send![self, isLowPower] {
+            match msg_send![self.0, isLowPower] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -84,9 +89,9 @@ pub trait IMTLDevice<'a> : INSObject {
         }
     }
 
-    fn is_headless(&self) -> bool {
+    pub fn is_headless(&self) -> bool {
         unsafe {
-            match msg_send![self, isHeadless] {
+            match msg_send![self.0, isHeadless] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -94,9 +99,9 @@ pub trait IMTLDevice<'a> : INSObject {
         }
     }
 
-    fn supports_feature_set(&self, feature: MTLFeatureSet) -> bool {
+    pub fn supports_feature_set(&self, feature: MTLFeatureSet) -> bool {
         unsafe {
-            match msg_send![self, supportsFeatureSet:feature] {
+            match msg_send![self.0, supportsFeatureSet:feature] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -104,9 +109,9 @@ pub trait IMTLDevice<'a> : INSObject {
         }
     }
 
-    fn supports_sample_count(&self, count: NSUInteger) -> bool {
+    pub fn supports_sample_count(&self, count: NSUInteger) -> bool {
         unsafe {
-            match msg_send![self, supportsTextureSampleCount:count] {
+            match msg_send![self.0, supportsTextureSampleCount:count] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -114,45 +119,41 @@ pub trait IMTLDevice<'a> : INSObject {
         }
     }
 
-    fn new_command_queue(&self) -> Id<MTLCommandQueue> {
+    pub fn new_command_queue(&self) -> MTLCommandQueue {
         unsafe {
-            Id::from_ptr(msg_send![self, newCommandQueue])
+            msg_send![self.0, newCommandQueue]
         }
     }
 
-    fn new_default_library(&self) -> Id<MTLLibrary> {
+    pub fn new_default_library(&self) -> MTLLibrary {
         unsafe {
-            Id::from_ptr(msg_send![self, newDefaultLibrary])
+            msg_send![self.0, newDefaultLibrary]
         }
     }
 
-    fn new_render_pipeline_state(&self, descriptor: &MTLRenderPipelineDescriptor) -> Result<&MTLRenderPipelineState, ()> {
+    pub fn new_render_pipeline_state(&self, descriptor: MTLRenderPipelineDescriptor) -> Result<MTLRenderPipelineState, ()> {
         unsafe {
-            let pipeline_state: *const MTLRenderPipelineState = msg_send![self, newRenderPipelineStateWithDescriptor:descriptor];
+            let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor];
 
             match pipeline_state.is_null() {
                 true => Err(()),
-                false => Ok(&*pipeline_state)
+                false => Ok(pipeline_state)
             }
         }
     }
 
-    fn new_buffer(&self, bytes: *const libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> MTLBuffer {
+    pub fn new_buffer(&self, bytes: *const libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> MTLBuffer {
         unsafe {
-            msg_send![self, newBufferWithBytes:bytes
+            msg_send![self.0, newBufferWithBytes:bytes
                                         length:length
                                        options:options]
         }
     }
 }
 
-impl INSObject for MTLDevice {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLDevice {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLDevice").unwrap()
     }
 }
-
-unsafe impl Message for MTLDevice { }
-
-impl<'a> IMTLDevice<'a> for MTLDevice { }
 

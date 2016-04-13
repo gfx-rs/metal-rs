@@ -5,12 +5,14 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
+use cocoa::base::{class};
 use cocoa::foundation::{NSUInteger, NSRange};
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString};
+
+use super::{id, NSObjectPrototype, NSObjectProtocol};
 
 use constants::{MTLCompareFunction, MTLPixelFormat};
 use types::{MTLRegion};
@@ -18,6 +20,10 @@ use buffer::MTLBuffer;
 use resource::{MTLResource, MTLResourceOptions, MTLCPUCacheMode, MTLStorageMode};
 
 use libc;
+
+use std::marker::PhantomData;
+use std::any::Any;
+use std::mem;
 
 #[repr(u64)]
 pub enum MTLSamplerMinMagFilter {
@@ -41,77 +47,77 @@ pub enum MTLSamplerAddressMode {
     ClampToZero = 4,
 }
 
-pub enum MTLSamplerDescriptor {}
+pub enum MTLSamplerDescriptorPrototype {}
+pub type MTLSamplerDescriptor = id<(MTLSamplerDescriptorPrototype, (NSObjectPrototype, ()))>;
 
-pub trait IMTLSamplerDescriptor : INSObject {
+impl MTLSamplerDescriptor {
+    unsafe fn new() -> Self {
+        msg_send![class("MTLSamplerDescriptor"), new]
+    }
+
+    unsafe fn alloc() -> Self {
+        msg_send![Self::class(), alloc]
+    }
+
+    unsafe fn init(&self) -> Self {
+        msg_send![self, init]
+    }
+
     fn set_min_filter(&self, filter: MTLSamplerMinMagFilter) {
         unsafe {
-            msg_send![self, setMinFilter:filter]
+            msg_send![self.0, setMinFilter:filter]
         }
     }
 
     fn set_mag_filter(&self, filter: MTLSamplerMinMagFilter) {
         unsafe {
-            msg_send![self, setMagFilter:filter]
+            msg_send![self.0, setMagFilter:filter]
         }
     }
 
     fn set_mip_filter(&self, filter: MTLSamplerMipFilter) {
         unsafe {
-            msg_send![self, setMipFilter:filter]
+            msg_send![self.0, setMipFilter:filter]
         }
     }
 
     fn set_address_mode_s(&self, mode: MTLSamplerAddressMode) {
         unsafe {
-            msg_send![self, setSAddressMode:mode]
+            msg_send![self.0, setSAddressMode:mode]
         }
     }
 
     fn set_address_mode_t(&self, mode: MTLSamplerAddressMode) {
         unsafe {
-            msg_send![self, setTAddressMode:mode]
+            msg_send![self.0, setTAddressMode:mode]
         }
     }
 
     fn set_address_mode_r(&self, mode: MTLSamplerAddressMode) {
         unsafe {
-            msg_send![self, setRAddressMode:mode]
+            msg_send![self.0, setRAddressMode:mode]
         }
     }
 
     fn set_compare_function(&self, func: MTLCompareFunction) {
         unsafe {
-            msg_send![self, setCompareFunction:func]
+            msg_send![self.0, setCompareFunction:func]
         }
     }
-
-
 }
 
-impl INSObject for MTLSamplerDescriptor {
-    fn class() -> &'static Class {
+
+impl NSObjectProtocol for MTLSamplerDescriptor {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLSamplerDescriptor").unwrap()
     }
 }
 
-unsafe impl Message for MTLSamplerDescriptor { }
+pub enum MTLSamplerStatePrototype {}
+pub type MTLSamplerState = id<(MTLSamplerStatePrototype, (NSObjectPrototype, ()))>;
 
-impl IMTLSamplerDescriptor for MTLSamplerDescriptor { }
-
-
-pub enum MTLSamplerState {}
-
-pub trait IMTLSamplerState : INSObject {
-
-}
-
-impl INSObject for MTLSamplerState {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLSamplerState {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLSamplerState").unwrap()
     }
 }
-
-unsafe impl Message for MTLSamplerState { }
-
-impl IMTLSamplerState for MTLSamplerState { }

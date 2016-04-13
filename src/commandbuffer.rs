@@ -5,13 +5,14 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::id;
 use cocoa::foundation::{NSUInteger, NSTimeInterval};
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString};
 use block::Block;
+
+use super::{id, NSObjectPrototype, NSObjectProtocol};
 
 use renderpass::MTLRenderPassDescriptor;
 use encoder::MTLRenderCommandEncoder;
@@ -42,86 +43,83 @@ pub enum MTLCommandBufferError {
 
 type MTLCommandBufferHandler = Block<(MTLCommandBuffer), ()>;
 
-pub enum MTLCommandBuffer {}
+pub enum MTLCommandBufferPrototype {}
+pub type MTLCommandBuffer = id<(MTLCommandBufferPrototype, (NSObjectPrototype, ()))>;
 
-pub trait IMTLCommandBuffer<'a> : INSObject {
-    fn label(&'a self) -> &'a str {
+impl<'a> MTLCommandBuffer {
+    pub fn label(&'a self) -> &'a str {
         unsafe {
-            let label: &'a NSString = msg_send![self, label];
+            let label: &'a NSString = msg_send![self.0, label];
             label.as_str()
         }
     }
 
-    fn set_label(&self, label: &str) {
+    pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self.0, setLabel:nslabel]
         }
     }
     
-    fn enqueue(&self) {
+    pub fn enqueue(&self) {
         unsafe {
-            msg_send![self, enqueue]
+            msg_send![self.0, enqueue]
         }
     }
 
 
-    fn commit(&self) {
+    pub fn commit(&self) {
         unsafe {
-            msg_send![self, commit]
+            msg_send![self.0, commit]
         }
     }
 
-    fn status(&self) -> MTLCommandBufferStatus {
+    pub fn status(&self) -> MTLCommandBufferStatus {
         unsafe {
-            msg_send![self, status]
+            msg_send![self.0, status]
         }
     }
 
-    fn present_drawable(&self, drawable: id) {
+    pub fn present_drawable<T>(&self, drawable: id<T>) {
         unsafe {
-            msg_send![self, presentDrawable:drawable]
+            msg_send![self.0, presentDrawable:drawable]
         }
     }
 
-    fn wait_until_completed(&self) {
+    pub fn wait_until_completed(&self) {
         unsafe {
-            msg_send![self, waitUntilCompleted]
+            msg_send![self.0, waitUntilCompleted]
         }
     }
 
-    fn new_blit_command_encoder(&self) -> id {
+    pub fn new_blit_command_encoder(&self) -> id {
         unsafe {
-            msg_send![self, blitCommandEncoder]
+            msg_send![self.0, blitCommandEncoder]
         }
     }
 
-    fn new_compute_command_encoder(&self) -> id {
+    pub fn new_compute_command_encoder(&self) -> id {
         unsafe {
-            msg_send![self, blitCommandEncoder]
+            msg_send![self.0, blitCommandEncoder]
         }
     }
 
-    fn new_render_command_encoder(&self, descriptor: &ShareId<MTLRenderPassDescriptor>) -> MTLRenderCommandEncoder {
+    pub fn new_render_command_encoder(&self, descriptor: MTLRenderPassDescriptor) -> MTLRenderCommandEncoder {
         unsafe {
-            msg_send![self, renderCommandEncoderWithDescriptor:descriptor]
+            msg_send![self.0, renderCommandEncoderWithDescriptor:descriptor]
         }
     }
 
-    fn new_parallel_render_command_encoder(&self) -> id {
+    pub fn new_parallel_render_command_encoder(&self) -> id {
         unsafe {
-            msg_send![self, blitCommandEncoder]
+            msg_send![self.0, blitCommandEncoder]
         }
-    }
+    } 
 }
 
-impl INSObject for MTLCommandBuffer {
-    fn class() -> &'static Class {
+impl NSObjectProtocol for MTLCommandBuffer {
+    unsafe fn class() -> &'static Class {
         Class::get("MTLCommandBuffer").unwrap()
     }
 }
-
-unsafe impl Message for MTLCommandBuffer { }
-
-impl<'a> IMTLCommandBuffer<'a> for MTLCommandBuffer { }
 
