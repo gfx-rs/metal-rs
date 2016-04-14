@@ -10,6 +10,7 @@ use libc;
 
 use texture::MTLTexture;
 use buffer::MTLBuffer;
+use pipeline::MTLRenderPipelineState;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -146,7 +147,7 @@ pub type MTLRenderCommandEncoder = id<
 impl MTLRenderCommandEncoder {
     // Setting Graphics Rendering State
 
-    pub fn set_render_pipeline_state(&self, pipeline_state: id) {
+    pub fn set_render_pipeline_state(&self, pipeline_state: MTLRenderPipelineState) {
         unsafe {
             msg_send![self.0, setRenderPipelineState:pipeline_state]
         }

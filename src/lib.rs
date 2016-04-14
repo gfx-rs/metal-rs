@@ -22,6 +22,7 @@ extern crate block;
 
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL};
+
 use cocoa::foundation::NSSize;
 
 use std::marker::PhantomData;

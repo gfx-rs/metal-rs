@@ -16,7 +16,7 @@ objc_id = "0.0.2"
 block = "0.1.4"
 
 [dev-dependencies]
-winit = { git = "https://github.com/tomaka/winit" }
+winit = "0.4.9"
 
 [[example]]
 name = "window"

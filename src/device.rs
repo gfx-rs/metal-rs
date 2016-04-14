@@ -11,7 +11,7 @@ use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
 use objc_foundation::{INSObject, NSString, INSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
+use super::{id, nil, NSObjectPrototype, NSObjectProtocol};
 
 use resource::MTLResourceOptions;
 use commandqueue::MTLCommandQueue;
@@ -69,6 +69,20 @@ impl<'a> MTLDevice {
     pub fn name(&'a self) -> &'a str {
         unsafe {
             let name: &'a NSString = msg_send![self.0, name];
+            name.as_str()
+        }
+    }
+
+    pub fn vendor(&'a self) -> &'a str {
+        unsafe {
+            let name: &'a NSString = msg_send![self.0, vendorName];
+            name.as_str()
+        }
+    }
+
+    pub fn family_name(&'a self) -> &'a str {
+        unsafe {
+            let name: &'a NSString = msg_send![self.0, familyName];
             name.as_str()
         }
     }
@@ -133,7 +147,8 @@ impl<'a> MTLDevice {
 
     pub fn new_render_pipeline_state(&self, descriptor: MTLRenderPipelineDescriptor) -> Result<MTLRenderPipelineState, ()> {
         unsafe {
-            let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor];
+            let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor
+                                                 error:nil];
 
             match pipeline_state.is_null() {
                 true => Err(()),
