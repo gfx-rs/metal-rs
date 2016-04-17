@@ -206,7 +206,7 @@ impl MTLRenderPassColorAttachmentDescriptor {
         unsafe {
             msg_send![self.0, setClearColor:clear_color]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLRenderPassColorAttachmentDescriptor {
@@ -232,7 +232,7 @@ impl MTLRenderPassDepthAttachmentDescriptor {
         unsafe {
             msg_send![self.0, setClearDepth:clear_depth]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLRenderPassDepthAttachmentDescriptor {
@@ -258,7 +258,7 @@ impl MTLRenderPassStencilAttachmentDescriptor {
         unsafe {
             msg_send![self.0, setClearStencil:clear_stencil]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLRenderPassStencilAttachmentDescriptor {
@@ -284,7 +284,7 @@ impl MTLRenderPassColorAttachmentDescriptorArray {
             msg_send![self.0, setObject:attachment
                      atIndexedSubscript:index]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLRenderPassColorAttachmentDescriptorArray {

@@ -200,9 +200,9 @@ impl MTLRenderCommandEncoder {
     pub fn set_blend_color(&self, red: f32, green: f32, blue: f32, alpha: f32) {
         unsafe {
             msg_send![self.0, setBlendColorRed:red
-                                       green:green
-                                        blue:blue
-                                       alpha:alpha]
+                                         green:green
+                                          blue:blue
+                                         alpha:alpha]
         }
     }
 

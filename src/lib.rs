@@ -92,7 +92,7 @@ pub enum <Type>Prototype {}
 pub type <Type> = id<(<Type>Prototype, (NSObjectPrototype, ()))>;
 
 impl <Type> {
- 
+
 }
 
 impl NSObjectProtocol for <Type> {
@@ -115,7 +115,7 @@ impl CAMetalDrawable {
         unsafe {
             msg_send![self.0, texture]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for CAMetalDrawable {
@@ -151,7 +151,7 @@ impl CAMetalLayer {
             msg_send![self.0, setPixelFormat:pixel_format]
         }
     }
-    
+
     pub fn drawable_size(&self) -> NSSize {
         unsafe {
             msg_send![self.0, drawableSize]
@@ -173,7 +173,7 @@ impl CAMetalLayer {
                 false => Some(drawable)
             }
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for CAMetalLayer {
@@ -197,6 +197,7 @@ mod encoder;
 mod pipeline;
 mod library;
 mod argument;
+mod vertexdescriptor;
 
 pub use constants::*;
 pub use types::*;
@@ -213,4 +214,5 @@ pub use encoder::*;
 pub use pipeline::*;
 pub use library::*;
 pub use argument::*;
+pub use vertexdescriptor::*;
 
