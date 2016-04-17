@@ -25,9 +25,11 @@ use objc::runtime::{Object, Class, BOOL};
 
 use cocoa::foundation::NSSize;
 
+use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
 use std::ops::Deref;
 use std::any::Any;
+use std::fmt;
 use std::mem;
 use std::ptr;
 
@@ -36,7 +38,32 @@ use std::ptr;
 pub struct id<T=()>(pub *mut Object, pub PhantomData<T>);
 
 impl<T> Copy for id<T> {}
-impl<T> Clone for id<T> { fn clone(&self) -> id<T> { *self } }
+impl<T> Clone for id<T> {
+    fn clone(&self) -> id<T> {
+        *self
+    }
+}
+
+impl<T> Hash for id<T> {
+    fn hash<H>(&self, state: &mut H) where H: Hasher {
+        state.write_u64(unsafe { mem::transmute(self.0) });
+        state.finish();
+    }
+}
+
+impl<T> PartialEq for id<T> {
+    fn eq(&self, other: &id<T>) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl<T> Eq for id<T> {}
+
+impl<T> fmt::Debug for id<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "id({:p})", self.0)
+    }
+}
 
 impl<T> id<T> {
     fn is_null(&self) -> bool {
@@ -52,7 +79,7 @@ impl<T, R> Deref for id<(T, R)> {
 unsafe impl<T> objc::Message for id<T> { }
 
 #[allow(non_upper_case_globals)]
-pub const nil: id = id(0 as *mut Object, PhantomData);
+pub const nil: id<()> = id(0 as *mut Object, PhantomData);
 
 pub trait AsObject {
     fn as_obj(&self) -> *mut Object;
@@ -198,6 +225,7 @@ mod pipeline;
 mod library;
 mod argument;
 mod vertexdescriptor;
+mod depthstencil;
 
 pub use constants::*;
 pub use types::*;
@@ -215,4 +243,5 @@ pub use pipeline::*;
 pub use library::*;
 pub use argument::*;
 pub use vertexdescriptor::*;
+pub use depthstencil::*;
 

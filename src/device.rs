@@ -55,11 +55,11 @@ pub fn create_system_default_device() -> MTLDevice {
     }
 }
 
-type MTLNewLibraryCompletionHandler = extern fn(library: id, error: id);
+/*type MTLNewLibraryCompletionHandler = extern fn(library: id, error: id);
 type MTLNewRenderPipelineStateCompletionHandler = extern fn(renderPipelineState: id, error: id);
 type MTLNewRenderPipelineStateWithReflectionCompletionHandler = extern fn(renderPipelineState: id, reflection: id, error: id);
 type MTLNewComputePipelineStateCompletionHandler = extern fn(computePipelineState: id, error: id);
-type MTLNewComputePipelineStateWithReflectionCompletionHandler = extern fn(computePipelineState: id, reflection: id, error: id);
+type MTLNewComputePipelineStateWithReflectionCompletionHandler = extern fn(computePipelineState: id, reflection: id, error: id);*/
 
 
 pub enum MTLDevicePrototype {}

@@ -60,13 +60,12 @@ impl<'a> MTLCommandBuffer {
             msg_send![self.0, setLabel:nslabel]
         }
     }
-    
+
     pub fn enqueue(&self) {
         unsafe {
             msg_send![self.0, enqueue]
         }
     }
-
 
     pub fn commit(&self) {
         unsafe {
@@ -92,7 +91,7 @@ impl<'a> MTLCommandBuffer {
         }
     }
 
-    pub fn new_blit_command_encoder(&self) -> id {
+    /*pub fn new_blit_command_encoder(&self) -> id {
         unsafe {
             msg_send![self.0, blitCommandEncoder]
         }
@@ -102,7 +101,7 @@ impl<'a> MTLCommandBuffer {
         unsafe {
             msg_send![self.0, blitCommandEncoder]
         }
-    }
+    }*/
 
     pub fn new_render_command_encoder(&self, descriptor: MTLRenderPassDescriptor) -> MTLRenderCommandEncoder {
         unsafe {
@@ -110,11 +109,11 @@ impl<'a> MTLCommandBuffer {
         }
     }
 
-    pub fn new_parallel_render_command_encoder(&self) -> id {
+    /*pub fn new_parallel_render_command_encoder(&self) -> id {
         unsafe {
             msg_send![self.0, blitCommandEncoder]
         }
-    } 
+    }*/
 }
 
 impl NSObjectProtocol for MTLCommandBuffer {

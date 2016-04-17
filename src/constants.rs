@@ -7,19 +7,6 @@
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
-pub enum MTLCompareFunction {
-   Never = 0,
-   Less = 1,
-   Equal = 2,
-   LessEqual = 3,
-   Greater = 4,
-   NotEqual = 5,
-   GreaterEqual = 6,
-   Always = 7
-}
-
-#[repr(u64)]
-#[allow(non_camel_case_types)]
 pub enum MTLPixelFormat {
    Invalid                = 0,
    A8Unorm                = 1,

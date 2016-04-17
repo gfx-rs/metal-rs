@@ -14,7 +14,8 @@ use objc_foundation::{INSObject, NSString, INSString};
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};
 
-use constants::{MTLCompareFunction, MTLPixelFormat};
+use depthstencil::MTLCompareFunction;
+use constants::{MTLPixelFormat};
 use types::{MTLRegion};
 use buffer::MTLBuffer;
 use resource::{MTLResource, MTLResourceOptions, MTLCPUCacheMode, MTLStorageMode};

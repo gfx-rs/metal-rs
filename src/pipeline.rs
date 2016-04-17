@@ -18,6 +18,7 @@ use constants::MTLPixelFormat;
 use renderpass::MTLRenderPassColorAttachmentDescriptor;
 use library::MTLFunction;
 use argument::MTLArgument;
+use vertexdescriptor::MTLVertexDescriptor;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -271,13 +272,13 @@ impl<'a> MTLRenderPipelineDescriptor {
     }
 
 
-    pub fn vertex_descriptor(&self) -> id {
+    pub fn vertex_descriptor(&self) -> MTLVertexDescriptor {
         unsafe {
             msg_send![self.0, vertexDescriptor]
         }
     }
 
-    pub fn set_vertex_descriptor(&self, descriptor: id) {
+    pub fn set_vertex_descriptor(&self, descriptor: MTLVertexDescriptor) {
         unsafe {
             msg_send![self.0, setVertexDescriptor:descriptor]
         }

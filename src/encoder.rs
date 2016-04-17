@@ -11,6 +11,8 @@ use libc;
 use texture::MTLTexture;
 use buffer::MTLBuffer;
 use pipeline::MTLRenderPipelineState;
+use sampler::MTLSamplerState;
+use depthstencil::MTLDepthStencilState;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -206,7 +208,7 @@ impl MTLRenderCommandEncoder {
         }
     }
 
-    pub fn set_depth_stencil_state(&self, depth_stencil_state: id) {
+    pub fn set_depth_stencil_state(&self, depth_stencil_state: MTLDepthStencilState) {
         unsafe {
             msg_send![self.0, setDepthStencilState:depth_stencil_state]
         }
@@ -257,13 +259,13 @@ impl MTLRenderCommandEncoder {
         }
     }
 
-    pub fn set_vertex_sampler_state(&self, index: u64, sampler: id) {
+    pub fn set_vertex_sampler_state(&self, index: u64, sampler: MTLSamplerState) {
         unsafe {
             msg_send![self.0, setVertexSamplerState:sampler                                                              atIndex:index]
         }
     }
 
-    pub fn set_vertex_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: id) {
+    pub fn set_vertex_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: MTLSamplerState) {
         unsafe {
             msg_send![self.0, setVertexSamplerState:sampler
                                       lodMinClamp:lod_min_clamp
@@ -297,13 +299,13 @@ impl MTLRenderCommandEncoder {
         }
     }
 
-    pub fn set_fragment_sampler_state(&self, index: u64, sampler: id) {
+    pub fn set_fragment_sampler_state(&self, index: u64, sampler: MTLSamplerState) {
         unsafe {
             msg_send![self.0, setFragmentSamplerState:sampler                                                              atIndex:index]
         }
     }
 
-    pub fn set_fragment_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: id) {
+    pub fn set_fragment_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: MTLSamplerState) {
         unsafe {
             msg_send![self.0, setFragmentSamplerState:sampler
                                       lodMinClamp:lod_min_clamp
