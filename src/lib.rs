@@ -135,7 +135,7 @@ pub type NSObject = id<(NSObjectPrototype, ())>;
 impl NSObjectProtocol for NSObject {}
 
 pub enum CAMetalDrawablePrototype {}
-pub type CAMetalDrawable = id<(CAMetalDrawablePrototype, (NSObjectPrototype, ()))>;
+pub type CAMetalDrawable = id<(CAMetalDrawablePrototype, (MTLDrawablePrototype, (NSObjectPrototype, ())))>;
 
 impl CAMetalDrawable {
     pub fn texture(&self) -> MTLTexture {
