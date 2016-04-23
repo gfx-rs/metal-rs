@@ -25,8 +25,9 @@ use libc;
 use std::marker::PhantomData;
 use std::any::Any;
 
-#[repr(u64)]
 #[allow(non_camel_case_types)]
+#[repr(u64)]
+#[derive(Copy, Clone)]
 pub enum MTLFeatureSet {
     iOS_GPUFamily1_v1 = 0,
     iOS_GPUFamily2_v1 = 1,

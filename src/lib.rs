@@ -66,7 +66,7 @@ impl<T> fmt::Debug for id<T> {
 }
 
 impl<T> id<T> {
-    fn is_null(&self) -> bool {
+    pub fn is_null(&self) -> bool {
         self.0.is_null()
     }
 }
@@ -93,7 +93,6 @@ impl<T> AsObject for id<T> {
 
 pub trait NSObjectProtocol : Message + Sized + AsObject {
     unsafe fn retain(&self) {
-        println!("retain: {:p}", self);
         msg_send![self.as_obj(), retain]
     }
 
