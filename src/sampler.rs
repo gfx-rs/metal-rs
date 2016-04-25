@@ -53,7 +53,7 @@ pub type MTLSamplerDescriptor = id<(MTLSamplerDescriptorPrototype, (NSObjectProt
 
 impl MTLSamplerDescriptor {
     unsafe fn new() -> Self {
-        msg_send![class("MTLSamplerDescriptor"), new]
+        msg_send![Self::class(), new]
     }
 
     unsafe fn alloc() -> Self {
@@ -106,7 +106,6 @@ impl MTLSamplerDescriptor {
         }
     }
 }
-
 
 impl NSObjectProtocol for MTLSamplerDescriptor {
     unsafe fn class() -> &'static Class {

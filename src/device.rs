@@ -19,6 +19,7 @@ use pipeline::{MTLRenderPipelineState, MTLRenderPipelineDescriptor};
 use library::MTLLibrary;
 use types::{MTLSize};
 use buffer::MTLBuffer;
+use texture::{MTLTexture, MTLTextureDescriptor};
 
 use libc;
 
@@ -163,6 +164,12 @@ impl<'a> MTLDevice {
             msg_send![self.0, newBufferWithBytes:bytes
                                         length:length
                                        options:options]
+        }
+    }
+
+    pub fn new_texture(&self, descriptor: MTLTextureDescriptor) -> MTLTexture {
+        unsafe {
+            msg_send![self.0, newTextureWithDescriptor:descriptor]
         }
     }
 }

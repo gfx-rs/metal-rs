@@ -66,6 +66,10 @@ impl<T> fmt::Debug for id<T> {
 }
 
 impl<T> id<T> {
+    pub fn nil() -> Self {
+        id(0 as *mut Object, PhantomData)
+    }
+
     pub fn is_null(&self) -> bool {
         self.0.is_null()
     }
