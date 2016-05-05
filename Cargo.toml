@@ -23,5 +23,9 @@ name = "window"
 path = "examples/window/main.rs"
 
 [[example]]
+name = "library"
+path = "examples/library/main.rs"
+
+[[example]]
 name = "caps"
 path = "examples/caps/main.rs"

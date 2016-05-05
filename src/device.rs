@@ -16,7 +16,7 @@ use super::{id, nil, NSObjectPrototype, NSObjectProtocol};
 use resource::MTLResourceOptions;
 use commandqueue::MTLCommandQueue;
 use pipeline::{MTLRenderPipelineState, MTLRenderPipelineDescriptor};
-use library::MTLLibrary;
+use library::{MTLLibrary, MTLCompileOptions};
 use types::{MTLSize};
 use buffer::MTLBuffer;
 use texture::{MTLTexture, MTLTextureDescriptor};
@@ -25,6 +25,7 @@ use libc;
 
 use std::marker::PhantomData;
 use std::any::Any;
+use std::ptr;
 
 #[allow(non_camel_case_types)]
 #[repr(u64)]
@@ -141,9 +142,17 @@ impl<'a> MTLDevice {
         }
     }
 
-    pub fn new_default_library(&self) -> MTLLibrary {
+    pub fn new_library_with_source(&self, src: &str, options: MTLCompileOptions) -> MTLLibrary {
+        use cocoa::foundation::NSString as cocoa_NSString;
+        use cocoa::base::nil as cocoa_nil;
+
         unsafe {
-            msg_send![self.0, newDefaultLibrary]
+            let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
+            let err = nil;
+
+            msg_send![self.0, newLibraryWithSource:source
+                                           options:options
+                                             error:&err]
         }
     }
 
@@ -159,7 +168,14 @@ impl<'a> MTLDevice {
         }
     }
 
-    pub fn new_buffer(&self, bytes: *const libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> MTLBuffer {
+    pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> MTLBuffer {
+        unsafe {
+            msg_send![self.0, newBufferWithLength:length
+                                          options:options]
+        }
+    }
+
+    pub fn new_buffer_with_data(&self, bytes: *const libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> MTLBuffer {
         unsafe {
             msg_send![self.0, newBufferWithBytes:bytes
                                         length:length

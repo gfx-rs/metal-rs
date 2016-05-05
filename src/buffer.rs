@@ -15,10 +15,11 @@ use super::{id, NSObjectPrototype, NSObjectProtocol};
 
 use libc;
 
+use resource::{MTLResourcePrototype};
 use texture::{MTLTexture, MTLTextureDescriptor};
 
 pub enum MTLBufferPrototype {}
-pub type MTLBuffer = id<(MTLBufferPrototype, (NSObjectPrototype, ()))>;
+pub type MTLBuffer = id<(MTLBufferPrototype, (MTLResourcePrototype, (NSObjectPrototype, ())))>;
 
 impl MTLBuffer {
     fn length(&self) -> u64 {

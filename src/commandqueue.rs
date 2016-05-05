@@ -37,7 +37,7 @@ impl<'a> MTLCommandQueue {
         unsafe {
             msg_send![self.0, commandBuffer]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLCommandQueue {

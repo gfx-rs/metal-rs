@@ -16,7 +16,7 @@ use super::{id, NSObjectPrototype, NSObjectProtocol};
 use constants::MTLPixelFormat;
 use types::{MTLRegion};
 use buffer::MTLBuffer;
-use resource::{MTLResource, MTLResourceOptions, MTLCPUCacheMode, MTLStorageMode};
+use resource::{MTLResource, MTLResourcePrototype, MTLResourceOptions, MTLCPUCacheMode, MTLStorageMode};
 
 use libc;
 
@@ -218,7 +218,7 @@ impl NSObjectProtocol for MTLTextureDescriptor {
 }
 
 pub enum MTLTexturePrototype {}
-pub type MTLTexture = id<(MTLTexturePrototype, (NSObjectPrototype, ()))>;
+pub type MTLTexture = id<(MTLTexturePrototype, (MTLResourcePrototype, (NSObjectPrototype, ())))>;
 
 impl<'a> MTLTexture {
     fn root_resource(&self) -> Option<MTLResource> {

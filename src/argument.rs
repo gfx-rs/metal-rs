@@ -251,7 +251,7 @@ impl<'a> MTLArgument {
             }
         }
     }
-    
+
     fn buffer_alignment(&self) -> u64 {
         unsafe {
             msg_send![self.0, bufferAlignment]

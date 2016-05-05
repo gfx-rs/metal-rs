@@ -62,33 +62,33 @@ pub enum MTLResourcePrototype {}
 pub type MTLResource = id<(MTLResourcePrototype, (NSObjectPrototype, ()))>;
 
 impl<'a> MTLResource {
-    fn label(&'a self) -> &'a str {
+    pub fn label(&'a self) -> &'a str {
         unsafe {
             let label: &'a NSString = msg_send![self.0, label];
             label.as_str()
         }
     }
 
-    fn set_label(&self, label: &str) {
+    pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
             msg_send![self.0, setLabel:nslabel]
         }
     }
 
-    fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
+    pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
         unsafe {
             msg_send![self.0, cpuCacheMode]
         }
     }
 
-    fn storage_mode(&self) -> MTLStorageMode {
+    pub fn storage_mode(&self) -> MTLStorageMode {
         unsafe {
             msg_send![self.0, storageMode]
         }
     }
- 
-    fn set_purgeable_state(&self, state: MTLPurgeableState) -> MTLPurgeableState {
+
+    pub fn set_purgeable_state(&self, state: MTLPurgeableState) -> MTLPurgeableState {
         unsafe {
             msg_send![self.0, setPurgeableState:state]
         }

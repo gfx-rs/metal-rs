@@ -21,7 +21,7 @@ pub enum MTLVertexAttributePrototype {}
 pub type MTLVertexAttribute = id<(MTLVertexAttributePrototype, (NSObjectPrototype, ()))>;
 
 impl<'a> MTLVertexAttribute {
-    pub fn name(&'a self) -> &'a str {    
+    pub fn name(&'a self) -> &'a str {
         unsafe {
             let name: &'a NSString = msg_send![self.0, name];
             name.as_str()
@@ -49,7 +49,7 @@ impl<'a> MTLVertexAttribute {
             }
         }
     }
- 
+
 }
 
 impl NSObjectProtocol for MTLVertexAttribute {
@@ -110,13 +110,31 @@ pub enum MTLCompileOptionsPrototype {}
 pub type MTLCompileOptions = id<(MTLCompileOptionsPrototype, (NSObjectPrototype, ()))>;
 
 impl MTLCompileOptions {
-    pub fn preprocessor_defines(&self) -> NSDictionary<NSString, NSObject> {
+    pub fn new() -> Self {
+        unsafe {
+            msg_send![Self::class(), new]
+        }
+    }
+
+    pub fn alloc() -> Self {
+        unsafe {
+            msg_send![Self::class(), alloc]
+        }
+    }
+
+    pub fn init(&self) -> Self {
+        unsafe {
+            msg_send![self.0, init]
+        }
+    }
+
+    pub fn preprocessor_defines(&self) -> id {
         unsafe {
             msg_send![self.0, preprocessorMacros]
         }
     }
 
-    pub fn set_preprocessor_defines(&self, defines: NSDictionary<NSString, NSObject>) {
+    pub fn set_preprocessor_defines(&self, defines: id) {
         unsafe {
             msg_send![self.0, setPreprocessorMacros:defines]
         }
@@ -148,7 +166,7 @@ impl MTLCompileOptions {
         unsafe {
             msg_send![self.0, setLanguageVersion:version]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLCompileOptions {
@@ -196,7 +214,11 @@ impl<'a> MTLLibrary {
 
     pub fn get_function(&self, name: &str) -> Option<MTLFunction> {
         unsafe {
-            let nsname = NSString::from_str(name);
+            use cocoa::foundation::NSString as cocoa_NSString;
+            use cocoa::base::nil as cocoa_nil;
+
+            let nsname = cocoa_NSString::alloc(cocoa_nil).init_str(name);
+            //let nsname = NSString::from_str(name);
             let func: MTLFunction = msg_send![self.0, newFunctionWithName:nsname];
 
             match func.is_null() {
