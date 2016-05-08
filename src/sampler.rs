@@ -27,12 +27,14 @@ use std::any::Any;
 use std::mem;
 
 #[repr(u64)]
+#[derive(Copy, Clone)]
 pub enum MTLSamplerMinMagFilter {
     Nearest = 0,
     Linear = 1,
 }
 
 #[repr(u64)]
+#[derive(Copy, Clone)]
 pub enum MTLSamplerMipFilter {
     NotMipmapped = 0,
     Nearest = 1,
@@ -40,6 +42,7 @@ pub enum MTLSamplerMipFilter {
 }
 
 #[repr(u64)]
+#[derive(Copy, Clone)]
 pub enum MTLSamplerAddressMode {
     ClampToEdge = 0,
     MirrorClampToEdge = 1,
@@ -52,57 +55,87 @@ pub enum MTLSamplerDescriptorPrototype {}
 pub type MTLSamplerDescriptor = id<(MTLSamplerDescriptorPrototype, (NSObjectPrototype, ()))>;
 
 impl MTLSamplerDescriptor {
-    unsafe fn new() -> Self {
-        msg_send![Self::class(), new]
+    pub fn new() -> Self {
+        unsafe {
+            msg_send![Self::class(), new]
+        }
     }
 
-    unsafe fn alloc() -> Self {
-        msg_send![Self::class(), alloc]
+    pub fn alloc() -> Self {
+        unsafe {
+            msg_send![Self::class(), alloc]
+        }
     }
 
-    unsafe fn init(&self) -> Self {
-        msg_send![self, init]
+    pub fn init(&self) -> Self {
+        unsafe {
+            msg_send![self, init]
+        }
     }
 
-    fn set_min_filter(&self, filter: MTLSamplerMinMagFilter) {
+    pub fn set_min_filter(&self, filter: MTLSamplerMinMagFilter) {
         unsafe {
             msg_send![self.0, setMinFilter:filter]
         }
     }
 
-    fn set_mag_filter(&self, filter: MTLSamplerMinMagFilter) {
+    pub fn set_mag_filter(&self, filter: MTLSamplerMinMagFilter) {
         unsafe {
             msg_send![self.0, setMagFilter:filter]
         }
     }
 
-    fn set_mip_filter(&self, filter: MTLSamplerMipFilter) {
+    pub fn set_mip_filter(&self, filter: MTLSamplerMipFilter) {
         unsafe {
             msg_send![self.0, setMipFilter:filter]
         }
     }
 
-    fn set_address_mode_s(&self, mode: MTLSamplerAddressMode) {
+    pub fn set_address_mode_s(&self, mode: MTLSamplerAddressMode) {
         unsafe {
             msg_send![self.0, setSAddressMode:mode]
         }
     }
 
-    fn set_address_mode_t(&self, mode: MTLSamplerAddressMode) {
+    pub fn set_address_mode_t(&self, mode: MTLSamplerAddressMode) {
         unsafe {
             msg_send![self.0, setTAddressMode:mode]
         }
     }
 
-    fn set_address_mode_r(&self, mode: MTLSamplerAddressMode) {
+    pub fn set_address_mode_r(&self, mode: MTLSamplerAddressMode) {
         unsafe {
             msg_send![self.0, setRAddressMode:mode]
         }
     }
 
-    fn set_compare_function(&self, func: MTLCompareFunction) {
+    pub fn set_max_anisotropy(&self, anisotropy: u64) {
+        unsafe {
+            msg_send![self.0, setMaxAnisotropy:anisotropy]
+        }
+    }
+
+    pub fn set_compare_function(&self, func: MTLCompareFunction) {
         unsafe {
             msg_send![self.0, setCompareFunction:func]
+        }
+    }
+
+    pub fn set_lod_bias(&self, bias: f32) {
+        unsafe {
+            msg_send![self.0, setLodBias:bias]
+        }
+    }
+
+    pub fn set_lod_min_clamp(&self, clamp: f32) {
+        unsafe {
+            msg_send![self.0, setLodMinClamp:clamp]
+        }
+    }
+
+    pub fn set_lod_max_clamp(&self, clamp: f32) {
+        unsafe {
+            msg_send![self.0, setLodMaxClamp:clamp]
         }
     }
 }

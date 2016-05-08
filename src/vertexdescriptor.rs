@@ -234,6 +234,12 @@ impl MTLVertexDescriptor {
         }
     }
 
+    pub fn serialize_descriptor(&self) -> *mut libc::c_void {
+        unsafe {
+            msg_send![self.0, newSerializedDescriptor]
+        }
+    }
+
     pub fn reset(&self) {
         unsafe {
             msg_send![self.0, reset]
@@ -243,7 +249,7 @@ impl MTLVertexDescriptor {
 
 impl NSObjectProtocol for MTLVertexDescriptor {
     unsafe fn class() -> &'static Class {
-        Class::get("MTLVertexDescriptor").unwrap()
+        Class::get("MTLVertexDescriptorInternal").unwrap()
     }
 }
 

@@ -11,7 +11,7 @@ cocoa = "0.2.5"
 bitflags = "0.4.0"
 libc = "0.2"
 objc = "0.1.8"
-objc-foundation = "0.0.4"
+objc-foundation = "0.1"
 objc_id = "0.0.2"
 block = "0.1.4"
 
@@ -25,6 +25,10 @@ path = "examples/window/main.rs"
 [[example]]
 name = "library"
 path = "examples/library/main.rs"
+
+[[example]]
+name = "reflection"
+path = "examples/reflection/main.rs"
 
 [[example]]
 name = "caps"

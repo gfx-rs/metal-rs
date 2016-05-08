@@ -15,11 +15,13 @@ use super::{id, nil, NSObjectPrototype, NSObjectProtocol};
 
 use resource::MTLResourceOptions;
 use commandqueue::MTLCommandQueue;
-use pipeline::{MTLRenderPipelineState, MTLRenderPipelineDescriptor};
+use pipeline::{MTLRenderPipelineState, MTLRenderPipelineDescriptor,
+               MTLRenderPipelineReflection};
 use library::{MTLLibrary, MTLCompileOptions};
 use types::{MTLSize};
 use buffer::MTLBuffer;
 use texture::{MTLTexture, MTLTextureDescriptor};
+use sampler::{MTLSamplerState, MTLSamplerDescriptor};
 
 use libc;
 
@@ -142,6 +144,12 @@ impl<'a> MTLDevice {
         }
     }
 
+    pub fn new_default_library(&self) -> MTLLibrary {
+        unsafe {
+            msg_send![self.0, newDefaultLibrary]
+        }
+    }
+
     pub fn new_library_with_source(&self, src: &str, options: MTLCompileOptions) -> MTLLibrary {
         use cocoa::foundation::NSString as cocoa_NSString;
         use cocoa::base::nil as cocoa_nil;
@@ -156,10 +164,27 @@ impl<'a> MTLDevice {
         }
     }
 
+    pub fn new_render_pipeline_state_with_reflection(&self, descriptor: MTLRenderPipelineDescriptor, reflection: *mut MTLRenderPipelineReflection) -> Result<MTLRenderPipelineState, ()> {
+        unsafe {
+            let reflection_options = MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo;
+
+            let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor
+                                                                                                        options:reflection_options
+                                                                                                     reflection:reflection
+                                                                                                          error:nil];
+
+            match pipeline_state.is_null() {
+                true => Err(()),
+                false => Ok(pipeline_state)
+            }
+        }
+
+    }
+
     pub fn new_render_pipeline_state(&self, descriptor: MTLRenderPipelineDescriptor) -> Result<MTLRenderPipelineState, ()> {
         unsafe {
             let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor
-                                                 error:nil];
+                                                                                                          error:nil];
 
             match pipeline_state.is_null() {
                 true => Err(()),
@@ -186,6 +211,12 @@ impl<'a> MTLDevice {
     pub fn new_texture(&self, descriptor: MTLTextureDescriptor) -> MTLTexture {
         unsafe {
             msg_send![self.0, newTextureWithDescriptor:descriptor]
+        }
+    }
+
+    pub fn new_sampler(&self, descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
+        unsafe {
+            msg_send![self.0, newSamplerStateWithDescriptor:descriptor]
         }
     }
 }

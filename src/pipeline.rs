@@ -14,6 +14,9 @@ use objc_foundation::{INSObject, NSObject, INSString, NSString,
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};
 
+use libc;
+
+use device::MTLDevice;
 use constants::MTLPixelFormat;
 use renderpass::MTLRenderPassColorAttachmentDescriptor;
 use library::MTLFunction;
@@ -69,7 +72,6 @@ pub enum MTLPrimitiveTopologyClass {
     Line = 2,
     Triangle = 3,
 }
-
 
 pub enum MTLRenderPipelineColorAttachmentDescriptorPrototype {}
 pub type MTLRenderPipelineColorAttachmentDescriptor = id<(MTLRenderPipelineColorAttachmentDescriptorPrototype, (NSObjectPrototype, ()))>;
@@ -198,9 +200,23 @@ pub enum MTLRenderPipelineReflectionPrototype {}
 pub type MTLRenderPipelineReflection = id<(MTLRenderPipelineReflectionPrototype, (NSObjectPrototype, ()))>;
 
 impl MTLRenderPipelineReflection {
-    pub fn vertex_arguments(&self) -> NSArray<MTLArgument> {
+    pub fn alloc() -> Self {
         unsafe {
-            msg_send![self.0, vertexArguments]
+            msg_send![Self::class(), alloc]
+        }
+    }
+
+    pub fn init(&self, vertex_data: *mut libc::c_void,
+            fragment_data: *mut libc::c_void, vertex_desc: *mut libc::c_void,
+            device: MTLDevice, options: u64, flags: u64) -> Self {
+        unsafe {
+            println!("{:p}, {:p}, {:p}, {:?}, {:?}, {:?}", vertex_data, fragment_data, vertex_desc, device, options, flags);
+            msg_send![self.0, initWithVertexData:vertex_data
+                                    fragmentData:fragment_data
+                      serializedVertexDescriptor:vertex_desc
+                                          device:device.0
+                                         options:options
+                                           flags:flags]
         }
     }
 
@@ -208,12 +224,18 @@ impl MTLRenderPipelineReflection {
         unsafe {
             msg_send![self.0, fragmentArguments]
         }
-    } 
+    }
+
+    pub fn vertex_arguments(&self) -> NSArray<MTLArgument> {
+        unsafe {
+            msg_send![self.0, vertexArguments]
+        }
+    }
 }
 
 impl NSObjectProtocol for MTLRenderPipelineReflection {
     unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPipelineReflection").unwrap()
+        Class::get("MTLRenderPipelineReflectionInternal").unwrap()
     }
 }
 
@@ -270,7 +292,6 @@ impl<'a> MTLRenderPipelineDescriptor {
             msg_send![self.0, setFragmentFunction:function]
         }
     }
-
 
     pub fn vertex_descriptor(&self) -> MTLVertexDescriptor {
         unsafe {
@@ -385,11 +406,23 @@ impl<'a> MTLRenderPipelineDescriptor {
             msg_send![self.0, setInputPrimitiveTopology:topology]
         }
     }
+
+    pub fn serialize_vertex_data(&self) -> *mut libc::c_void {
+        unsafe {
+            msg_send![self.0, serializedVertexData]
+        }
+    }
+
+    pub fn serialize_fragment_data(&self) -> *mut libc::c_void {
+        unsafe {
+            msg_send![self.0, serializeFragmentData]
+        }
+    }
 }
 
 impl NSObjectProtocol for MTLRenderPipelineDescriptor {
     unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPipelineDescriptor").unwrap()
+        Class::get("MTLRenderPipelineDescriptorInternal").unwrap()
     }
 }
 
@@ -409,7 +442,7 @@ impl<'a> MTLRenderPipelineState {
             let nslabel = NSString::from_str(label);
             msg_send![self.0, setLabel:nslabel]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLRenderPipelineState {
@@ -433,7 +466,7 @@ impl MTLRenderPipelineColorAttachmentDescriptorArray {
             msg_send![self.0, setObject:attachment
                      atIndexedSubscript:index]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLRenderPipelineColorAttachmentDescriptorArray {

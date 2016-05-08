@@ -46,7 +46,7 @@ impl MTLBuffer {
                                               offset:offset
                                          bytesPerRow:stride]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLBuffer {
