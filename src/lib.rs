@@ -117,20 +117,28 @@ pub trait NSObjectProtocol : Message + Sized + AsObject {
     }
 }
 
-/*
-pub enum <Type>Prototype {}
-pub type <Type> = id<(<Type>Prototype, (NSObjectPrototype, ()))>;
+pub enum NSArrayPrototype {}
+pub type NSArray<T> = id<(NSArrayPrototype, (NSObjectPrototype, (T)))>;
 
-impl <Type> {
+impl<T> NSArray<T> where T: Any {
+    pub fn object_at(&self, index: u64) -> T {
+        unsafe {
+            msg_send![self.0, objectAtIndex:index]
+        }
+    }
 
-}
-
-impl NSObjectProtocol for <Type> {
-    unsafe fn class() -> &'static Class {
-        Class::get("<Type>").unwrap()
+    pub fn count(&self) -> u64 {
+        unsafe {
+            msg_send![self.0, count]
+        }
     }
 }
- */
+
+impl<T> NSObjectProtocol for NSArray<T> {
+    unsafe fn class() -> &'static Class {
+        Class::get("NSArray").unwrap()
+    }
+}
 
 pub enum NSObjectPrototype {}
 pub type NSObject = id<(NSObjectPrototype, ())>;

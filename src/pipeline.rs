@@ -9,10 +9,10 @@ use cocoa::foundation::NSUInteger;
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSObject, INSString, NSString,
-                      INSArray, NSArray};
+use objc_foundation::{INSObject, NSObject, INSString, NSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
+use super::{id, NSObjectPrototype, NSObjectProtocol, NSArray,
+            NSArrayPrototype};
 
 use libc;
 

@@ -72,6 +72,18 @@ pub enum MTLVertexBufferLayoutDescriptorPrototype {}
 pub type MTLVertexBufferLayoutDescriptor = id<(MTLVertexBufferLayoutDescriptorPrototype, (NSObjectPrototype, ()))>;
 
 impl MTLVertexBufferLayoutDescriptor {
+    pub fn alloc() -> Self {
+        unsafe {
+            msg_send![Self::class(), alloc]
+        }
+    }
+
+    pub fn init(&self) -> Self {
+        unsafe {
+            msg_send![self, init]
+        }
+    }
+
     pub fn stride(&self) -> u64 {
         unsafe {
             msg_send![self.0, stride]
@@ -145,6 +157,12 @@ pub enum MTLVertexAttributeDescriptorPrototype {}
 pub type MTLVertexAttributeDescriptor = id<(MTLVertexAttributeDescriptorPrototype, (NSObjectPrototype, ()))>;
 
 impl MTLVertexAttributeDescriptor {
+    pub fn alloc() -> Self {
+        unsafe {
+            msg_send![Self::class(), alloc]
+        }
+    }
+
     pub fn format(&self) -> MTLVertexFormat {
         unsafe {
             msg_send![self.0, format]
@@ -191,7 +209,7 @@ impl NSObjectProtocol for MTLVertexAttributeDescriptor {
 pub enum MTLVertexAttributeDescriptorArrayPrototype {}
 pub type MTLVertexAttributeDescriptorArray = id<(MTLVertexAttributeDescriptorArrayPrototype, (NSObjectPrototype, ()))>;
 
-impl MTLVertexBufferLayoutDescriptorArray {
+impl MTLVertexAttributeDescriptorArray {
     pub fn object_at(&self, index: usize) -> MTLVertexAttributeDescriptor {
         unsafe {
             msg_send![self.0, objectAtIndexedSubscript:index]

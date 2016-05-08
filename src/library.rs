@@ -10,10 +10,10 @@ use cocoa::foundation::NSUInteger;
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
 use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSObject, NSString, INSString, NSArray,
+use objc_foundation::{INSObject, NSObject, NSString, INSString,
                       NSDictionary};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
+use super::{id, NSObjectPrototype, NSObjectProtocol, NSArray, NSArrayPrototype};
 
 use argument::MTLDataType;
 

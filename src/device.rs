@@ -26,6 +26,7 @@ use sampler::{MTLSamplerState, MTLSamplerDescriptor};
 use libc;
 
 use std::marker::PhantomData;
+use std::ffi::CStr;
 use std::any::Any;
 use std::ptr;
 
@@ -150,32 +151,46 @@ impl<'a> MTLDevice {
         }
     }
 
-    pub fn new_library_with_source(&self, src: &str, options: MTLCompileOptions) -> MTLLibrary {
+    pub fn new_library_with_source(&self, src: &str, options: MTLCompileOptions) -> Result<MTLLibrary, String> {
         use cocoa::foundation::NSString as cocoa_NSString;
         use cocoa::base::nil as cocoa_nil;
 
         unsafe {
             let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
-            let err = nil;
+            let mut err = nil;
 
-            msg_send![self.0, newLibraryWithSource:source
-                                           options:options
-                                             error:&err]
+            let library: MTLLibrary = msg_send![self.0, newLibraryWithSource:source
+                                                                     options:options
+                                                                       error:&mut err];
+
+            match library.is_null() {
+                false => Ok(library),
+                true => {
+                    let desc: id = msg_send![err.0, localizedDescription];
+                    let compile_error: *const libc::c_char = msg_send![desc.0, UTF8String];
+                    Err(unsafe { CStr::from_ptr(compile_error).to_string_lossy().into_owned() })
+                }
+            }
         }
     }
 
-    pub fn new_render_pipeline_state_with_reflection(&self, descriptor: MTLRenderPipelineDescriptor, reflection: *mut MTLRenderPipelineReflection) -> Result<MTLRenderPipelineState, ()> {
+    pub fn new_render_pipeline_state_with_reflection(&self, descriptor: MTLRenderPipelineDescriptor, reflection: *mut MTLRenderPipelineReflection) -> Result<MTLRenderPipelineState, String> {
         unsafe {
             let reflection_options = MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo;
+            let mut err = nil;
 
             let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor
                                                                                                         options:reflection_options
                                                                                                      reflection:reflection
-                                                                                                          error:nil];
+                                                                                                          error:&mut err];
 
             match pipeline_state.is_null() {
-                true => Err(()),
-                false => Ok(pipeline_state)
+                false => Ok(pipeline_state),
+                true => {
+                    let desc: id = msg_send![err.0, localizedDescription];
+                    let compile_error: *const libc::c_char = msg_send![desc.0, UTF8String];
+                    Err(unsafe { CStr::from_ptr(compile_error).to_string_lossy().into_owned() })
+                }
             }
         }
 
