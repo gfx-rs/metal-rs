@@ -22,25 +22,25 @@ pub enum MTLBufferPrototype {}
 pub type MTLBuffer = id<(MTLBufferPrototype, (MTLResourcePrototype, (NSObjectPrototype, ())))>;
 
 impl MTLBuffer {
-    fn length(&self) -> u64 {
+    pub fn length(&self) -> u64 {
         unsafe {
             msg_send![self.0, length]
         }
     }
 
-    fn contents(&self) -> *mut libc::c_void {
+    pub fn contents(&self) -> *mut libc::c_void {
         unsafe {
             msg_send![self.0, contents]
         }
     }
 
-    fn invalidate_range(&self, range: NSRange) {
+    pub fn invalidate_range(&self, range: NSRange) {
         unsafe {
             msg_send![self.0, didModifyRange:range]
         }
     }
 
-    fn new_texture_from_contents(&self, descriptor: MTLTextureDescriptor, offset: u64, stride: u64) -> MTLTexture {
+    pub fn new_texture_from_contents(&self, descriptor: MTLTextureDescriptor, offset: u64, stride: u64) -> MTLTexture {
         unsafe {
             msg_send![self.0, newTextureWithDescriptor:descriptor
                                               offset:offset

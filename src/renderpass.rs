@@ -297,6 +297,11 @@ pub enum MTLRenderPassDescriptorPrototype {}
 pub type MTLRenderPassDescriptor = id<(MTLRenderPassDescriptorPrototype, (NSObjectPrototype, ()))>;
 
 impl MTLRenderPassDescriptor {
+    pub fn new() -> Self {
+        unsafe {
+            msg_send![Self::class(), renderPassDescriptor]
+        }
+    }
     pub fn alloc() -> Self {
         unsafe {
             msg_send![Self::class(), alloc]

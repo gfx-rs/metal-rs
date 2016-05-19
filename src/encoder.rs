@@ -69,7 +69,7 @@ pub enum MTLTriangleFillMode {
 }
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct MTLScissorRect {
     pub x: NSUInteger,
     pub y: NSUInteger,
@@ -78,7 +78,7 @@ pub struct MTLScissorRect {
 }
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct MTLViewport {
     pub originX: f64,
     pub originY: f64,
