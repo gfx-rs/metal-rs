@@ -42,6 +42,18 @@ pub enum MTLStencilDescriptorPrototype {}
 pub type MTLStencilDescriptor = id<(MTLStencilDescriptorPrototype, (NSObjectPrototype, ()))>;
 
 impl MTLStencilDescriptor {
+    pub fn alloc() -> Self {
+        unsafe {
+            msg_send![Self::class(), alloc]
+        }
+    }
+
+    pub fn init(&self) -> Self {
+        unsafe {
+            msg_send![self.0, init]
+        }
+    }
+
     pub fn stencil_compare_function(&self) -> MTLCompareFunction {
         unsafe {
             msg_send![self.0, stencilCompareFunction]
@@ -102,7 +114,6 @@ impl MTLStencilDescriptor {
         }
     }
 
-
     pub fn write_mask(&self) -> u32 {
         unsafe {
             msg_send![self.0, writeMask]
@@ -126,6 +137,18 @@ pub enum MTLDepthStencilDescriptorPrototype {}
 pub type MTLDepthStencilDescriptor = id<(MTLDepthStencilDescriptorPrototype, (NSObjectPrototype, ()))>;
 
 impl MTLDepthStencilDescriptor {
+    pub fn alloc() -> Self {
+        unsafe {
+            msg_send![Self::class(), alloc]
+        }
+    }
+
+    pub fn init(&self) -> Self {
+        unsafe {
+            msg_send![self.0, init]
+        }
+    }
+
     pub fn depth_compare_function(&self) -> MTLCompareFunction {
         unsafe {
             msg_send![self.0, depthCompareFunction]

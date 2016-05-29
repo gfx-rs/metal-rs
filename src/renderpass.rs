@@ -69,7 +69,7 @@ impl MTLRenderPassAttachmentDescriptor {
 
     pub fn set_texture(&self, texture: MTLTexture) {
         unsafe {
-            msg_send![self.0, setTexture:texture]
+            msg_send![self.0, setTexture:texture.0]
         }
     }
 
@@ -117,7 +117,7 @@ impl MTLRenderPassAttachmentDescriptor {
 
     pub fn set_resolve_texture(&self, resolve_texture: MTLTexture) {
         unsafe {
-            msg_send![self.0, setResolveTexture:resolve_texture]
+            msg_send![self.0, setResolveTexture:resolve_texture.0]
         }
     }
 
@@ -281,7 +281,7 @@ impl MTLRenderPassColorAttachmentDescriptorArray {
 
     pub fn set_object_at(&self, index: usize, attachment: MTLRenderPassColorAttachmentDescriptor) {
         unsafe {
-            msg_send![self.0, setObject:attachment
+            msg_send![self.0, setObject:attachment.0
                      atIndexedSubscript:index]
         }
     }
@@ -328,7 +328,7 @@ impl MTLRenderPassDescriptor {
 
     pub fn set_depth_attachment(&self, depth_attachment: MTLRenderPassDepthAttachmentDescriptor) {
         unsafe {
-            msg_send![self.0, setDepthAttachment:depth_attachment]
+            msg_send![self.0, setDepthAttachment:depth_attachment.0]
         }
     }
 
@@ -340,7 +340,7 @@ impl MTLRenderPassDescriptor {
 
     pub fn set_stencil_attachment(&self, stencil_attachment: MTLRenderPassStencilAttachmentDescriptor) {
         unsafe {
-            msg_send![self.0, setStencilAttachment:stencil_attachment]
+            msg_send![self.0, setStencilAttachment:stencil_attachment.0]
         }
     }
 

@@ -222,7 +222,7 @@ pub enum MTLTexturePrototype {}
 pub type MTLTexture = id<(MTLTexturePrototype, (MTLResourcePrototype, (NSObjectPrototype, ())))>;
 
 impl<'a> MTLTexture {
-    fn root_resource(&self) -> Option<MTLResource> {
+    pub fn root_resource(&self) -> Option<MTLResource> {
        unsafe {
            let resource: MTLResource = msg_send![self.0, rootResource];
 
@@ -233,7 +233,7 @@ impl<'a> MTLTexture {
        }
     }
 
-    fn parent_texture(&self) -> Option<MTLTexture> {
+    pub fn parent_texture(&self) -> Option<MTLTexture> {
        unsafe {
            let texture: MTLTexture = msg_send![self.0, parentTexture];
 
@@ -244,19 +244,19 @@ impl<'a> MTLTexture {
        }
     }
 
-    fn parent_relative_level(&self) -> u64 {
+    pub fn parent_relative_level(&self) -> u64 {
         unsafe {
             msg_send![self.0, parentRelativeLevel]
         }
     }
 
-    fn parent_relative_slice(&self) -> u64 {
+    pub fn parent_relative_slice(&self) -> u64 {
         unsafe {
             msg_send![self.0, parentRelativeSlice]
         }
     }
 
-    fn buffer(&self) -> Option<MTLBuffer> {
+    pub fn buffer(&self) -> Option<MTLBuffer> {
         unsafe {
             let buf: MTLBuffer = msg_send![self.0, buffer];
 
@@ -267,73 +267,73 @@ impl<'a> MTLTexture {
         }
     }
 
-    fn buffer_offset(&self) -> u64 {
+    pub fn buffer_offset(&self) -> u64 {
         unsafe {
             msg_send![self.0, bufferOffset]
         }
     }
 
-    fn buffer_stride(&self) -> u64 {
+    pub fn buffer_stride(&self) -> u64 {
         unsafe {
             msg_send![self.0, bufferBytesPerRow]
         }
     }
 
-    fn texture_type(&self) -> MTLTextureType {
+    pub fn texture_type(&self) -> MTLTextureType {
         unsafe {
             msg_send![self.0, textureType]
         }
     }
 
-    fn pixel_format(&self) -> MTLPixelFormat {
+    pub fn pixel_format(&self) -> MTLPixelFormat {
         unsafe {
             msg_send![self.0, pixelFormat]
         }
     }
 
-    fn width(&self) -> u64 {
+    pub fn width(&self) -> u64 {
         unsafe {
             msg_send![self.0, width]
         }
     }
 
-    fn height(&self) -> u64 {
+    pub fn height(&self) -> u64 {
         unsafe {
             msg_send![self.0, height]
         }
     }
 
-    fn depth(&self) -> u64 {
+    pub fn depth(&self) -> u64 {
         unsafe {
             msg_send![self.0, depth]
         }
     }
 
-    fn mipmap_level_count(&self) -> u64 {
+    pub fn mipmap_level_count(&self) -> u64 {
         unsafe {
             msg_send![self.0, mipmapLevelCount]
         }
     }
 
-    fn sample_count(&self) -> u64 {
+    pub fn sample_count(&self) -> u64 {
         unsafe {
             msg_send![self.0, sampleCount]
         }
     }
 
-    fn array_length(&self) -> u64 {
+    pub fn array_length(&self) -> u64 {
         unsafe {
             msg_send![self.0, arrayLength]
         }
     }
 
-    fn usage(&self) -> MTLTextureUsage {
+    pub fn usage(&self) -> MTLTextureUsage {
         unsafe {
             msg_send![self.0, usage]
         }
     }
 
-    fn framebuffer_only(&self) -> bool {
+    pub fn framebuffer_only(&self) -> bool {
         unsafe {
             match msg_send![self.0, framebufferOnly] {
                 YES => true,
@@ -343,7 +343,7 @@ impl<'a> MTLTexture {
         }
     }
 
-    fn get_bytes(&self, bytes: *mut libc::c_void, region: MTLRegion, mipmap_level: u64, stride: u64) {
+    pub fn get_bytes(&self, bytes: *mut libc::c_void, region: MTLRegion, mipmap_level: u64, stride: u64) {
         unsafe {
             msg_send![self.0, getBytes:bytes
                          bytesPerRow:stride
@@ -352,7 +352,7 @@ impl<'a> MTLTexture {
         }
     }
 
-    fn get_bytes_in_slice(&self, bytes: *mut libc::c_void, region: MTLRegion, mipmap_level: u64, stride: u64, image_stride: u64, slice: u64) {
+    pub fn get_bytes_in_slice(&self, bytes: *mut libc::c_void, region: MTLRegion, mipmap_level: u64, stride: u64, image_stride: u64, slice: u64) {
         unsafe {
             msg_send![self.0, getBytes:bytes
                          bytesPerRow:stride
@@ -363,7 +363,7 @@ impl<'a> MTLTexture {
         }
     }
 
-    fn replace_region(&self, region: MTLRegion, mipmap_level: u64, stride: u64, bytes: *const libc::c_void) {
+    pub fn replace_region(&self, region: MTLRegion, mipmap_level: u64, stride: u64, bytes: *const libc::c_void) {
         unsafe {
             msg_send![self.0, replaceRegion:region
                               mipmapLevel:mipmap_level
@@ -372,7 +372,7 @@ impl<'a> MTLTexture {
         }
     }
 
-    fn replace_region_in_slice(&self, region: MTLRegion, mipmap_level: u64, image_stride: u64, stride: u64, slice: u64, bytes: *const libc::c_void) {
+    pub fn replace_region_in_slice(&self, region: MTLRegion, mipmap_level: u64, image_stride: u64, stride: u64, slice: u64, bytes: *const libc::c_void) {
         unsafe {
             msg_send![self.0, replaceRegion:region
                               mipmapLevel:mipmap_level
@@ -383,13 +383,13 @@ impl<'a> MTLTexture {
         }
     }
 
-    fn new_texture_view(&self, pixel_format: MTLPixelFormat) -> MTLTexture {
+    pub fn new_texture_view(&self, pixel_format: MTLPixelFormat) -> MTLTexture {
         unsafe {
             msg_send![self.0, newTextureViewWithPixelFormat:pixel_format]
         }
     }
 
-    fn new_texture_view_from_slice(&self, pixel_format: MTLPixelFormat, texture_type: MTLTextureType, mipmap_levels: NSRange, slices: NSRange) -> MTLTexture {
+    pub fn new_texture_view_from_slice(&self, pixel_format: MTLPixelFormat, texture_type: MTLTextureType, mipmap_levels: NSRange, slices: NSRange) -> MTLTexture {
         unsafe {
             msg_send![self.0, newTextureViewWithPixelFormat:pixel_format]
         }

@@ -16,6 +16,7 @@ use super::{id, nil, NSObjectPrototype, NSObjectProtocol};
 use libc;
 
 #[repr(u64)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVertexFormat {
     Invalid = 0,
     UChar2 = 1,
@@ -80,7 +81,7 @@ impl MTLVertexBufferLayoutDescriptor {
 
     pub fn init(&self) -> Self {
         unsafe {
-            msg_send![self, init]
+            msg_send![self.0, init]
         }
     }
 
@@ -140,7 +141,7 @@ impl MTLVertexBufferLayoutDescriptorArray {
 
     pub fn set_object_at(&self, index: usize, layout: MTLVertexBufferLayoutDescriptor) {
         unsafe {
-            msg_send![self.0, setObject:layout
+            msg_send![self.0, setObject:layout.0
                      atIndexedSubscript:index]
         }
     }
@@ -267,7 +268,7 @@ impl MTLVertexDescriptor {
 
 impl NSObjectProtocol for MTLVertexDescriptor {
     unsafe fn class() -> &'static Class {
-        Class::get("MTLVertexDescriptorInternal").unwrap()
+        Class::get("MTLVertexDescriptor").unwrap()
     }
 }
 

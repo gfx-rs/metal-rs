@@ -22,6 +22,7 @@ use types::{MTLSize};
 use buffer::MTLBuffer;
 use texture::{MTLTexture, MTLTextureDescriptor};
 use sampler::{MTLSamplerState, MTLSamplerDescriptor};
+use depthstencil::{MTLDepthStencilDescriptor, MTLDepthStencilState};
 
 use libc;
 
@@ -139,6 +140,16 @@ impl<'a> MTLDevice {
         }
     }
 
+    pub fn d24_s8_supported(&self) -> bool {
+        unsafe {
+            match msg_send![self.0, isDepth24Stencil8PixelFormatSupported] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
+    }
+
     pub fn new_command_queue(&self) -> MTLCommandQueue {
         unsafe {
             msg_send![self.0, newCommandQueue]
@@ -179,7 +190,7 @@ impl<'a> MTLDevice {
             let reflection_options = MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo;
             let mut err = nil;
 
-            let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor
+            let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor.0
                                                                                                         options:reflection_options
                                                                                                      reflection:reflection
                                                                                                           error:&mut err];
@@ -198,7 +209,7 @@ impl<'a> MTLDevice {
 
     pub fn new_render_pipeline_state(&self, descriptor: MTLRenderPipelineDescriptor) -> Result<MTLRenderPipelineState, ()> {
         unsafe {
-            let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor
+            let pipeline_state: MTLRenderPipelineState = msg_send![self.0, newRenderPipelineStateWithDescriptor:descriptor.0
                                                                                                           error:nil];
 
             match pipeline_state.is_null() {
@@ -218,20 +229,26 @@ impl<'a> MTLDevice {
     pub fn new_buffer_with_data(&self, bytes: *const libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> MTLBuffer {
         unsafe {
             msg_send![self.0, newBufferWithBytes:bytes
-                                        length:length
-                                       options:options]
+                                          length:length
+                                         options:options]
         }
     }
 
     pub fn new_texture(&self, descriptor: MTLTextureDescriptor) -> MTLTexture {
         unsafe {
-            msg_send![self.0, newTextureWithDescriptor:descriptor]
+            msg_send![self.0, newTextureWithDescriptor:descriptor.0]
         }
     }
 
     pub fn new_sampler(&self, descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
         unsafe {
-            msg_send![self.0, newSamplerStateWithDescriptor:descriptor]
+            msg_send![self.0, newSamplerStateWithDescriptor:descriptor.0]
+        }
+    }
+
+    pub fn new_depth_stencil_state(&self, descriptor: MTLDepthStencilDescriptor) -> MTLDepthStencilState {
+        unsafe {
+            msg_send![self.0, newDepthStencilStateWithDescriptor:descriptor]
         }
     }
 }

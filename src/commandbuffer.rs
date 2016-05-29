@@ -105,7 +105,7 @@ impl<'a> MTLCommandBuffer {
 
     pub fn new_render_command_encoder(&self, descriptor: MTLRenderPassDescriptor) -> MTLRenderCommandEncoder {
         unsafe {
-            msg_send![self.0, renderCommandEncoderWithDescriptor:descriptor]
+            msg_send![self.0, renderCommandEncoderWithDescriptor:descriptor.0]
         }
     }
 

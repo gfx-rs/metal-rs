@@ -42,9 +42,9 @@ impl MTLBuffer {
 
     pub fn new_texture_from_contents(&self, descriptor: MTLTextureDescriptor, offset: u64, stride: u64) -> MTLTexture {
         unsafe {
-            msg_send![self.0, newTextureWithDescriptor:descriptor
-                                              offset:offset
-                                         bytesPerRow:stride]
+            msg_send![self.0, newTextureWithDescriptor:descriptor.0
+                                                offset:offset
+                                           bytesPerRow:stride]
         }
     }
 }

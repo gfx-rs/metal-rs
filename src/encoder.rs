@@ -15,7 +15,7 @@ use sampler::MTLSamplerState;
 use depthstencil::MTLDepthStencilState;
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLPrimitiveType {
     Point = 0,
     Line = 1,
@@ -25,14 +25,14 @@ pub enum MTLPrimitiveType {
 }
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLIndexType {
    UInt16 = 0,
    UInt32 = 1,
 }
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVisibilityResultMode {
     Disabled = 0,
     Boolean = 1,
@@ -40,7 +40,7 @@ pub enum MTLVisibilityResultMode {
 }
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCullMode {
     None = 0,
     Front = 1,
@@ -48,21 +48,21 @@ pub enum MTLCullMode {
 }
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLWinding {
     Clockwise = 0,
     CounterClockwise = 1,
 }
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDepthClipMode {
     Clip = 0,
     Clamp = 1,
 }
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLTriangleFillMode {
     Fill = 0,
     Lines = 1,
@@ -131,7 +131,7 @@ impl<'a> MTLCommandEncoder {
         unsafe {
             msg_send![self.0, endEncoding]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLCommandEncoder {
@@ -151,7 +151,7 @@ impl MTLRenderCommandEncoder {
 
     pub fn set_render_pipeline_state(&self, pipeline_state: MTLRenderPipelineState) {
         unsafe {
-            msg_send![self.0, setRenderPipelineState:pipeline_state]
+            msg_send![self.0, setRenderPipelineState:pipeline_state.0]
         }
     }
 
@@ -210,7 +210,7 @@ impl MTLRenderCommandEncoder {
 
     pub fn set_depth_stencil_state(&self, depth_stencil_state: MTLDepthStencilState) {
         unsafe {
-            msg_send![self.0, setDepthStencilState:depth_stencil_state]
+            msg_send![self.0, setDepthStencilState:depth_stencil_state.0]
         }
     }
 
@@ -223,14 +223,14 @@ impl MTLRenderCommandEncoder {
     pub fn set_stencil_front_back_reference_value(&self, front: u32, back: u32) {
         unsafe {
             msg_send![self.0, setStencilFrontReferenceValue:front
-                                       backReferenceValue:back]
+                                         backReferenceValue:back]
         }
     }
 
     pub fn set_visibility_result_mode(&self, offset: u64, mode: MTLVisibilityResultMode) {
         unsafe {
             msg_send![self.0, setVisibilityResultMode:mode
-                                             offset:offset]
+                                               offset:offset]
         }
     }
 
@@ -239,38 +239,39 @@ impl MTLRenderCommandEncoder {
     pub fn set_vertex_bytes(&self, index: u64, length: u64, bytes: *const libc::c_void) {
         unsafe {
             msg_send![self.0, setVertexBytes:bytes
-                                    length:length
-                                   atIndex:index]
+                                      length:length
+                                     atIndex:index]
         }
     }
 
     pub fn set_vertex_buffer(&self, index: u64, offset: u64, buffer: MTLBuffer) {
         unsafe {
-            msg_send![self.0, setVertexBuffer:buffer
-                                     offset:offset
-                                    atIndex:index]
+            msg_send![self.0, setVertexBuffer:buffer.0
+                                       offset:offset
+                                      atIndex:index]
         }
     }
 
     pub fn set_vertex_texture(&self, index: u64, texture: MTLTexture) {
         unsafe {
-            msg_send![self.0, setVertexTexture:texture
-                                     atIndex:index]
+            msg_send![self.0, setVertexTexture:texture.0
+                                       atIndex:index]
         }
     }
 
     pub fn set_vertex_sampler_state(&self, index: u64, sampler: MTLSamplerState) {
         unsafe {
-            msg_send![self.0, setVertexSamplerState:sampler                                                              atIndex:index]
+            msg_send![self.0, setVertexSamplerState:sampler.0
+                                            atIndex:index]
         }
     }
 
     pub fn set_vertex_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: MTLSamplerState) {
         unsafe {
-            msg_send![self.0, setVertexSamplerState:sampler
-                                      lodMinClamp:lod_min_clamp
-                                      lodMaxClamp:lod_max_clamp
-                                          atIndex:index]
+            msg_send![self.0, setVertexSamplerState:sampler.0
+                                        lodMinClamp:lod_min_clamp
+                                        lodMaxClamp:lod_max_clamp
+                                            atIndex:index]
         }
     }
 
@@ -279,38 +280,39 @@ impl MTLRenderCommandEncoder {
     pub fn set_fragment_bytes(&self, index: u64, length: u64, bytes: *const libc::c_void) {
         unsafe {
             msg_send![self.0, setFragmentBytes:bytes
-                                    length:length
-                                   atIndex:index]
+                                        length:length
+                                       atIndex:index]
         }
     }
 
     pub fn set_fragment_buffer(&self, index: u64, offset: u64, buffer: MTLBuffer) {
         unsafe {
-            msg_send![self.0, setFragmentBuffer:buffer
-                                     offset:offset
-                                    atIndex:index]
+            msg_send![self.0, setFragmentBuffer:buffer.0
+                                         offset:offset
+                                        atIndex:index]
         }
     }
 
     pub fn set_fragment_texture(&self, index: u64, texture: MTLTexture) {
         unsafe {
-            msg_send![self.0, setFragmentTexture:texture
-                                     atIndex:index]
+            msg_send![self.0, setFragmentTexture:texture.0
+                                         atIndex:index]
         }
     }
 
     pub fn set_fragment_sampler_state(&self, index: u64, sampler: MTLSamplerState) {
         unsafe {
-            msg_send![self.0, setFragmentSamplerState:sampler                                                              atIndex:index]
+            msg_send![self.0, setFragmentSamplerState:sampler.0
+                                              atIndex:index]
         }
     }
 
     pub fn set_fragment_sampler_state_with_lod(&self, index: u64, lod_min_clamp: f32, lod_max_clamp: f32, sampler: MTLSamplerState) {
         unsafe {
-            msg_send![self.0, setFragmentSamplerState:sampler
-                                      lodMinClamp:lod_min_clamp
-                                      lodMaxClamp:lod_max_clamp
-                                          atIndex:index]
+            msg_send![self.0, setFragmentSamplerState:sampler.0
+                                          lodMinClamp:lod_min_clamp
+                                          lodMaxClamp:lod_max_clamp
+                                              atIndex:index]
         }
     }
 
@@ -319,38 +321,38 @@ impl MTLRenderCommandEncoder {
     pub fn draw_primitives(&self, primitive_type: MTLPrimitiveType, vertex_start: u64, vertex_count: u64) {
         unsafe {
             msg_send![self.0, drawPrimitives:primitive_type
-                               vertexStart:vertex_start
-                               vertexCount:vertex_count]
+                                 vertexStart:vertex_start
+                                 vertexCount:vertex_count]
         }
     }
 
     pub fn draw_primitives_instanced(&self, primitive_type: MTLPrimitiveType, vertex_start: u64, vertex_count: u64, instance_count: u64) {
         unsafe {
             msg_send![self.0, drawPrimitives:primitive_type
-                               vertexStart:vertex_start
-                               vertexCount:vertex_count
-                             instanceCount:instance_count]
+                                 vertexStart:vertex_start
+                                 vertexCount:vertex_count
+                               instanceCount:instance_count]
         }
     }
 
     pub fn draw_indexed_primitives(&self, primitive_type: MTLPrimitiveType, index_count: u64, index_type: MTLIndexType, index_buffer: MTLBuffer, index_buffer_offset: u64) {
         unsafe {
             msg_send![self.0, drawIndexedPrimitives:primitive_type
-                                       indexCount:index_count
-                                        indexType:index_type
-                                      indexBuffer:index_buffer
-                                indexBufferOffset:index_buffer_offset]
+                                         indexCount:index_count
+                                          indexType:index_type
+                                        indexBuffer:index_buffer.0
+                                  indexBufferOffset:index_buffer_offset]
         }
     }
 
     pub fn draw_indexed_primitives_instanced(&self, primitive_type: MTLPrimitiveType, index_count: u64, index_type: MTLIndexType, index_buffer: MTLBuffer, index_buffer_offset: u64, instance_count: u64) {
         unsafe {
             msg_send![self.0, drawIndexedPrimitives:primitive_type
-                                       indexCount:index_count
-                                        indexType:index_type
-                                      indexBuffer:index_buffer
-                                indexBufferOffset:index_buffer_offset
-                                    instanceCount:instance_count]
+                                         indexCount:index_count
+                                          indexType:index_type
+                                        indexBuffer:index_buffer.0
+                                  indexBufferOffset:index_buffer_offset
+                                      instanceCount:instance_count]
         }
     }
 

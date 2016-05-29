@@ -277,7 +277,7 @@ impl<'a> MTLRenderPipelineDescriptor {
 
     pub fn set_vertex_function(&self, function: MTLFunction) {
         unsafe {
-            msg_send![self.0, setVertexFunction:function]
+            msg_send![self.0, setVertexFunction:function.0]
         }
     }
 
@@ -289,7 +289,7 @@ impl<'a> MTLRenderPipelineDescriptor {
 
     pub fn set_fragment_function(&self, function: MTLFunction) {
         unsafe {
-            msg_send![self.0, setFragmentFunction:function]
+            msg_send![self.0, setFragmentFunction:function.0]
         }
     }
 
@@ -301,7 +301,7 @@ impl<'a> MTLRenderPipelineDescriptor {
 
     pub fn set_vertex_descriptor(&self, descriptor: MTLVertexDescriptor) {
         unsafe {
-            msg_send![self.0, setVertexDescriptor:descriptor]
+            msg_send![self.0, setVertexDescriptor:descriptor.0]
         }
     }
 
@@ -463,7 +463,7 @@ impl MTLRenderPipelineColorAttachmentDescriptorArray {
 
     pub fn set_object_at(&self, index: usize, attachment: MTLRenderPipelineColorAttachmentDescriptor) {
         unsafe {
-            msg_send![self.0, setObject:attachment
+            msg_send![self.0, setObject:attachment.0
                      atIndexedSubscript:index]
         }
     }

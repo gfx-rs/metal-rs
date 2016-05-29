@@ -21,7 +21,7 @@ impl MTLDrawable {
         unsafe {
             msg_send![self.0, present]
         }
-    } 
+    }
 }
 
 impl NSObjectProtocol for MTLDrawable {

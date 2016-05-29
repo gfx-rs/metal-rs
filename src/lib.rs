@@ -174,7 +174,7 @@ impl CAMetalLayer {
 
     pub fn set_device(&self, device: MTLDevice) {
         unsafe {
-            msg_send![self.0, setDevice:device]
+            msg_send![self.0, setDevice:device.0]
         }
     }
 
