@@ -9,6 +9,7 @@
 #![crate_type = "rlib"]
 
 #![allow(non_snake_case)]
+#![allow(non_upper_case_globals)]
 
 extern crate cocoa;
 #[macro_use]
@@ -31,7 +32,6 @@ use std::ops::Deref;
 use std::any::Any;
 use std::fmt;
 use std::mem;
-use std::ptr;
 
 #[allow(non_camel_case_types)]
 #[repr(C)]

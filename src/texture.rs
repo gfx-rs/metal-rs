@@ -6,10 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 use cocoa::foundation::{NSUInteger, NSRange};
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc::runtime::{Class, YES, NO};
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};
 
@@ -35,7 +32,8 @@ pub enum MTLTextureType {
 }
 
 bitflags! {
-    flags MTLTextureUsage: NSUInteger {
+    #[allow(non_upper_case_globals)]
+    pub flags MTLTextureUsage: NSUInteger {
         const MTLTextureUsageUnknown         = 0x0000,
         const MTLTextureUsageShaderRead      = 0x0001,
         const MTLTextureUsageShaderWrite     = 0x0002,
@@ -391,7 +389,10 @@ impl<'a> MTLTexture {
 
     pub fn new_texture_view_from_slice(&self, pixel_format: MTLPixelFormat, texture_type: MTLTextureType, mipmap_levels: NSRange, slices: NSRange) -> MTLTexture {
         unsafe {
-            msg_send![self.0, newTextureViewWithPixelFormat:pixel_format]
+            msg_send![self.0, newTextureViewWithPixelFormat:pixel_format
+                                                textureType:texture_type
+                                                     levels:mipmap_levels
+                                                     slices:slices]
         }
     }
 }

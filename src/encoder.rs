@@ -1,8 +1,6 @@
 use cocoa::foundation::{NSUInteger};
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc::runtime::Class;
+use objc_foundation::{NSString, INSString};
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};
 

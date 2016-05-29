@@ -5,26 +5,11 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::{class};
-use cocoa::foundation::{NSUInteger, NSRange};
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc::runtime::Class;
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};
 
 use depthstencil::MTLCompareFunction;
-use constants::{MTLPixelFormat};
-use types::{MTLRegion};
-use buffer::MTLBuffer;
-use resource::{MTLResource, MTLResourceOptions, MTLCPUCacheMode, MTLStorageMode};
-
-use libc;
-
-use std::marker::PhantomData;
-use std::any::Any;
-use std::mem;
 
 #[repr(u64)]
 #[derive(Copy, Clone)]

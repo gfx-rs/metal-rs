@@ -6,10 +6,8 @@
 // copied, modified, or distributed except according to those terms.
 
 use cocoa::foundation::{NSUInteger};
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc::runtime::{Object, Class, YES, NO};
+use objc_foundation::{NSString, INSString};
 
 use super::{id, nil, NSObjectPrototype, NSObjectProtocol};
 
@@ -28,8 +26,6 @@ use libc;
 
 use std::marker::PhantomData;
 use std::ffi::CStr;
-use std::any::Any;
-use std::ptr;
 
 #[allow(non_camel_case_types)]
 #[repr(u64)]
@@ -179,7 +175,7 @@ impl<'a> MTLDevice {
                 true => {
                     let desc: id = msg_send![err.0, localizedDescription];
                     let compile_error: *const libc::c_char = msg_send![desc.0, UTF8String];
-                    Err(unsafe { CStr::from_ptr(compile_error).to_string_lossy().into_owned() })
+                    Err(CStr::from_ptr(compile_error).to_string_lossy().into_owned())
                 }
             }
         }
@@ -200,7 +196,7 @@ impl<'a> MTLDevice {
                 true => {
                     let desc: id = msg_send![err.0, localizedDescription];
                     let compile_error: *const libc::c_char = msg_send![desc.0, UTF8String];
-                    Err(unsafe { CStr::from_ptr(compile_error).to_string_lossy().into_owned() })
+                    Err(CStr::from_ptr(compile_error).to_string_lossy().into_owned())
                 }
             }
         }

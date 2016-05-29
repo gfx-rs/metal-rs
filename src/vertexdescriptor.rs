@@ -5,13 +5,9 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::foundation::{NSUInteger};
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc::runtime::Class;
 
-use super::{id, nil, NSObjectPrototype, NSObjectProtocol};
+use super::{id, NSObjectPrototype, NSObjectProtocol};
 
 use libc;
 

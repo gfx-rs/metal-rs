@@ -5,11 +5,8 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::foundation::{NSUInteger, NSTimeInterval};
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc::runtime::Class;
+use objc_foundation::{NSString, INSString};
 use block::Block;
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};

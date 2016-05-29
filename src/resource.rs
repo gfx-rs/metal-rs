@@ -6,10 +6,8 @@
 // copied, modified, or distributed except according to those terms.
 
 use cocoa::foundation::NSUInteger;
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc::runtime::Class;
+use objc_foundation::{NSString, INSString};
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};
 
@@ -37,13 +35,14 @@ pub enum MTLStorageMode {
     Private = 2,
 }
 
-const MTLResourceCPUCacheModeShift: NSUInteger = 0;
-const MTLResourceCPUCacheModeMask: NSUInteger = (0xf << MTLResourceCPUCacheModeShift);
-const MTLResourceStorageModeShift: NSUInteger = 4;
-const MTLResourceStorageModeMask: NSUInteger = (0xf << MTLResourceStorageModeShift);
+pub const MTLResourceCPUCacheModeShift: NSUInteger = 0;
+pub const MTLResourceCPUCacheModeMask: NSUInteger = (0xf << MTLResourceCPUCacheModeShift);
+pub const MTLResourceStorageModeShift: NSUInteger = 4;
+pub const MTLResourceStorageModeMask: NSUInteger = (0xf << MTLResourceStorageModeShift);
 
 bitflags! {
-    flags MTLResourceOptions: NSUInteger {
+    #[allow(non_upper_case_globals)]
+    pub flags MTLResourceOptions: NSUInteger {
         const MTLResourceCPUCacheModeDefaultCache  = (MTLCPUCacheMode::DefaultCache as NSUInteger) << MTLResourceCPUCacheModeShift,
         const MTLResourceCPUCacheModeWriteCombined = (MTLCPUCacheMode::WriteCombined as NSUInteger) << MTLResourceCPUCacheModeShift,
 

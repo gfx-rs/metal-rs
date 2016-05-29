@@ -5,15 +5,10 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::{class};
-use cocoa::foundation::NSUInteger;
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSObject, NSString, INSString,
-                      NSDictionary};
+use objc::runtime::{Class, YES, NO};
+use objc_foundation::{NSString, INSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol, NSArray, NSArrayPrototype};
+use super::{id, NSObjectPrototype, NSObjectProtocol, NSArray};
 
 use argument::MTLDataType;
 

@@ -5,17 +5,9 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::base::{class};
-use cocoa::foundation::NSUInteger;
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSCopying, INSObject, NSString, INSString};
+use objc::runtime::Class;
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};
-
-use std::mem;
-use std::ptr;
 
 use texture::MTLTexture;
 use buffer::MTLBuffer;

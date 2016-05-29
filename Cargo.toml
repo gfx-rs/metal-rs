@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 cocoa = "0.2.5"
-bitflags = "0.4.0"
+bitflags = "0.7"
 libc = "0.2"
 objc = "0.1.8"
 objc-foundation = "0.1"

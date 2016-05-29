@@ -5,11 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use cocoa::foundation::NSTimeInterval;
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSString, INSString};
+use objc::runtime::Class;
 
 use super::{id, NSObjectPrototype, NSObjectProtocol};
 
@@ -17,7 +13,7 @@ pub enum MTLDrawablePrototype {}
 pub type MTLDrawable = id<(MTLDrawablePrototype, (NSObjectPrototype, ()))>;
 
 impl MTLDrawable {
-    fn present(&self) {
+    pub fn present(&self) {
         unsafe {
             msg_send![self.0, present]
         }

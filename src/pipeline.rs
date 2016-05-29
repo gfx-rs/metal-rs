@@ -6,19 +6,15 @@
 // copied, modified, or distributed except according to those terms.
 
 use cocoa::foundation::NSUInteger;
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-use objc_id::{Id, ShareId};
-use objc_foundation::{INSObject, NSObject, INSString, NSString};
+use objc::runtime::{Class, YES, NO};
+use objc_foundation::{INSString, NSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol, NSArray,
-            NSArrayPrototype};
+use super::{id, NSObjectPrototype, NSObjectProtocol, NSArray};
 
 use libc;
 
 use device::MTLDevice;
 use constants::MTLPixelFormat;
-use renderpass::MTLRenderPassColorAttachmentDescriptor;
 use library::MTLFunction;
 use argument::MTLArgument;
 use vertexdescriptor::MTLVertexDescriptor;
@@ -54,7 +50,7 @@ pub enum MTLBlendOperation {
 }
 
 bitflags! {
-    flags MTLColorWriteMask: NSUInteger {
+    pub flags MTLColorWriteMask: NSUInteger {
         const MTLColorWriteMaskNone  = 0,
         const MTLColorWriteMaskRed   = 0x1 << 3,
         const MTLColorWriteMaskGreen = 0x1 << 2,
