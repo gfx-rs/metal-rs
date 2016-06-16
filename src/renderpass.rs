@@ -188,6 +188,18 @@ pub type MTLRenderPassColorAttachmentDescriptor = id<
             (NSObjectPrototype, ())))>;
 
 impl MTLRenderPassColorAttachmentDescriptor {
+    pub fn alloc() -> Self {
+        unsafe {
+            msg_send![Self::class(), alloc]
+        }
+    }
+
+    pub fn init(&self) -> Self {
+        unsafe {
+            msg_send![self.0, init]
+        }
+    }
+
     pub fn clear_color(&self) -> MTLClearColor {
         unsafe {
             msg_send![self.0, clearColor]
@@ -294,6 +306,7 @@ impl MTLRenderPassDescriptor {
             msg_send![Self::class(), renderPassDescriptor]
         }
     }
+
     pub fn alloc() -> Self {
         unsafe {
             msg_send![Self::class(), alloc]
@@ -351,7 +364,7 @@ impl MTLRenderPassDescriptor {
 
 impl NSObjectProtocol for MTLRenderPassDescriptor {
     unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPassDescriptor").unwrap()
+        Class::get("MTLRenderPassDescriptorInternal").unwrap()
     }
 }
 

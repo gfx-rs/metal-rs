@@ -138,6 +138,26 @@ impl NSObjectProtocol for MTLCommandEncoder {
     }
 }
 
+pub enum MTLParallelRenderCommandEncoderPrototype {}
+pub type MTLParallelRenderCommandEncoder = id<
+    (MTLParallelRenderCommandEncoderPrototype,
+        (MTLCommandEncoderPrototype,
+            (NSObjectPrototype, ())))>;
+
+impl MTLParallelRenderCommandEncoder {
+    pub fn render_command_encoder(&self) -> MTLRenderCommandEncoder {
+        unsafe {
+            msg_send![self.0, renderCommandEncoder]
+        }
+    }
+}
+
+impl NSObjectProtocol for MTLParallelRenderCommandEncoder {
+    unsafe fn class() -> &'static Class {
+        Class::get("MTLParallelRenderCommandEncoder").unwrap()
+    }
+}
+
 pub enum MTLRenderCommandEncoderPrototype {}
 pub type MTLRenderCommandEncoder = id<
     (MTLRenderCommandEncoderPrototype,

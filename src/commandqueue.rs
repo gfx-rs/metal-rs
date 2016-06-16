@@ -35,6 +35,12 @@ impl<'a> MTLCommandQueue {
             msg_send![self.0, commandBuffer]
         }
     }
+
+    pub fn new_command_buffer_with_unretained_references(&self) -> MTLCommandBuffer {
+        unsafe {
+            msg_send![self.0, commandBufferWithUnretainedReferences]
+        }
+    }
 }
 
 impl NSObjectProtocol for MTLCommandQueue {

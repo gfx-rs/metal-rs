@@ -22,7 +22,7 @@ extern crate objc_id;
 extern crate block;
 
 use objc::Message;
-use objc::runtime::{Object, Class, BOOL};
+use objc::runtime::{Object, Class, BOOL, YES, NO};
 
 use cocoa::foundation::NSSize;
 
@@ -104,6 +104,10 @@ pub trait NSObjectProtocol : Message + Sized + AsObject {
         msg_send![self.as_obj(), release]
     }
 
+    unsafe fn retain_count(&self) -> u64 {
+        msg_send![self.as_obj(), retainCount]
+    }
+
     unsafe fn autorelease(&self) {
         msg_send![self.as_obj(), autorelease]
     }
@@ -137,6 +141,29 @@ impl<T> NSArray<T> where T: Any {
 impl<T> NSObjectProtocol for NSArray<T> {
     unsafe fn class() -> &'static Class {
         Class::get("NSArray").unwrap()
+    }
+}
+
+pub enum NSAutoreleasePoolPrototype {}
+pub type NSAutoreleasePool = id<(NSAutoreleasePoolPrototype, (NSObjectPrototype, ()))>;
+
+impl NSAutoreleasePool {
+    pub fn alloc() -> Self {
+        unsafe {
+            msg_send![Self::class(), alloc]
+        }
+    }
+
+    pub fn init(&self) -> Self {
+        unsafe {
+            msg_send![self.0, init]
+        }
+    }
+}
+
+impl NSObjectProtocol for NSAutoreleasePool {
+    unsafe fn class() -> &'static Class {
+        Class::get("NSAutoreleasePool").unwrap()
     }
 }
 
@@ -199,6 +226,28 @@ impl CAMetalLayer {
     pub fn set_drawable_size(&self, size: NSSize) {
         unsafe {
             msg_send![self.0, setDrawableSize:size]
+        }
+    }
+
+    pub fn presents_with_transaction(&self) -> bool {
+        unsafe {
+            match msg_send![self.0, presentsWithTransaction] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
+    }
+
+    pub fn set_presents_with_transaction(&self, transaction: bool) {
+        unsafe {
+            msg_send![self.0, setPresentsWithTransaction:transaction];
+        }
+    }
+
+    pub fn remove_all_animations(&self) {
+        unsafe {
+            msg_send![self.0, removeAllAnimations];
         }
     }
 

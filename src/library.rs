@@ -207,7 +207,7 @@ impl<'a> MTLLibrary {
         }
     }
 
-    pub fn get_function(&self, name: &str) -> Option<MTLFunction> {
+    pub fn get_function(&self, name: &str) -> MTLFunction {
         unsafe {
             use cocoa::foundation::NSString as cocoa_NSString;
             use cocoa::base::nil as cocoa_nil;
@@ -216,10 +216,7 @@ impl<'a> MTLLibrary {
             //let nsname = NSString::from_str(name);
             let func: MTLFunction = msg_send![self.0, newFunctionWithName:nsname];
 
-            match func.is_null() {
-                true => None,
-                false => Some(func)
-            }
+            func
         }
     }
 
