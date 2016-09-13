@@ -137,7 +137,6 @@ impl MTLRenderPassAttachmentDescriptor {
         }
     }
 
-
     pub fn resolve_depth_plane(&self) -> u64 {
         unsafe {
             msg_send![self.0, resolveDepthPlane]

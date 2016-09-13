@@ -159,6 +159,12 @@ impl NSAutoreleasePool {
             msg_send![self.0, init]
         }
     }
+
+    pub fn drain(&self) {
+        unsafe {
+            msg_send![self.0, drain]
+        }
+    }
 }
 
 impl NSObjectProtocol for NSAutoreleasePool {
@@ -193,6 +199,12 @@ pub enum CAMetalLayerPrototype {}
 pub type CAMetalLayer = id<(CAMetalLayerPrototype, (NSObjectPrototype, ()))>;
 
 impl CAMetalLayer {
+    pub fn new() -> CAMetalLayer {
+        unsafe {
+            msg_send![Self::class(), new]
+        }
+    }
+
     pub fn layer() -> CAMetalLayer {
         unsafe {
             msg_send![Self::class(), layer]
@@ -242,6 +254,18 @@ impl CAMetalLayer {
     pub fn set_presents_with_transaction(&self, transaction: bool) {
         unsafe {
             msg_send![self.0, setPresentsWithTransaction:transaction];
+        }
+    }
+
+    pub fn set_edge_antialiasing_mask(&self, mask: u64) {
+        unsafe {
+            msg_send![self.0, setEdgeAntialiasingMask:mask]
+        }
+    }
+
+    pub fn set_masks_to_bounds(&self, masks: bool) {
+        unsafe {
+            msg_send![self.0, setMasksToBounds:masks]
         }
     }
 

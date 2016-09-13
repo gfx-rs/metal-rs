@@ -6,6 +6,7 @@ use super::{id, NSObjectPrototype, NSObjectProtocol};
 
 use libc;
 
+use resource::MTLResource;
 use texture::MTLTexture;
 use buffer::MTLBuffer;
 use pipeline::MTLRenderPipelineState;
@@ -87,7 +88,7 @@ pub struct MTLViewport {
 }
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct MTLDrawPrimitivesIndirectArguments {
     pub vertexCount: u32,
     pub instanceCount: u32,
@@ -96,7 +97,7 @@ pub struct MTLDrawPrimitivesIndirectArguments {
 }
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct MTLDrawIndexedPrimitivesIndirectArguments {
     pub indexCount: u32,
     pub instanceCount: u32,
@@ -363,14 +364,16 @@ impl MTLRenderCommandEncoder {
         }
     }
 
-    pub fn draw_indexed_primitives_instanced(&self, primitive_type: MTLPrimitiveType, index_count: u64, index_type: MTLIndexType, index_buffer: MTLBuffer, index_buffer_offset: u64, instance_count: u64) {
+    pub fn draw_indexed_primitives_instanced(&self, primitive_type: MTLPrimitiveType, index_count: u64, index_type: MTLIndexType, index_buffer: MTLBuffer, index_buffer_offset: u64, instance_count: u64, base_vertex: i64, base_instance: u64) {
         unsafe {
             msg_send![self.0, drawIndexedPrimitives:primitive_type
                                          indexCount:index_count
                                           indexType:index_type
                                         indexBuffer:index_buffer.0
                                   indexBufferOffset:index_buffer_offset
-                                      instanceCount:instance_count]
+                                      instanceCount:instance_count
+                                         baseVertex:base_vertex
+                                       baseInstance:base_instance]
         }
     }
 
@@ -387,6 +390,49 @@ impl MTLRenderCommandEncoder {
 impl NSObjectProtocol for MTLRenderCommandEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLRenderCommandEncoder").unwrap()
+    }
+}
+
+pub enum MTLBlitCommandEncoderPrototype {}
+pub type MTLBlitCommandEncoder = id<
+    (MTLBlitCommandEncoderPrototype,
+        (MTLCommandEncoderPrototype,
+            (NSObjectPrototype, ())))>;
+
+impl MTLBlitCommandEncoder {
+
+    pub fn synchronize_resource(&self, resource: MTLResource) {
+        unsafe {
+            msg_send![self.0, synchronizeResource:resource]
+        }
+    }
+
+}
+
+
+impl NSObjectProtocol for MTLBlitCommandEncoder {
+    unsafe fn class() -> &'static Class {
+        Class::get("MTLBlitCommandEncoder").unwrap()
+    }
+}
+
+pub enum MTLComputeCommandEncoderPrototype {}
+pub type MTLComputeCommandEncoder = id<
+    (MTLComputeCommandEncoderPrototype,
+        (MTLCommandEncoderPrototype,
+            (NSObjectPrototype, ())))>;
+
+impl MTLComputeCommandEncoder {
+
+    pub fn set_render_pipeline_state(&self) {
+    }
+
+}
+
+
+impl NSObjectProtocol for MTLComputeCommandEncoder {
+    unsafe fn class() -> &'static Class {
+        Class::get("MTLComputeCommandEncoder").unwrap()
     }
 }
 
