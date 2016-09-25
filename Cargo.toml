@@ -1,6 +1,7 @@
 [package]
-name = "metal"
-version = "0.0.1"
+name = "metal-rs"
+version = "0.1.0"
+description = "Rust bindings for Metal"
 authors = ["Felix Kaaman <trundmatu@gmail.com>"]
 readme = "README.md"
 keywords = ["metal", "graphics", "bindings"]

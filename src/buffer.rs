@@ -31,7 +31,7 @@ impl MTLBuffer {
         }
     }
 
-    pub fn invalidate_range(&self, range: NSRange) {
+    pub fn did_modify_range(&self, range: NSRange) {
         unsafe {
             msg_send![self.0, didModifyRange:range]
         }

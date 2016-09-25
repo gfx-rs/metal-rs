@@ -1,5 +1,5 @@
 # metal-rs
-Canonical rust bindings for the Metal graphics API.
+Unsafe Rust bindings for the Metal 3D Graphics API.
 
 ## License
 
