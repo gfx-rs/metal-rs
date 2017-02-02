@@ -26,6 +26,7 @@ use libc;
 
 use std::marker::PhantomData;
 use std::ffi::CStr;
+use std::path::Path;
 
 #[allow(non_camel_case_types)]
 #[repr(u64)]
@@ -169,6 +170,29 @@ impl<'a> MTLDevice {
             let library: MTLLibrary = msg_send![self.0, newLibraryWithSource:source
                                                                      options:options
                                                                        error:&mut err];
+
+            match library.is_null() {
+                false => Ok(library),
+                true => {
+                    let desc: id = msg_send![err.0, localizedDescription];
+                    let compile_error: *const libc::c_char = msg_send![desc.0, UTF8String];
+                    Err(CStr::from_ptr(compile_error).to_string_lossy().into_owned())
+                }
+            }
+        }
+    }
+
+    pub fn new_library_with_file<P: AsRef<Path>>(&self, file: P) -> Result<MTLLibrary, String> {
+        use cocoa::foundation::NSString as cocoa_NSString;
+        use cocoa::base::nil as cocoa_nil;
+
+        unsafe {
+            let filename = cocoa_NSString::alloc(cocoa_nil)
+                .init_str(file.as_ref().to_string_lossy().as_ref());
+            let mut err = nil;
+
+            let library: MTLLibrary = msg_send![self.0, newLibraryWithFile:filename
+                                                                     error:&mut err];
 
             match library.is_null() {
                 false => Ok(library),
