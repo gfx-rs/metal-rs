@@ -8,19 +8,19 @@ keywords = ["metal", "graphics", "bindings"]
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-cocoa = "0.5.0"
-bitflags = "0.7"
+cocoa = "0.8.0"
+bitflags = "0.8"
 libc = "0.2"
 objc-foundation = "0.1"
-objc_id = "0.0.2"
-block = "0.1.5"
+objc_id = "0.1.0"
+block = "0.1.6"
 
 [dependencies.objc]
-version = "0.2.1"
+version = "0.2.2"
 features = ["objc_exception"]
 
 [dev-dependencies]
-winit = "0.4.9"
+winit = "0.5.1"
 sema = "0.1.4"
 
 [[example]]
