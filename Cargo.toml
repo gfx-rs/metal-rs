@@ -1,6 +1,6 @@
 [package]
 name = "metal-rs"
-version = "0.2.0"
+version = "0.3.0"
 description = "Rust bindings for Metal"
 authors = ["metal-rs authors"]
 readme = "README.md"
@@ -12,7 +12,6 @@ cocoa = "0.5.0"
 bitflags = "0.7"
 libc = "0.2"
 objc-foundation = "0.1"
-objc_id = "0.0.2"
 block = "0.1.5"
 
 [dependencies.objc]

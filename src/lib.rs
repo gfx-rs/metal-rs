@@ -18,7 +18,6 @@ extern crate libc;
 #[macro_use]
 extern crate objc;
 extern crate objc_foundation;
-extern crate objc_id;
 extern crate block;
 
 use objc::Message;
