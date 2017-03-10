@@ -1,8 +1,8 @@
 [package]
 name = "metal-rs"
-version = "0.1.0"
+version = "0.2.0"
 description = "Rust bindings for Metal"
-authors = ["Felix Kaaman <trundmatu@gmail.com>"]
+authors = ["metal-rs authors"]
 readme = "README.md"
 keywords = ["metal", "graphics", "bindings"]
 license = "MIT OR Apache-2.0"
