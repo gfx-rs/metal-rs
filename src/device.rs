@@ -17,7 +17,9 @@ use pipeline::{MTLRenderPipelineState, MTLRenderPipelineDescriptor,
                MTLRenderPipelineReflection};
 use library::{MTLLibrary, MTLCompileOptions};
 use types::{MTLSize};
+use argument::MTLArgumentDescriptor;
 use buffer::MTLBuffer;
+use encoder::MTLArgumentEncoder;
 use texture::{MTLTexture, MTLTextureDescriptor};
 use sampler::{MTLSamplerState, MTLSamplerDescriptor};
 use depthstencil::{MTLDepthStencilDescriptor, MTLDepthStencilState};
@@ -269,6 +271,12 @@ impl<'a> MTLDevice {
     pub fn new_depth_stencil_state(&self, descriptor: MTLDepthStencilDescriptor) -> MTLDepthStencilState {
         unsafe {
             msg_send![self.0, newDepthStencilStateWithDescriptor:descriptor]
+        }
+    }
+
+    pub fn new_argument_encoder(&self, arguments: &[MTLArgumentDescriptor]) -> MTLArgumentEncoder {
+        unsafe {
+            msg_send![self.0, newArgumentEncoder:arguments]
         }
     }
 }

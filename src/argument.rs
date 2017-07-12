@@ -305,3 +305,6 @@ impl NSObjectProtocol for MTLArgument {
     }
 }
 
+
+pub enum MTLArgumentDescriptorPrototype {}
+pub type MTLArgumentDescriptor = id<(MTLArgumentDescriptorPrototype, (NSObjectPrototype, ()))>;
