@@ -2,6 +2,9 @@
 name = "metal-rs"
 version = "0.4.0"
 description = "Rust bindings for Metal"
+documentation = "https://docs.rs/crate/metal-rs"
+homepage = "https://github.com/gfx-rs/metal-rs"
+repository = "https://github.com/gfx-rs/metal-rs"
 authors = ["GFX Developers"]
 readme = "README.md"
 keywords = ["metal", "graphics", "bindings"]
