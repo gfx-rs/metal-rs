@@ -393,6 +393,7 @@ impl NSObjectProtocol for MTLRenderCommandEncoder {
     }
 }
 
+
 pub enum MTLBlitCommandEncoderPrototype {}
 pub type MTLBlitCommandEncoder = id<
     (MTLBlitCommandEncoderPrototype,
@@ -409,12 +410,12 @@ impl MTLBlitCommandEncoder {
 
 }
 
-
 impl NSObjectProtocol for MTLBlitCommandEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLBlitCommandEncoder").unwrap()
     }
 }
+
 
 pub enum MTLComputeCommandEncoderPrototype {}
 pub type MTLComputeCommandEncoder = id<
@@ -429,10 +430,14 @@ impl MTLComputeCommandEncoder {
 
 }
 
-
 impl NSObjectProtocol for MTLComputeCommandEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLComputeCommandEncoder").unwrap()
     }
 }
 
+
+pub enum MTLArgumentEncoderPrototype {}
+pub type MTLArgumentEncoder = id<
+    (MTLArgumentEncoderPrototype,
+        (NSObjectPrototype, ()))>;
