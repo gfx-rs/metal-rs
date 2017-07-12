@@ -42,17 +42,17 @@ pub const MTLResourceStorageModeMask: NSUInteger = (0xf << MTLResourceStorageMod
 
 bitflags! {
     #[allow(non_upper_case_globals)]
-    pub flags MTLResourceOptions: NSUInteger {
-        const MTLResourceCPUCacheModeDefaultCache  = (MTLCPUCacheMode::DefaultCache as NSUInteger) << MTLResourceCPUCacheModeShift,
-        const MTLResourceCPUCacheModeWriteCombined = (MTLCPUCacheMode::WriteCombined as NSUInteger) << MTLResourceCPUCacheModeShift,
+    pub struct MTLResourceOptions: NSUInteger {
+        const MTLResourceCPUCacheModeDefaultCache  = (MTLCPUCacheMode::DefaultCache as NSUInteger) << MTLResourceCPUCacheModeShift;
+        const MTLResourceCPUCacheModeWriteCombined = (MTLCPUCacheMode::WriteCombined as NSUInteger) << MTLResourceCPUCacheModeShift;
 
-        const MTLResourceStorageModeShared  = (MTLStorageMode::Shared as NSUInteger)  << MTLResourceStorageModeShift,
-        const MTLResourceStorageModeManaged = (MTLStorageMode::Managed as NSUInteger) << MTLResourceStorageModeShift,
-        const MTLResourceStorageModePrivate = (MTLStorageMode::Private as NSUInteger) << MTLResourceStorageModeShift,
+        const MTLResourceStorageModeShared  = (MTLStorageMode::Shared as NSUInteger)  << MTLResourceStorageModeShift;
+        const MTLResourceStorageModeManaged = (MTLStorageMode::Managed as NSUInteger) << MTLResourceStorageModeShift;
+        const MTLResourceStorageModePrivate = (MTLStorageMode::Private as NSUInteger) << MTLResourceStorageModeShift;
 
         // Deprecated spellings
-        const MTLResourceOptionCPUCacheModeDefault       = MTLResourceCPUCacheModeDefaultCache.bits,
-        const MTLResourceOptionCPUCacheModeWriteCombined = MTLResourceCPUCacheModeWriteCombined.bits,
+        const MTLResourceOptionCPUCacheModeDefault       = MTLResourceCPUCacheModeDefaultCache.bits;
+        const MTLResourceOptionCPUCacheModeWriteCombined = MTLResourceCPUCacheModeWriteCombined.bits;
     }
 }
 
