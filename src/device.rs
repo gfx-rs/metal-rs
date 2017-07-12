@@ -41,10 +41,10 @@ pub enum MTLFeatureSet {
 }
 
 bitflags! {
-    flags MTLPipelineOption: NSUInteger {
-        const MTLPipelineOptionNone           = 0,
-        const MTLPipelineOptionArgumentInfo   = 1 << 0,
-        const MTLPipelineOptionBufferTypeInfo = 1 << 1
+    struct MTLPipelineOption: NSUInteger {
+        const MTLPipelineOptionNone           = 0;
+        const MTLPipelineOptionArgumentInfo   = 1 << 0;
+        const MTLPipelineOptionBufferTypeInfo = 1 << 1;
     }
 }
 
