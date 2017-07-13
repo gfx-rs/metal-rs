@@ -124,6 +124,13 @@ pub enum NSArrayPrototype {}
 pub type NSArray<T> = id<(NSArrayPrototype, (NSObjectPrototype, (T)))>;
 
 impl<T> NSArray<T> where T: Any {
+    pub fn array_with_objects(slice: &[T]) -> Self {
+        unsafe {
+            msg_send![Self::class(), arrayWithObjects:slice.as_ptr()
+                                                count:slice.len() as u64]
+        }
+    }
+
     pub fn object_at(&self, index: u64) -> T {
         unsafe {
             msg_send![self.0, objectAtIndex:index]
