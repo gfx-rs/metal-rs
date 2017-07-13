@@ -40,3 +40,7 @@ path = "examples/reflection/main.rs"
 [[example]]
 name = "caps"
 path = "examples/caps/main.rs"
+
+[[example]]
+name = "indirect"
+path = "examples/indirect/main.rs"

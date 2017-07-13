@@ -9,7 +9,7 @@ use cocoa::foundation::{NSUInteger};
 use objc::runtime::{Object, Class, YES, NO};
 use objc_foundation::{NSString, INSString};
 
-use super::{id, nil, NSObjectPrototype, NSObjectProtocol};
+use super::{id, nil, NSArray, NSObjectPrototype, NSObjectProtocol};
 
 use resource::MTLResourceOptions;
 use commandqueue::MTLCommandQueue;
@@ -32,14 +32,34 @@ use std::path::Path;
 
 #[allow(non_camel_case_types)]
 #[repr(u64)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum MTLFeatureSet {
     iOS_GPUFamily1_v1 = 0,
     iOS_GPUFamily2_v1 = 1,
     iOS_GPUFamily1_v2 = 2,
     iOS_GPUFamily2_v2 = 3,
     iOS_GPUFamily3_v1 = 4,
-    OSX_GPUFamily1_v1 = 10000,
+    iOS_GPUFamily1_v3 = 5,
+    iOS_GPUFamily2_v3 = 6,
+    iOS_GPUFamily3_v2 = 7,
+    iOS_GPUFamily1_v4 = 8,
+    iOS_GPUFamily2_v4 = 9,
+    iOS_GPUFamily3_v3 = 10,
+    tvOS_GPUFamily1_v1 = 30000,
+    tvOS_GPUFamily1_v2 = 30001,
+    tvOS_GPUFamily1_v3 = 30002,
+    macOS_GPUFamily1_v1 = 10000,
+    macOS_GPUFamily1_v2 = 10001,
+    macOS_ReadWriteTextureTier2 = 10002,
+    macOS_GPUFamily1_v3 = 10003,
+}
+
+#[allow(non_camel_case_types)]
+#[repr(u64)]
+#[derive(Copy, Clone, Debug)]
+pub enum MTLArgumentBuffersTier {
+    tier1 = 0,
+    tier2 = 1,
 }
 
 bitflags! {
@@ -274,9 +294,15 @@ impl<'a> MTLDevice {
         }
     }
 
-    pub fn new_argument_encoder(&self, arguments: &[MTLArgumentDescriptor]) -> MTLArgumentEncoder {
+    pub fn argument_buffers_support(&self) -> MTLArgumentBuffersTier {
         unsafe {
-            msg_send![self.0, newArgumentEncoder:arguments]
+            msg_send![self.0, argumentBuffersSupport]
+        }
+    }
+
+    pub fn new_argument_encoder(&self, arguments: NSArray<MTLArgumentDescriptor>) -> MTLArgumentEncoder {
+        unsafe {
+            msg_send![self.0, newArgumentEncoderWithArguments:arguments]
         }
     }
 }

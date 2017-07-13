@@ -1,4 +1,4 @@
-use cocoa::foundation::{NSUInteger};
+use cocoa::foundation::{NSRange, NSUInteger};
 use objc::runtime::Class;
 use objc_foundation::{NSString, INSString};
 
@@ -441,3 +441,46 @@ pub enum MTLArgumentEncoderPrototype {}
 pub type MTLArgumentEncoder = id<
     (MTLArgumentEncoderPrototype,
         (NSObjectPrototype, ()))>;
+
+impl NSObjectProtocol for MTLArgumentEncoder {
+    unsafe fn class() -> &'static Class {
+        Class::get("MTLArgumentEncoder").unwrap()
+    }
+}
+
+impl MTLArgumentEncoder {
+    pub fn encoded_length(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self.0, encodedLength]
+        }
+    }
+
+    pub fn set_argument_buffer(&self, buffer: MTLBuffer, offset: NSUInteger) {
+        unsafe {
+            msg_send![self.0, setArgumentBuffer:buffer
+                                         offset:offset]
+        }
+    }
+
+    pub fn set_sampler_states(&self, data: &[MTLSamplerState], offset: NSUInteger) {
+        let range = NSRange {
+            location: offset,
+            length: data.len() as NSUInteger,
+        };
+        unsafe {
+            msg_send![self.0, setSamplerStates:data.as_ptr()
+                                     withRange:range]
+        }
+    }
+
+    pub fn set_textures(&self, data: &[MTLTexture], offset: NSUInteger) {
+        let range = NSRange {
+            location: offset,
+            length: data.len() as NSUInteger,
+        };
+        unsafe {
+            msg_send![self.0, setTextures:data.as_ptr()
+                                withRange:range]
+        }
+    }
+}

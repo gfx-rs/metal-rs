@@ -5,6 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use cocoa::foundation::NSUInteger;
 use objc::runtime::{Class, YES, NO};
 use objc_foundation::{NSString, INSString, NSArray};
 
@@ -89,6 +90,10 @@ pub enum MTLDataType {
     Bool2 = 54,
     Bool3 = 55,
     Bool4 = 56,
+
+    Texture = 58,
+    Sampler = 59,
+    Pointer = 60,
 }
 
 #[repr(u32)]
@@ -308,3 +313,47 @@ impl NSObjectProtocol for MTLArgument {
 
 pub enum MTLArgumentDescriptorPrototype {}
 pub type MTLArgumentDescriptor = id<(MTLArgumentDescriptorPrototype, (NSObjectPrototype, ()))>;
+
+impl NSObjectProtocol for MTLArgumentDescriptor {
+    unsafe fn class() -> &'static Class {
+        Class::get("MTLArgumentDescriptor").unwrap()
+    }
+}
+
+impl MTLArgumentDescriptor {
+    pub fn new() -> Self {
+        unsafe {
+            msg_send![Self::class(), argumentDescriptor]
+        }
+    }
+
+    pub fn set_data_type(&self, ty: MTLDataType) {
+        unsafe {
+            msg_send![self.0, setDataType:ty]
+        }
+    }
+
+    pub fn set_index(&self, index: NSUInteger) {
+        unsafe {
+            msg_send![self.0, setIndex:index]
+        }
+    }
+
+    pub fn set_access(&self, access: MTLArgumentAccess) {
+        unsafe {
+            msg_send![self.0, setAccess:access]
+        }
+    }
+
+    pub fn set_array_length(&self, length: NSUInteger) {
+        unsafe {
+            msg_send![self.0, setArrayLength:length]
+        }
+    }
+
+    pub fn set_texture_type(&self, ty: MTLTextureType) {
+        unsafe {
+            msg_send![self.0, setTextureType:ty]
+        }
+    }
+}

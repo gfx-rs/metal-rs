@@ -38,7 +38,7 @@ pub enum MTLCommandBufferError {
     InvalidResource = 9,
 }
 
-type MTLCommandBufferHandler = Block<(MTLCommandBuffer), ()>;
+type _MTLCommandBufferHandler = Block<(MTLCommandBuffer), ()>;
 
 pub enum MTLCommandBufferPrototype {}
 pub type MTLCommandBuffer = id<(MTLCommandBufferPrototype, (NSObjectPrototype, ()))>;
