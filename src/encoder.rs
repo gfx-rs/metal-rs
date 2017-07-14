@@ -455,6 +455,12 @@ impl MTLArgumentEncoder {
         }
     }
 
+    pub fn alignment(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self.0, alignment]
+        }
+    }
+
     pub fn set_argument_buffer(&self, buffer: MTLBuffer, offset: NSUInteger) {
         unsafe {
             msg_send![self.0, setArgumentBuffer:buffer
@@ -462,14 +468,14 @@ impl MTLArgumentEncoder {
         }
     }
 
-    pub fn set_sampler_states(&self, data: &[MTLSamplerState], offset: NSUInteger) {
+    pub fn set_buffers(&self, data: &[MTLBuffer], offset: NSUInteger) {
         let range = NSRange {
             location: offset,
             length: data.len() as NSUInteger,
         };
         unsafe {
-            msg_send![self.0, setSamplerStates:data.as_ptr()
-                                     withRange:range]
+            msg_send![self.0, setBuffers:data.as_ptr()
+                               withRange:range]
         }
     }
 
@@ -481,6 +487,17 @@ impl MTLArgumentEncoder {
         unsafe {
             msg_send![self.0, setTextures:data.as_ptr()
                                 withRange:range]
+        }
+    }
+
+    pub fn set_sampler_states(&self, data: &[MTLSamplerState], offset: NSUInteger) {
+        let range = NSRange {
+            location: offset,
+            length: data.len() as NSUInteger,
+        };
+        unsafe {
+            msg_send![self.0, setSamplerStates:data.as_ptr()
+                                     withRange:range]
         }
     }
 }
