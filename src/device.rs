@@ -11,7 +11,7 @@ use objc_foundation::{NSString, INSString};
 
 use super::{id, nil, NSArray, NSObjectPrototype, NSObjectProtocol};
 
-use resource::MTLResourceOptions;
+use resource::{MTLResourceOptions, MTLSizeAndAlign};
 use commandqueue::MTLCommandQueue;
 use pipeline::{MTLRenderPipelineState, MTLRenderPipelineDescriptor,
                MTLRenderPipelineReflection};
@@ -23,6 +23,7 @@ use encoder::MTLArgumentEncoder;
 use texture::{MTLTexture, MTLTextureDescriptor};
 use sampler::{MTLSamplerState, MTLSamplerDescriptor};
 use depthstencil::{MTLDepthStencilDescriptor, MTLDepthStencilState};
+use heap::{MTLHeap, MTLHeapDescriptor};
 
 use libc;
 
@@ -290,7 +291,7 @@ impl<'a> MTLDevice {
 
     pub fn new_depth_stencil_state(&self, descriptor: MTLDepthStencilDescriptor) -> MTLDepthStencilState {
         unsafe {
-            msg_send![self.0, newDepthStencilStateWithDescriptor:descriptor]
+            msg_send![self.0, newDepthStencilStateWithDescriptor:descriptor.0]
         }
     }
 
@@ -303,6 +304,24 @@ impl<'a> MTLDevice {
     pub fn new_argument_encoder(&self, arguments: NSArray<MTLArgumentDescriptor>) -> MTLArgumentEncoder {
         unsafe {
             msg_send![self.0, newArgumentEncoderWithArguments:arguments]
+        }
+    }
+
+    pub fn new_heap(&self, descriptor: MTLHeapDescriptor) -> MTLHeap {
+        unsafe {
+            msg_send![self.0, newHeapWithDescriptor: descriptor.0]
+        }
+    }
+
+    pub fn heap_buffer_size_and_align(&self, length: NSUInteger, options: MTLResourceOptions) -> MTLSizeAndAlign {
+        unsafe {
+            msg_send![self.0, heapBufferSizeAndAlignWithLength: length options: options]
+        }
+    }
+
+    pub fn heap_texture_size_and_align(&self, descriptor: MTLTextureDescriptor) -> MTLSizeAndAlign {
+        unsafe {
+            msg_send![self.0, heapTextureSizeAndAlignWithDescriptor: descriptor.0]
         }
     }
 }

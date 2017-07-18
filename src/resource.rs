@@ -13,6 +13,7 @@ use super::{id, NSObjectPrototype, NSObjectProtocol};
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLPurgeableState {
     KeepCurrent = 1,
     NonVolatile = 2,
@@ -22,6 +23,7 @@ pub enum MTLPurgeableState {
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLCPUCacheMode {
     DefaultCache = 0,
     WriteCombined = 1,
@@ -29,6 +31,7 @@ pub enum MTLCPUCacheMode {
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLStorageMode {
     Shared  = 0,
     Managed = 1,
@@ -54,6 +57,13 @@ bitflags! {
         const MTLResourceOptionCPUCacheModeDefault       = MTLResourceCPUCacheModeDefaultCache.bits;
         const MTLResourceOptionCPUCacheModeWriteCombined = MTLResourceCPUCacheModeWriteCombined.bits;
     }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+#[repr(C)]
+pub struct MTLSizeAndAlign {
+    pub size: NSUInteger,
+    pub align: NSUInteger,
 }
 
 
