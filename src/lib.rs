@@ -313,6 +313,7 @@ mod library;
 mod argument;
 mod vertexdescriptor;
 mod depthstencil;
+mod heap;
 
 pub use constants::*;
 pub use types::*;
@@ -331,4 +332,5 @@ pub use library::*;
 pub use argument::*;
 pub use vertexdescriptor::*;
 pub use depthstencil::*;
+pub use heap::*;
 
