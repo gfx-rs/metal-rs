@@ -29,6 +29,11 @@ use std::any::Any;
 use std::fmt;
 use std::mem;
 
+#[cfg(target_pointer_width = "64")]
+pub type CGFloat = libc::c_double;
+#[cfg(not(target_pointer_width = "64"))]
+pub type CGFloat = libc::c_float;
+
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct id<T=()>(pub *mut Object, pub PhantomData<T>);
@@ -288,7 +293,14 @@ impl CAMetalLayer {
             }
         }
     }
+
+    pub fn set_contents_scale(&self, scale: CGFloat) {
+        unsafe {
+            msg_send![self.0, setContentsScale:scale];
+        }
+    }
 }
+
 
 impl NSObjectProtocol for CAMetalLayer {
     unsafe fn class() -> &'static Class {
