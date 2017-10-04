@@ -9,14 +9,12 @@ use cocoa::foundation::NSUInteger;
 use objc::runtime::{Class, YES, NO};
 use objc_foundation::{INSString, NSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol, NSArray};
-
 use libc;
 
 use device::MTLDevice;
 use constants::MTLPixelFormat;
 use library::MTLFunction;
-use argument::MTLArgument;
+//use argument::MTLArgument;
 use vertexdescriptor::MTLVertexDescriptor;
 
 #[repr(u64)]
@@ -69,9 +67,14 @@ pub enum MTLPrimitiveTopologyClass {
     Triangle = 3,
 }
 
-pub enum MTLRenderPipelineColorAttachmentDescriptorPrototype {}
-pub type MTLRenderPipelineColorAttachmentDescriptor = id<(MTLRenderPipelineColorAttachmentDescriptorPrototype, (NSObjectPrototype, ()))>;
+pub enum MTLRenderPipelineColorAttachmentDescriptor {}
 
+foreign_obj_type! {
+    type CType = MTLRenderPipelineColorAttachmentDescriptor;
+    pub struct RenderPipelineColorAttachmentDescriptor;
+    pub struct RenderPipelineColorAttachmentDescriptorRef;
+}
+/*
 impl MTLRenderPipelineColorAttachmentDescriptor {
     pub fn pixel_format(&self) -> MTLPixelFormat {
         unsafe {
@@ -190,11 +193,16 @@ impl NSObjectProtocol for MTLRenderPipelineColorAttachmentDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineColorAttachmentDescriptor").unwrap()
     }
+}*/
+
+pub enum MTLRenderPipelineReflection {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPipelineReflection;
+    pub struct RenderPipelineReflection;
+    pub struct RenderPipelineReflectionRef;
 }
-
-pub enum MTLRenderPipelineReflectionPrototype {}
-pub type MTLRenderPipelineReflection = id<(MTLRenderPipelineReflectionPrototype, (NSObjectPrototype, ()))>;
-
+/*
 impl MTLRenderPipelineReflection {
     pub fn alloc() -> Self {
         unsafe {
@@ -233,11 +241,16 @@ impl NSObjectProtocol for MTLRenderPipelineReflection {
     unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineReflectionInternal").unwrap()
     }
+}*/
+
+pub enum MTLRenderPipelineDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPipelineDescriptor;
+    pub struct RenderPipelineDescriptor;
+    pub struct RenderPipelineDescriptorRef;
 }
-
-pub enum MTLRenderPipelineDescriptorPrototype {}
-pub type MTLRenderPipelineDescriptor = id<(MTLRenderPipelineDescriptorPrototype, (NSObjectPrototype, ()))>;
-
+/*
 impl<'a> MTLRenderPipelineDescriptor {
     pub fn alloc() -> Self {
         unsafe {
@@ -424,11 +437,16 @@ impl NSObjectProtocol for MTLRenderPipelineDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineDescriptorInternal").unwrap()
     }
+}*/
+
+pub enum MTLRenderPipelineState {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPipelineState;
+    pub struct RenderPipelineState;
+    pub struct RenderPipelineStateRef;
 }
-
-pub enum MTLRenderPipelineStatePrototype {}
-pub type MTLRenderPipelineState = id<(MTLRenderPipelineStatePrototype, (NSObjectPrototype, ()))>;
-
+/*
 impl<'a> MTLRenderPipelineState {
     pub fn label(&'a self) -> &'a str {
         unsafe {
@@ -449,11 +467,16 @@ impl NSObjectProtocol for MTLRenderPipelineState {
     unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineState").unwrap()
     }
+}*/
+
+pub enum MTLRenderPipelineColorAttachmentDescriptorArray {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPipelineColorAttachmentDescriptorArray;
+    pub struct RenderPipelineColorAttachmentDescriptorArray;
+    pub struct RenderPipelineColorAttachmentDescriptorArrayRef;
 }
-
-pub enum MTLRenderPipelineColorAttachmentDescriptorArrayPrototype {}
-pub type MTLRenderPipelineColorAttachmentDescriptorArray = id<(MTLRenderPipelineColorAttachmentDescriptorArrayPrototype, (NSObjectPrototype, ()))>;
-
+/*
 impl MTLRenderPipelineColorAttachmentDescriptorArray {
     pub fn object_at(&self, index: usize) -> MTLRenderPipelineColorAttachmentDescriptor {
         unsafe {
@@ -473,5 +496,5 @@ impl NSObjectProtocol for MTLRenderPipelineColorAttachmentDescriptorArray {
     unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPipelineColorAttachmentDescriptorArray").unwrap()
     }
-}
+}*/
 

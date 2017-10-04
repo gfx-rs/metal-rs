@@ -8,13 +8,16 @@
 use objc::runtime::{Class, YES, NO};
 use objc_foundation::{NSString, INSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol, NSArray};
-
 use argument::MTLDataType;
 
-pub enum MTLVertexAttributePrototype {}
-pub type MTLVertexAttribute = id<(MTLVertexAttributePrototype, (NSObjectPrototype, ()))>;
+pub enum MTLVertexAttribute {}
 
+foreign_obj_type! {
+    type CType = MTLVertexAttribute;
+    pub struct VertexAttribute;
+    pub struct VertexAttributeRef;
+}
+/*
 impl<'a> MTLVertexAttribute {
     pub fn name(&'a self) -> &'a str {
         unsafe {
@@ -51,7 +54,7 @@ impl NSObjectProtocol for MTLVertexAttribute {
     unsafe fn class() -> &'static Class {
         Class::get("MTLVertexAttribute").unwrap()
     }
-}
+}*/
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -61,11 +64,14 @@ pub enum MTLFunctionType {
     Kernel = 3,
 }
 
+pub enum MTLFunction {}
 
-
-pub enum MTLFunctionPrototype {}
-pub type MTLFunction = id<(MTLFunctionPrototype, (NSObjectPrototype, ()))>;
-
+foreign_obj_type! {
+    type CType = MTLFunction;
+    pub struct Function;
+    pub struct FunctionRef;
+}
+/*
 impl<'a> MTLFunction {
     pub fn name(&'a self) -> &'a str {
         unsafe {
@@ -91,7 +97,7 @@ impl NSObjectProtocol for MTLFunction {
     unsafe fn class() -> &'static Class {
         Class::get("MTLFunction").unwrap()
     }
-}
+}*/
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -103,9 +109,14 @@ pub enum MTLLanguageVersion {
 }
 
 
-pub enum MTLCompileOptionsPrototype {}
-pub type MTLCompileOptions = id<(MTLCompileOptionsPrototype, (NSObjectPrototype, ()))>;
+pub enum MTLCompileOptions {}
 
+foreign_obj_type! {
+    type CType = MTLCompileOptions;
+    pub struct CompileOptions;
+    pub struct CompileOptionsRef;
+}
+/*
 impl MTLCompileOptions {
     pub fn new() -> Self {
         unsafe {
@@ -170,7 +181,7 @@ impl NSObjectProtocol for MTLCompileOptions {
     unsafe fn class() -> &'static Class {
         Class::get("MTLCompileOptions").unwrap()
     }
-}
+}*/
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -189,11 +200,14 @@ pub enum MTLRenderPipelineError {
     InvalidInput      = 3,
 }
 
+pub enum MTLLibrary {}
 
-
-pub enum MTLLibraryPrototype {}
-pub type MTLLibrary = id<(MTLLibraryPrototype, (NSObjectPrototype, ()))>;
-
+foreign_obj_type! {
+    type CType = MTLLibrary;
+    pub struct Library;
+    pub struct LibraryRef;
+}
+/*
 impl<'a> MTLLibrary {
     pub fn label(&'a self) -> &'a str {
         unsafe {
@@ -233,5 +247,5 @@ impl NSObjectProtocol for MTLLibrary {
     unsafe fn class() -> &'static Class {
         Class::get("MTLLibrary").unwrap()
     }
-}
+}*/
 

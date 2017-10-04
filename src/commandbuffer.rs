@@ -9,9 +9,6 @@ use objc::runtime::Class;
 use objc_foundation::{NSString, INSString};
 use block::Block;
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
-use renderpass::MTLRenderPassDescriptor;
 use encoder::{MTLParallelRenderCommandEncoder, MTLRenderCommandEncoder, MTLBlitCommandEncoder};
 
 #[repr(u32)]
@@ -40,9 +37,15 @@ pub enum MTLCommandBufferError {
 
 type _MTLCommandBufferHandler = Block<(MTLCommandBuffer), ()>;
 
-pub enum MTLCommandBufferPrototype {}
-pub type MTLCommandBuffer = id<(MTLCommandBufferPrototype, (NSObjectPrototype, ()))>;
+pub enum MTLCommandBuffer {}
 
+foreign_obj_type! {
+    type CType = MTLCommandBuffer;
+    pub struct CommandBuffer;
+    pub struct CommandBufferRef;
+}
+
+/*
 impl<'a> MTLCommandBuffer {
     pub fn label(&'a self) -> &'a str {
         unsafe {
@@ -123,5 +126,5 @@ impl NSObjectProtocol for MTLCommandBuffer {
     unsafe fn class() -> &'static Class {
         Class::get("MTLCommandBuffer").unwrap()
     }
-}
+}*/
 

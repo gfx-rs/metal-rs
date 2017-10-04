@@ -7,8 +7,6 @@
 
 use objc::runtime::Class;
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 use libc;
 
 #[repr(u64)]
@@ -64,7 +62,7 @@ pub enum MTLVertexStepFunction {
     PerVertex = 1,
     PerInstance = 2,
 }
-
+/*
 pub enum MTLVertexBufferLayoutDescriptorPrototype {}
 pub type MTLVertexBufferLayoutDescriptor = id<(MTLVertexBufferLayoutDescriptorPrototype, (NSObjectPrototype, ()))>;
 
@@ -225,11 +223,16 @@ impl NSObjectProtocol for MTLVertexAttributeDescriptorArray {
     unsafe fn class() -> &'static Class {
         Class::get("MTLVertexAttributeDescriptorArray").unwrap()
     }
+}*/
+
+pub enum MTLVertexDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLVertexDescriptor;
+    pub struct VertexDescriptor;
+    pub struct VertexDescriptorRef;
 }
-
-pub enum MTLVertexDescriptorPrototype {}
-pub type MTLVertexDescriptor = id<(MTLVertexDescriptorPrototype, (NSObjectPrototype, ()))>;
-
+/*
 impl MTLVertexDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -266,5 +269,5 @@ impl NSObjectProtocol for MTLVertexDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLVertexDescriptor").unwrap()
     }
-}
+}*/
 

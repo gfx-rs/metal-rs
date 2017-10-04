@@ -8,16 +8,19 @@
 use cocoa::foundation::NSRange;
 use objc::runtime::Class;
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 use libc;
 
-use resource::{MTLResourcePrototype};
 use texture::{MTLTexture, MTLTextureDescriptor};
 
-pub enum MTLBufferPrototype {}
-pub type MTLBuffer = id<(MTLBufferPrototype, (MTLResourcePrototype, (NSObjectPrototype, ())))>;
+pub enum MTLBuffer {}
 
+foreign_obj_type! {
+    type CType = MTLBuffer;
+    pub struct Buffer;
+    pub struct BufferRef;
+}
+
+/*
 impl MTLBuffer {
     pub fn length(&self) -> u64 {
         unsafe {
@@ -50,5 +53,5 @@ impl NSObjectProtocol for MTLBuffer {
     unsafe fn class() -> &'static Class {
         Class::get("MTLBuffer").unwrap()
     }
-}
+}*/
 

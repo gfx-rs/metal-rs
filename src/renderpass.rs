@@ -7,8 +7,6 @@
 
 use objc::runtime::Class;
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 use texture::MTLTexture;
 use buffer::MTLBuffer;
 
@@ -48,7 +46,7 @@ impl MTLClearColor {
         }
     }
 }
-
+/*
 pub enum MTLRenderPassAttachmentDescriptorPrototype {}
 pub type MTLRenderPassAttachmentDescriptor = id<(MTLRenderPassAttachmentDescriptorPrototype, (NSObjectPrototype, ()))>;
 
@@ -365,5 +363,5 @@ impl NSObjectProtocol for MTLRenderPassDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLRenderPassDescriptorInternal").unwrap()
     }
-}
+}*/
 

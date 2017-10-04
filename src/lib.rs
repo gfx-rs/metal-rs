@@ -16,6 +16,8 @@ extern crate libc;
 extern crate objc;
 extern crate objc_foundation;
 extern crate block;
+#[macro_use]
+extern crate foreign_types;
 
 use objc::Message;
 use objc::runtime::{Object, Class, BOOL, YES, NO};
@@ -34,94 +36,45 @@ pub type CGFloat = libc::c_double;
 #[cfg(not(target_pointer_width = "64"))]
 pub type CGFloat = libc::c_float;
 
-#[allow(non_camel_case_types)]
-#[repr(C)]
-pub struct id<T=()>(pub *mut Object, pub PhantomData<T>);
+macro_rules! foreign_obj_type {
+    {type CType = $raw_ident:ident;
+    pub struct $owned_ident:ident;
+    pub struct $ref_ident:ident;
+    } => {
+        foreign_type! {
+            type CType = $raw_ident;
+            fn drop = ::obj_drop;
+            fn clone = ::obj_clone;
+            pub struct $owned_ident;
+            pub struct $ref_ident;
+        }
 
-impl<T> Copy for id<T> {}
-impl<T> Clone for id<T> {
-    fn clone(&self) -> id<T> {
-        *self
-    }
+        unsafe impl ::objc::Message for $raw_ident {
+        }
+        unsafe impl ::objc::Message for $ref_ident {
+        }
+    };
 }
 
-impl<T> Hash for id<T> {
-    fn hash<H>(&self, state: &mut H) where H: Hasher {
-        state.write_u64(unsafe { mem::transmute(self.0) });
-        state.finish();
-    }
+macro_rules! try_objc {
+    {
+        $err_name: ident => $body:expr
+    } => {
+        {
+            let mut $err_name: *mut ::objc::runtime::Object = ::std::ptr::null_mut();
+            let value = $body;
+            if !$err_name.is_null() {
+                let desc: *mut Object = msg_send![$err_name, localizedDescription];
+                let compile_error: *const ::libc::c_char = msg_send![desc, UTF8String];
+                let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
+                msg_send![$err_name, release];
+                return Err(message);
+            }
+            value
+        }
+    };
 }
-
-impl<T> PartialEq for id<T> {
-    fn eq(&self, other: &id<T>) -> bool {
-        self.0 == other.0
-    }
-}
-
-impl<T> Eq for id<T> {}
-
-impl<T> fmt::Debug for id<T> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "id({:p})", self.0)
-    }
-}
-
-impl<T> id<T> {
-    pub fn nil() -> Self {
-        id(0 as *mut Object, PhantomData)
-    }
-
-    pub fn is_null(&self) -> bool {
-        self.0.is_null()
-    }
-}
-
-impl<T, R> Deref for id<(T, R)> {
-    type Target = id<R>;
-    fn deref(&self) -> &id<R> { unsafe { mem::transmute(self) } }
-}
-
-unsafe impl<T> objc::Message for id<T> { }
-
-#[allow(non_upper_case_globals)]
-pub const nil: id<()> = id(0 as *mut Object, PhantomData);
-
-pub trait AsObject {
-    fn as_obj(&self) -> *mut Object;
-}
-
-impl<T> AsObject for id<T> {
-    fn as_obj(&self) -> *mut Object {
-        self.0
-    }
-}
-
-pub trait NSObjectProtocol : Message + Sized + AsObject {
-    unsafe fn retain(&self) {
-        msg_send![self.as_obj(), retain]
-    }
-
-    unsafe fn release(&self) {
-        msg_send![self.as_obj(), release]
-    }
-
-    unsafe fn retain_count(&self) -> u64 {
-        msg_send![self.as_obj(), retainCount]
-    }
-
-    unsafe fn autorelease(&self) {
-        msg_send![self.as_obj(), autorelease]
-    }
-
-    unsafe fn is_kind_of_class(&self, class: Class) -> BOOL {
-        msg_send![self.as_obj(), isKindOfClass:class]
-    }
-
-    unsafe fn class() -> &'static Class {
-        Class::get("NSObject").unwrap()
-    }
-}
-
+/*
 pub enum NSArrayPrototype {}
 pub type NSArray<T> = id<(NSArrayPrototype, (NSObjectPrototype, (T)))>;
 
@@ -306,7 +259,7 @@ impl NSObjectProtocol for CAMetalLayer {
     unsafe fn class() -> &'static Class {
         Class::get("CAMetalLayer").unwrap()
     }
-}
+}*/
 
 mod constants;
 mod types;
@@ -346,3 +299,12 @@ pub use vertexdescriptor::*;
 pub use depthstencil::*;
 pub use heap::*;
 
+#[inline]
+unsafe fn obj_drop<T>(p: *mut T) {
+    msg_send![(p as *mut Object), release];
+}
+
+#[inline]
+unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
+    msg_send![(p as *mut Object), retain]
+}

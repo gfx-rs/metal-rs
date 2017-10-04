@@ -7,11 +7,16 @@
 
 use objc::runtime::Class;
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
+pub enum MTLDrawable {}
 
-pub enum MTLDrawablePrototype {}
-pub type MTLDrawable = id<(MTLDrawablePrototype, (NSObjectPrototype, ()))>;
+foreign_obj_type! {
+    type CType = MTLDrawable;
+    pub struct Drawable;
+    pub struct DrawableRef;
+}
 
+
+/*
 impl MTLDrawable {
     pub fn present(&self) {
         unsafe {
@@ -25,4 +30,4 @@ impl NSObjectProtocol for MTLDrawable {
         Class::get("MTLDrawable").unwrap()
     }
 }
-
+*/

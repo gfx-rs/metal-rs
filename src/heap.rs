@@ -5,7 +5,6 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use {NSObjectPrototype, NSObjectProtocol, id};
 use buffer::MTLBuffer;
 use texture::{MTLTexture, MTLTextureDescriptor};
 use resource::{MTLResourceOptions, MTLStorageMode, MTLCPUCacheMode, MTLPurgeableState};
@@ -13,9 +12,14 @@ use resource::{MTLResourceOptions, MTLStorageMode, MTLCPUCacheMode, MTLPurgeable
 use cocoa::foundation::NSUInteger;
 use objc::runtime::Class;
 
-pub enum MTLHeapPrototype {}
-pub type MTLHeap = id<(MTLHeapPrototype, (NSObjectPrototype, ()))>;
+pub enum MTLHeap {}
 
+foreign_obj_type! {
+    type CType = MTLHeap;
+    pub struct Heap;
+    pub struct HeapRef;
+}
+/*
 impl MTLHeap {
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
         unsafe {
@@ -65,16 +69,16 @@ impl MTLHeap {
             msg_send![self.0, newTextureWithDescriptor:descriptor.0]
         }
     }
-}
-pub enum MTLHeapDescriptorPrototype {}
-pub type MTLHeapDescriptor = id<(MTLHeapDescriptorPrototype, (NSObjectPrototype, ()))>;
+}*/
 
-impl NSObjectProtocol for MTLHeapDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLHeapDescriptor").unwrap()
-    }
-}
+pub enum MTLHeapDescriptor {}
 
+foreign_obj_type! {
+    type CType = MTLHeapDescriptor;
+    pub struct HeapDescriptor;
+    pub struct HeapDescriptorRef;
+}
+/*
 impl MTLHeapDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -129,4 +133,4 @@ impl MTLHeapDescriptor {
             msg_send![self.0, setSize: size];
         }
     }
-}
+}*/

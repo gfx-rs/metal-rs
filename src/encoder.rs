@@ -9,8 +9,6 @@ use cocoa::foundation::{NSRange, NSUInteger};
 use objc::runtime::Class;
 use objc_foundation::{NSString, INSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 use libc;
 
 use resource::MTLResource;
@@ -113,11 +111,14 @@ pub struct MTLDrawIndexedPrimitivesIndirectArguments {
     pub baseInstance: u32
 }
 
-pub enum MTLCommandEncoderPrototype {}
-pub type MTLCommandEncoder = id<
-    (MTLCommandEncoderPrototype,
-        (NSObjectPrototype, ()))>;
+pub enum MTLCommandEncoder {}
 
+foreign_obj_type! {
+    type CType = MTLCommandEncoder;
+    pub struct CommandEncoder;
+    pub struct CommandEncoderRef;
+}
+/*
 impl<'a> MTLCommandEncoder {
     pub fn label(&'a self) -> &'a str {
         unsafe {
@@ -144,14 +145,16 @@ impl NSObjectProtocol for MTLCommandEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLCommandEncoder").unwrap()
     }
+}*/
+
+pub enum MTLParallelRenderCommandEncoder {}
+
+foreign_obj_type! {
+    type CType = MTLParallelRenderCommandEncoder;
+    pub struct ParallelRenderCommandEncoder;
+    pub struct ParallelRenderCommandEncoderRef;
 }
-
-pub enum MTLParallelRenderCommandEncoderPrototype {}
-pub type MTLParallelRenderCommandEncoder = id<
-    (MTLParallelRenderCommandEncoderPrototype,
-        (MTLCommandEncoderPrototype,
-            (NSObjectPrototype, ())))>;
-
+/*
 impl MTLParallelRenderCommandEncoder {
     pub fn render_command_encoder(&self) -> MTLRenderCommandEncoder {
         unsafe {
@@ -164,14 +167,16 @@ impl NSObjectProtocol for MTLParallelRenderCommandEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLParallelRenderCommandEncoder").unwrap()
     }
+}*/
+
+pub enum MTLRenderCommandEncoder {}
+
+foreign_obj_type! {
+    type CType = MTLRenderCommandEncoder;
+    pub struct RenderCommandEncoder;
+    pub struct RenderCommandEncoderRef;
 }
-
-pub enum MTLRenderCommandEncoderPrototype {}
-pub type MTLRenderCommandEncoder = id<
-    (MTLRenderCommandEncoderPrototype,
-        (MTLCommandEncoderPrototype,
-            (NSObjectPrototype, ())))>;
-
+/*
 impl MTLRenderCommandEncoder {
     // Setting Graphics Rendering State
 
@@ -398,15 +403,17 @@ impl NSObjectProtocol for MTLRenderCommandEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLRenderCommandEncoder").unwrap()
     }
+}*/
+
+
+pub enum MTLBlitCommandEncoder {}
+
+foreign_obj_type! {
+    type CType = MTLBlitCommandEncoder;
+    pub struct BlitCommandEncoder;
+    pub struct BlitCommandEncoderRef;
 }
-
-
-pub enum MTLBlitCommandEncoderPrototype {}
-pub type MTLBlitCommandEncoder = id<
-    (MTLBlitCommandEncoderPrototype,
-        (MTLCommandEncoderPrototype,
-            (NSObjectPrototype, ())))>;
-
+/*
 impl MTLBlitCommandEncoder {
 
     pub fn synchronize_resource(&self, resource: MTLResource) {
@@ -421,15 +428,17 @@ impl NSObjectProtocol for MTLBlitCommandEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLBlitCommandEncoder").unwrap()
     }
+}*/
+
+
+pub enum MTLComputeCommandEncoder {}
+
+foreign_obj_type! {
+    type CType = MTLComputeCommandEncoder;
+    pub struct ComputeCommandEncoder;
+    pub struct ComputeCommandEncoderRef;
 }
-
-
-pub enum MTLComputeCommandEncoderPrototype {}
-pub type MTLComputeCommandEncoder = id<
-    (MTLComputeCommandEncoderPrototype,
-        (MTLCommandEncoderPrototype,
-            (NSObjectPrototype, ())))>;
-
+/*
 impl MTLComputeCommandEncoder {
 
     pub fn set_render_pipeline_state(&self) {
@@ -441,14 +450,17 @@ impl NSObjectProtocol for MTLComputeCommandEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLComputeCommandEncoder").unwrap()
     }
+}*/
+
+
+pub enum MTLArgumentEncoder {}
+
+foreign_obj_type! {
+    type CType = MTLArgumentEncoder;
+    pub struct ArgumentEncoder;
+    pub struct ArgumentEncoderRef;
 }
-
-
-pub enum MTLArgumentEncoderPrototype {}
-pub type MTLArgumentEncoder = id<
-    (MTLArgumentEncoderPrototype,
-        (NSObjectPrototype, ()))>;
-
+/*
 impl NSObjectProtocol for MTLArgumentEncoder {
     unsafe fn class() -> &'static Class {
         Class::get("MTLArgumentEncoder").unwrap()
@@ -507,4 +519,4 @@ impl MTLArgumentEncoder {
                                      withRange:range]
         }
     }
-}
+}*/

@@ -9,8 +9,6 @@ use cocoa::foundation::NSUInteger;
 use objc::runtime::{Class, YES, NO};
 use objc_foundation::{NSString, INSString, NSArray};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 use texture::MTLTextureType;
 
 #[repr(u64)]
@@ -113,10 +111,15 @@ pub enum MTLArgumentAccess {
     WriteOnly  = 2,
 }
 
+pub enum MTLStructMember {}
 
-pub enum MTLStructMemberPrototype {}
-pub type MTLStructMember = id<(MTLStructMemberPrototype, (NSObjectPrototype, ()))>;
+foreign_obj_type! {
+    type CType = MTLStructMember;
+    pub struct StructMember;
+    pub struct StructMemberRef;
+}
 
+/*
 impl<'a> MTLStructMember {
     pub fn name(&'a self) -> &'a str {
         unsafe {
@@ -148,8 +151,8 @@ impl<'a> MTLStructMember {
             msg_send![self.0, arrayType]
         }
     }
-}
-
+}*/
+/*
 pub enum MTLStructTypePrototype {}
 pub type MTLStructType = id<(MTLStructTypePrototype, (NSObjectPrototype, ()))>;
 
@@ -173,8 +176,8 @@ impl NSObjectProtocol for MTLStructType {
     unsafe fn class() -> &'static Class {
         Class::get("MTLStructType").unwrap()
     }
-}
-
+}*/
+/*
 pub enum MTLArrayTypePrototype {}
 pub type MTLArrayType = id<(MTLArrayTypePrototype, (NSObjectPrototype, ()))>;
 
@@ -214,11 +217,10 @@ impl NSObjectProtocol for MTLArrayType {
     unsafe fn class() -> &'static Class {
         Class::get("MTLArrayType").unwrap()
     }
-}
-
+}*/
+/*
 pub enum MTLArgumentPrototype {}
 pub type MTLArgument = id<(MTLArgumentPrototype, (NSObjectPrototype, ()))>;
-
 impl<'a> MTLArgument {
     pub fn name(&'a self) -> &'a str {
         unsafe {
@@ -308,12 +310,11 @@ impl NSObjectProtocol for MTLArgument {
     unsafe fn class() -> &'static Class {
         Class::get("MTLArgument").unwrap()
     }
-}
+}*/
 
-
+/*
 pub enum MTLArgumentDescriptorPrototype {}
 pub type MTLArgumentDescriptor = id<(MTLArgumentDescriptorPrototype, (NSObjectPrototype, ()))>;
-
 impl NSObjectProtocol for MTLArgumentDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLArgumentDescriptor").unwrap()
@@ -356,4 +357,4 @@ impl MTLArgumentDescriptor {
             msg_send![self.0, setTextureType:ty]
         }
     }
-}
+}*/
