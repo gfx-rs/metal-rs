@@ -9,8 +9,6 @@ use cocoa::foundation::NSUInteger;
 use objc::runtime::Class;
 use objc_foundation::{NSString, INSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -66,10 +64,15 @@ pub struct MTLSizeAndAlign {
     pub align: NSUInteger,
 }
 
+pub enum MTLResource {}
 
-pub enum MTLResourcePrototype {}
-pub type MTLResource = id<(MTLResourcePrototype, (NSObjectPrototype, ()))>;
+foreign_obj_type! {
+    type CType = MTLResource;
+    pub struct Resource;
+    pub struct ResourceRef;
+}
 
+/*
 impl<'a> MTLResource {
     pub fn label(&'a self) -> &'a str {
         unsafe {
@@ -108,5 +111,5 @@ impl NSObjectProtocol for MTLResource {
     unsafe fn class() -> &'static Class {
         Class::get("MTLResource").unwrap()
     }
-}
+}*/
 

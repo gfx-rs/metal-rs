@@ -8,12 +8,10 @@
 use cocoa::foundation::{NSUInteger, NSRange};
 use objc::runtime::{Class, YES, NO};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 use constants::MTLPixelFormat;
 use types::{MTLRegion};
 use buffer::MTLBuffer;
-use resource::{MTLResource, MTLResourcePrototype, MTLResourceOptions, MTLCPUCacheMode, MTLStorageMode};
+use resource::{MTLResource,  MTLResourceOptions, MTLCPUCacheMode, MTLStorageMode};
 
 use libc;
 
@@ -42,10 +40,17 @@ bitflags! {
     }
 }
 
+pub enum MTLTextureDescriptor {}
 
-pub enum MTLTextureDescriptorPrototype {}
-pub type MTLTextureDescriptor = id<(MTLTextureDescriptorPrototype, (NSObjectPrototype, ()))>;
+foreign_obj_type! {
+    type CType = MTLTextureDescriptor;
+    pub struct TextureDescriptor;
+    pub struct TextureDescriptorRef;
+}
 
+
+
+/*
 impl MTLTextureDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -214,11 +219,19 @@ impl NSObjectProtocol for MTLTextureDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLTextureDescriptor").unwrap()
     }
+}*/
+
+pub enum MTLTexture {}
+
+foreign_obj_type! {
+    type CType = MTLTexture;
+    pub struct Texture;
+    pub struct TextureRef;
 }
 
-pub enum MTLTexturePrototype {}
-pub type MTLTexture = id<(MTLTexturePrototype, (MTLResourcePrototype, (NSObjectPrototype, ())))>;
 
+
+/*
 impl<'a> MTLTexture {
     pub fn root_resource(&self) -> Option<MTLResource> {
        unsafe {
@@ -401,5 +414,5 @@ impl NSObjectProtocol for MTLTexture {
     unsafe fn class() -> &'static Class {
         Class::get("MTLTexture").unwrap()
     }
-}
+}*/
 

@@ -8,13 +8,16 @@
 use objc::runtime::Class;
 use objc_foundation::{NSString, INSString};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 use commandbuffer::MTLCommandBuffer;
 
-pub enum MTLCommandQueuePrototype {}
-pub type MTLCommandQueue = id<(MTLCommandQueuePrototype, (NSObjectPrototype, ()))>;
+pub enum MTLCommandQueue {}
 
+foreign_obj_type! {
+    type CType = MTLCommandQueue;
+    pub struct CommandQueue;
+    pub struct CommandQueueRef;
+}
+/*
 impl<'a> MTLCommandQueue {
     pub fn label(&'a self) -> &'a str {
         unsafe {
@@ -47,5 +50,5 @@ impl NSObjectProtocol for MTLCommandQueue {
     unsafe fn class() -> &'static Class {
         Class::get("MTLCommandQueue").unwrap()
     }
-}
+}*/
 

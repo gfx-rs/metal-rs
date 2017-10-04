@@ -7,8 +7,6 @@
 
 use objc::runtime::Class;
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 use depthstencil::MTLCompareFunction;
 
 #[repr(u64)]
@@ -36,9 +34,15 @@ pub enum MTLSamplerAddressMode {
     ClampToZero = 4,
 }
 
-pub enum MTLSamplerDescriptorPrototype {}
-pub type MTLSamplerDescriptor = id<(MTLSamplerDescriptorPrototype, (NSObjectPrototype, ()))>;
+pub enum MTLSamplerDescriptor {}
 
+foreign_obj_type! {
+    type CType = MTLSamplerDescriptor;
+    pub struct SamplerDescriptor;
+    pub struct SamplerDescriptorRef;
+}
+
+/*
 impl MTLSamplerDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -129,13 +133,19 @@ impl NSObjectProtocol for MTLSamplerDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLSamplerDescriptor").unwrap()
     }
+}*/
+
+pub enum MTLSamplerState {}
+
+foreign_obj_type! {
+    type CType = MTLSamplerState;
+    pub struct SamplerState;
+    pub struct SamplerStateRef;
 }
 
-pub enum MTLSamplerStatePrototype {}
-pub type MTLSamplerState = id<(MTLSamplerStatePrototype, (NSObjectPrototype, ()))>;
-
+/*
 impl NSObjectProtocol for MTLSamplerState {
     unsafe fn class() -> &'static Class {
         Class::get("MTLSamplerState").unwrap()
     }
-}
+}*/

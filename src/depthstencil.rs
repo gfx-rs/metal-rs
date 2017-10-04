@@ -7,8 +7,6 @@
 
 use objc::runtime::{Class, YES, NO};
 
-use super::{id, NSObjectPrototype, NSObjectProtocol};
-
 #[repr(u64)]
 pub enum MTLCompareFunction {
     Never = 0,
@@ -33,9 +31,14 @@ pub enum MTLStencilOperation {
     DecrementWrap = 7,
 }
 
-pub enum MTLStencilDescriptorPrototype {}
-pub type MTLStencilDescriptor = id<(MTLStencilDescriptorPrototype, (NSObjectPrototype, ()))>;
+pub enum MTLStencilDescriptor {}
 
+foreign_obj_type! {
+    type CType = MTLStencilDescriptor;
+    pub struct StencilDescriptor;
+    pub struct StencilDescriptorRef;
+}
+/*
 impl MTLStencilDescriptor {
     pub fn alloc() -> Self {
         unsafe {
@@ -126,11 +129,17 @@ impl NSObjectProtocol for MTLStencilDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLStencilDescriptor").unwrap()
     }
+}*/
+
+pub enum MTLDepthStencilDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLDepthStencilDescriptor;
+    pub struct DepthStencilDescriptor;
+    pub struct DepthStencilDescriptorRef;
 }
 
-pub enum MTLDepthStencilDescriptorPrototype {}
-pub type MTLDepthStencilDescriptor = id<(MTLDepthStencilDescriptorPrototype, (NSObjectPrototype, ()))>;
-
+/*
 impl MTLDepthStencilDescriptor {
     pub fn alloc() -> Self {
         unsafe {
@@ -201,14 +210,19 @@ impl NSObjectProtocol for MTLDepthStencilDescriptor {
     unsafe fn class() -> &'static Class {
         Class::get("MTLDepthStencilDescriptor").unwrap()
     }
+}*/
+
+pub enum MTLDepthStencilState {}
+
+foreign_obj_type! {
+    type CType = MTLDepthStencilState;
+    pub struct DepthStencilState;
+    pub struct DepthStencilStateRef;
 }
-
-pub enum MTLDepthStencilStatePrototype {}
-pub type MTLDepthStencilState = id<(MTLDepthStencilStatePrototype, (NSObjectPrototype, ()))>;
-
+/*
 impl NSObjectProtocol for MTLDepthStencilState {
     unsafe fn class() -> &'static Class {
         Class::get("MTLDepthStencilState").unwrap()
     }
-}
+}*/
 
