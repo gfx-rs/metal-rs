@@ -5,8 +5,6 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use objc::runtime::Class;
-
 pub enum MTLDrawable {}
 
 foreign_obj_type! {
@@ -16,18 +14,10 @@ foreign_obj_type! {
 }
 
 
-/*
-impl MTLDrawable {
+impl DrawableRef {
     pub fn present(&self) {
         unsafe {
-            msg_send![self.0, present]
+            msg_send![self, present]
         }
     }
 }
-
-impl NSObjectProtocol for MTLDrawable {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLDrawable").unwrap()
-    }
-}
-*/

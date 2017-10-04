@@ -38,98 +38,89 @@ foreign_obj_type! {
     pub struct StencilDescriptor;
     pub struct StencilDescriptorRef;
 }
-/*
-impl MTLStencilDescriptor {
-    pub fn alloc() -> Self {
+
+impl StencilDescriptor {
+    pub fn new() -> Self {
         unsafe {
-            msg_send![Self::class(), alloc]
+            let class = Class::get("MTLStencilDescriptor").unwrap();
+            msg_send![class, new]
         }
     }
+}
 
-    pub fn init(&self) -> Self {
-        unsafe {
-            msg_send![self.0, init]
-        }
-    }
-
+impl StencilDescriptorRef {
     pub fn stencil_compare_function(&self) -> MTLCompareFunction {
         unsafe {
-            msg_send![self.0, stencilCompareFunction]
+            msg_send![self, stencilCompareFunction]
         }
     }
 
     pub fn set_stencil_compare_function(&self, func: MTLCompareFunction) {
         unsafe {
-            msg_send![self.0, setStencilCompareFunction:func]
+            msg_send![self, setStencilCompareFunction:func]
         }
     }
 
     pub fn stencil_failure_operation(&self) -> MTLStencilOperation {
         unsafe {
-            msg_send![self.0, stencilFailureOperation]
+            msg_send![self, stencilFailureOperation]
         }
     }
 
     pub fn set_stencil_failure_operation(&self, operation: MTLStencilOperation) {
         unsafe {
-            msg_send![self.0, setStencilFailureOperation:operation]
+            msg_send![self, setStencilFailureOperation:operation]
         }
     }
 
     pub fn depth_failure_operation(&self) -> MTLStencilOperation {
         unsafe {
-            msg_send![self.0, depthFailureOperation]
+            msg_send![self, depthFailureOperation]
         }
     }
 
     pub fn set_depth_failure_operation(&self, operation: MTLStencilOperation) {
         unsafe {
-            msg_send![self.0, setDepthFailureOperation:operation]
+            msg_send![self, setDepthFailureOperation:operation]
         }
     }
 
     pub fn depth_stencil_pass_operation(&self) -> MTLStencilOperation {
         unsafe {
-            msg_send![self.0, depthStencilPassOperation]
+            msg_send![self, depthStencilPassOperation]
         }
     }
 
     pub fn set_depth_stencil_pass_operation(&self, operation: MTLStencilOperation) {
         unsafe {
-            msg_send![self.0, setDepthStencilPassOperation:operation]
+            msg_send![self, setDepthStencilPassOperation:operation]
         }
     }
 
     pub fn read_mask(&self) -> u32 {
         unsafe {
-            msg_send![self.0, readMask]
+            msg_send![self, readMask]
         }
     }
 
     pub fn set_read_mask(&self, mask: u32) {
         unsafe {
-            msg_send![self.0, setReadMask:mask]
+            msg_send![self, setReadMask:mask]
         }
     }
 
     pub fn write_mask(&self) -> u32 {
         unsafe {
-            msg_send![self.0, writeMask]
+            msg_send![self, writeMask]
         }
     }
 
     pub fn set_write_mask(&self, mask: u32) {
         unsafe {
-            msg_send![self.0, setWriteMask:mask]
+            msg_send![self, setWriteMask:mask]
         }
     }
 }
-
-impl NSObjectProtocol for MTLStencilDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLStencilDescriptor").unwrap()
-    }
-}*/
 
 pub enum MTLDepthStencilDescriptor {}
 
@@ -139,35 +130,32 @@ foreign_obj_type! {
     pub struct DepthStencilDescriptorRef;
 }
 
-/*
-impl MTLDepthStencilDescriptor {
-    pub fn alloc() -> Self {
+
+impl DepthStencilDescriptor {
+    pub fn new() -> Self {
         unsafe {
-            msg_send![Self::class(), alloc]
+            let class = Class::get("MTLDepthStencilDescriptor").unwrap();
+            msg_send![class, new]
         }
     }
+}
 
-    pub fn init(&self) -> Self {
-        unsafe {
-            msg_send![self.0, init]
-        }
-    }
-
+impl DepthStencilDescriptorRef {
     pub fn depth_compare_function(&self) -> MTLCompareFunction {
         unsafe {
-            msg_send![self.0, depthCompareFunction]
+            msg_send![self, depthCompareFunction]
         }
     }
 
     pub fn set_depth_compare_function(&self, func: MTLCompareFunction) {
         unsafe {
-            msg_send![self.0, setDepthCompareFunction:func]
+            msg_send![self, setDepthCompareFunction:func]
         }
     }
 
     pub fn depth_write_enabled(&self) -> bool {
         unsafe {
-            match msg_send![self.0, isDepthWriteEnabled] {
+            match msg_send![self, isDepthWriteEnabled] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -177,40 +165,34 @@ impl MTLDepthStencilDescriptor {
 
     pub fn set_depth_write_enabled(&self, enabled: bool) {
         unsafe {
-            msg_send![self.0, setDepthWriteEnabled:enabled]
+            msg_send![self, setDepthWriteEnabled:enabled]
         }
     }
 
-    pub fn front_face_stencil(&self) -> MTLStencilDescriptor {
+    pub fn front_face_stencil(&self) -> Option<&StencilDescriptorRef> {
         unsafe {
-            msg_send![self.0, frontFaceStencil]
+            msg_send![self, frontFaceStencil]
         }
     }
 
-    pub fn set_front_face_stencil(&self, descriptor: MTLStencilDescriptor) {
+    pub fn set_front_face_stencil(&self, descriptor: Option<&StencilDescriptorRef>) {
         unsafe {
-            msg_send![self.0, setFrontFaceStencil:descriptor]
+            msg_send![self, setFrontFaceStencil:descriptor]
         }
     }
 
-    pub fn back_face_stencil(&self) -> MTLStencilDescriptor {
+    pub fn back_face_stencil(&self) -> Option<&StencilDescriptorRef> {
         unsafe {
-            msg_send![self.0, backFaceStencil]
+            msg_send![self, backFaceStencil]
         }
     }
 
-    pub fn set_back_face_stencil(&self, descriptor: MTLStencilDescriptor) {
+    pub fn set_back_face_stencil(&self, descriptor: Option<&StencilDescriptorRef>) {
         unsafe {
-            msg_send![self.0, setBackFaceStencil:descriptor]
+            msg_send![self, setBackFaceStencil:descriptor]
         }
     }
 }
-
-impl NSObjectProtocol for MTLDepthStencilDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLDepthStencilDescriptor").unwrap()
-    }
-}*/
 
 pub enum MTLDepthStencilState {}
 
@@ -219,10 +201,3 @@ foreign_obj_type! {
     pub struct DepthStencilState;
     pub struct DepthStencilStateRef;
 }
-/*
-impl NSObjectProtocol for MTLDepthStencilState {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLDepthStencilState").unwrap()
-    }
-}*/
-

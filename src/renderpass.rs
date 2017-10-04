@@ -5,10 +5,10 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use objc::runtime::Class;
+use super::*;
 
-use texture::MTLTexture;
-use buffer::MTLBuffer;
+use objc::runtime::Class;
+use cocoa::foundation::NSUInteger;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -46,322 +46,294 @@ impl MTLClearColor {
         }
     }
 }
-/*
-pub enum MTLRenderPassAttachmentDescriptorPrototype {}
-pub type MTLRenderPassAttachmentDescriptor = id<(MTLRenderPassAttachmentDescriptorPrototype, (NSObjectPrototype, ()))>;
 
-impl MTLRenderPassAttachmentDescriptor {
-    pub fn texture(&self) -> MTLTexture {
+pub enum MTLRenderPassAttachmentDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPassAttachmentDescriptor;
+    pub struct RenderPassAttachmentDescriptor;
+    pub struct RenderPassAttachmentDescriptorRef;
+}
+
+impl RenderPassAttachmentDescriptorRef {
+    pub fn texture(&self) -> Option<&TextureRef> {
         unsafe {
-            msg_send![self.0, texture]
+            msg_send![self, texture]
         }
     }
 
-    pub fn set_texture(&self, texture: MTLTexture) {
+    pub fn set_texture(&self, texture: Option<&TextureRef>) {
         unsafe {
-            msg_send![self.0, setTexture:texture.0]
+            msg_send![self, setTexture:texture];
         }
     }
 
-    pub fn level(&self) -> u64 {
+    pub fn level(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, level]
+            msg_send![self, level]
         }
     }
 
-    pub fn set_level(&self, level: u64) {
+    pub fn set_level(&self, level: NSUInteger) {
         unsafe {
-            msg_send![self.0, setLevel:level]
+            msg_send![self, setLevel:level]
         }
     }
 
-    pub fn slice(&self) -> u64 {
+    pub fn slice(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, slice]
+            msg_send![self, slice]
         }
     }
 
-    pub fn set_slice(&self, slice: u64) {
+    pub fn set_slice(&self, slice: NSUInteger) {
         unsafe {
-            msg_send![self.0, setSlice:slice]
+            msg_send![self, setSlice:slice]
         }
     }
 
-    pub fn depth_plane(&self) -> u64 {
+    pub fn depth_plane(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, depthPlane]
+            msg_send![self, depthPlane]
         }
     }
 
-    pub fn set_depth_plane(&self, depth_plane: u64) {
+    pub fn set_depth_plane(&self, depth_plane: NSUInteger) {
         unsafe {
-            msg_send![self.0, setDepthPlane:depth_plane]
+            msg_send![self, setDepthPlane:depth_plane]
         }
     }
 
-    pub fn resolve_texture(&self) -> MTLTexture {
+    pub fn resolve_texture(&self) -> Option<&TextureRef> {
         unsafe {
-            msg_send![self.0, resolveTexture]
+            msg_send![self, resolveTexture]
         }
     }
 
-    pub fn set_resolve_texture(&self, resolve_texture: MTLTexture) {
+    pub fn set_resolve_texture(&self, resolve_texture: Option<&TextureRef>) {
         unsafe {
-            msg_send![self.0, setResolveTexture:resolve_texture.0]
+            msg_send![self, setResolveTexture:resolve_texture]
         }
     }
 
-    pub fn resolve_level(&self) -> u64 {
+    pub fn resolve_level(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, resolveLevel]
+            msg_send![self, resolveLevel]
         }
     }
 
-    pub fn set_resolve_level(&self, resolve_level: u64) {
+    pub fn set_resolve_level(&self, resolve_level: NSUInteger) {
         unsafe {
-            msg_send![self.0, setResolveLevel:resolve_level]
+            msg_send![self, setResolveLevel:resolve_level]
         }
     }
 
-    pub fn resolve_slice(&self) -> u64 {
+    pub fn resolve_slice(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, resolveSlice]
+            msg_send![self, resolveSlice]
         }
     }
 
-    pub fn set_resolve_slice(&self, resolve_slice: u64) {
+    pub fn set_resolve_slice(&self, resolve_slice: NSUInteger) {
         unsafe {
-            msg_send![self.0, setResolveSlice:resolve_slice]
+            msg_send![self, setResolveSlice:resolve_slice]
         }
     }
 
-    pub fn resolve_depth_plane(&self) -> u64 {
+    pub fn resolve_depth_plane(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, resolveDepthPlane]
+            msg_send![self, resolveDepthPlane]
         }
     }
 
-    pub fn set_resolve_depth_plane(&self, resolve_depth_plane: u64) {
+    pub fn set_resolve_depth_plane(&self, resolve_depth_plane: NSUInteger) {
         unsafe {
-            msg_send![self.0, setResolveDepthPlane:resolve_depth_plane]
+            msg_send![self, setResolveDepthPlane:resolve_depth_plane]
         }
     }
 
     pub fn load_action(&self) -> MTLLoadAction {
         unsafe {
-            msg_send![self.0, loadAction]
+            msg_send![self, loadAction]
         }
     }
 
     pub fn set_load_action(&self, load_action: MTLLoadAction) {
         unsafe {
-            msg_send![self.0, setLoadAction:load_action]
+            msg_send![self, setLoadAction:load_action]
         }
     }
 
     pub fn store_action(&self) -> MTLStoreAction {
         unsafe {
-            msg_send![self.0, storeAction]
+            msg_send![self, storeAction]
         }
     }
 
     pub fn set_store_action(&self, store_action: MTLStoreAction) {
         unsafe {
-            msg_send![self.0, setStoreAction:store_action]
+            msg_send![self, setStoreAction:store_action]
         }
     }
 }
 
-impl NSObjectProtocol for MTLRenderPassAttachmentDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPassAttachmentDescriptor").unwrap()
+pub enum MTLRenderPassColorAttachmentDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPassColorAttachmentDescriptor;
+    pub struct RenderPassColorAttachmentDescriptor;
+    pub struct RenderPassColorAttachmentDescriptorRef;
+    type ParentType = RenderPassAttachmentDescriptorRef;
+}
+
+impl RenderPassColorAttachmentDescriptor {
+    pub fn new() -> Self {
+        unsafe {
+            let class = Class::get("MTLRenderPassColorAttachmentDescriptor").unwrap();
+            msg_send![class, new]
+        }
     }
 }
 
-pub enum MTLRenderPassColorAttachmentDescriptorPrototype {}
-pub type MTLRenderPassColorAttachmentDescriptor = id<
-    (MTLRenderPassColorAttachmentDescriptorPrototype,
-        (MTLRenderPassAttachmentDescriptorPrototype,
-            (NSObjectPrototype, ())))>;
-
-impl MTLRenderPassColorAttachmentDescriptor {
-    pub fn alloc() -> Self {
-        unsafe {
-            msg_send![Self::class(), alloc]
-        }
-    }
-
-    pub fn init(&self) -> Self {
-        unsafe {
-            msg_send![self.0, init]
-        }
-    }
-
+impl RenderPassAttachmentDescriptorRef {
     pub fn clear_color(&self) -> MTLClearColor {
         unsafe {
-            msg_send![self.0, clearColor]
+            msg_send![self, clearColor]
         }
     }
 
     pub fn set_clear_color(&self, clear_color: MTLClearColor) {
         unsafe {
-            msg_send![self.0, setClearColor:clear_color]
+            msg_send![self, setClearColor:clear_color]
         }
     }
 }
 
-impl NSObjectProtocol for MTLRenderPassColorAttachmentDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPassColorAttachmentDescriptor").unwrap()
-    }
+pub enum MTLRenderPassDepthAttachmentDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPassDepthAttachmentDescriptor;
+    pub struct RenderPassDepthAttachmentDescriptor;
+    pub struct RenderPassDepthAttachmentDescriptorRef;
+    type ParentType = RenderPassAttachmentDescriptorRef;
 }
 
-pub enum MTLRenderPassDepthAttachmentDescriptorPrototype {}
-pub type MTLRenderPassDepthAttachmentDescriptor = id<
-    (MTLRenderPassDepthAttachmentDescriptorPrototype,
-        (MTLRenderPassAttachmentDescriptorPrototype,
-            (NSObjectPrototype, ())))>;
-
-impl MTLRenderPassDepthAttachmentDescriptor {
+impl RenderPassDepthAttachmentDescriptorRef {
     pub fn clear_depth(&self) -> f64 {
         unsafe {
-            msg_send![self.0, clearDepth]
+            msg_send![self, clearDepth]
         }
     }
 
     pub fn set_clear_depth(&self, clear_depth: f64) {
         unsafe {
-            msg_send![self.0, setClearDepth:clear_depth]
+            msg_send![self, setClearDepth:clear_depth]
         }
     }
 }
 
-impl NSObjectProtocol for MTLRenderPassDepthAttachmentDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPassDepthAttachmentDescriptor").unwrap()
-    }
+pub enum MTLRenderPassStencilAttachmentDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPassStencilAttachmentDescriptor;
+    pub struct RenderPassStencilAttachmentDescriptor;
+    pub struct RenderPassStencilAttachmentDescriptorRef;
 }
 
-pub enum MTLRenderPassStencilAttachmentDescriptorPrototype {}
-pub type MTLRenderPassStencilAttachmentDescriptor = id<
-    (MTLRenderPassStencilAttachmentDescriptorPrototype,
-        (MTLRenderPassAttachmentDescriptorPrototype,
-            (NSObjectPrototype, ())))>;
-
-impl MTLRenderPassStencilAttachmentDescriptor {
+impl RenderPassStencilAttachmentDescriptorRef {
     pub fn clear_stencil(&self) -> u32 {
         unsafe {
-            msg_send![self.0, clearStencil]
+            msg_send![self, clearStencil]
         }
     }
 
     pub fn set_clear_stencil(&self, clear_stencil: u32) {
         unsafe {
-            msg_send![self.0, setClearStencil:clear_stencil]
+            msg_send![self, setClearStencil:clear_stencil]
         }
     }
 }
 
-impl NSObjectProtocol for MTLRenderPassStencilAttachmentDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPassStencilAttachmentDescriptor").unwrap()
-    }
+pub enum MTLRenderPassColorAttachmentDescriptorArray {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPassColorAttachmentDescriptorArray;
+    pub struct RenderPassColorAttachmentDescriptorArray;
+    pub struct RenderPassColorAttachmentDescriptorArrayRef;
 }
 
-
-
-pub enum MTLRenderPassColorAttachmentDescriptorArrayPrototype {}
-pub type MTLRenderPassColorAttachmentDescriptorArray = id<(MTLRenderPassColorAttachmentDescriptorArrayPrototype, (NSObjectPrototype, ()))>;
-
-impl MTLRenderPassColorAttachmentDescriptorArray {
-    pub fn object_at(&self, index: usize) -> MTLRenderPassColorAttachmentDescriptor {
+impl RenderPassColorAttachmentDescriptorArrayRef {
+    pub fn object_at(&self, index: usize) -> Option<&RenderPassColorAttachmentDescriptorRef> {
         unsafe {
-            msg_send![self.0, objectAtIndexedSubscript:index]
+            msg_send![self, objectAtIndexedSubscript:index]
         }
     }
 
-    pub fn set_object_at(&self, index: usize, attachment: MTLRenderPassColorAttachmentDescriptor) {
+    pub fn set_object_at(&self, index: usize, attachment: Option<&RenderPassColorAttachmentDescriptorRef>) {
         unsafe {
-            msg_send![self.0, setObject:attachment.0
+            msg_send![self, setObject:attachment
                      atIndexedSubscript:index]
         }
     }
 }
 
-impl NSObjectProtocol for MTLRenderPassColorAttachmentDescriptorArray {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPassColorAttachmentDescriptorArray").unwrap()
-    }
+pub enum MTLRenderPassDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLRenderPassDescriptor;
+    pub struct RenderPassDescriptor;
+    pub struct RenderPassDescriptorRef;
 }
 
-pub enum MTLRenderPassDescriptorPrototype {}
-pub type MTLRenderPassDescriptor = id<(MTLRenderPassDescriptorPrototype, (NSObjectPrototype, ()))>;
-
-impl MTLRenderPassDescriptor {
-    pub fn new() -> Self {
+impl RenderPassDescriptor {
+    pub fn new<'a>() -> &'a RenderPassDescriptorRef {
         unsafe {
-            msg_send![Self::class(), renderPassDescriptor]
-        }
-    }
-
-    pub fn alloc() -> Self {
-        unsafe {
-            msg_send![Self::class(), alloc]
-        }
-    }
-
-    pub fn init(&self) -> Self {
-        unsafe {
-            msg_send![self.0, init]
-        }
-    }
-
-    pub fn color_attachments(&self) -> MTLRenderPassColorAttachmentDescriptorArray {
-        unsafe {
-            msg_send![self.0, colorAttachments]
-        }
-    }
-
-    pub fn depth_attachment(&self) -> MTLRenderPassDepthAttachmentDescriptor {
-        unsafe {
-            msg_send![self.0, depthAttachment]
-        }
-    }
-
-    pub fn set_depth_attachment(&self, depth_attachment: MTLRenderPassDepthAttachmentDescriptor) {
-        unsafe {
-            msg_send![self.0, setDepthAttachment:depth_attachment.0]
-        }
-    }
-
-    pub fn stencil_attachment(&self) -> MTLRenderPassStencilAttachmentDescriptor {
-        unsafe {
-            msg_send![self.0, stencilAttachment]
-        }
-    }
-
-    pub fn set_stencil_attachment(&self, stencil_attachment: MTLRenderPassStencilAttachmentDescriptor) {
-        unsafe {
-            msg_send![self.0, setStencilAttachment:stencil_attachment.0]
-        }
-    }
-
-    pub fn visibility_result_buffer(&self) -> MTLBuffer {
-        unsafe {
-            msg_send![self.0, visibilityResultBuffer]
-        }
-    }
-
-    pub fn render_target_array_length(&self) -> u64 {
-        unsafe {
-            msg_send![self.0, renderTargetArrayLength]
+            let class = Class::get("MTLRenderPassDescriptorInternal").unwrap();
+            msg_send![class, renderPassDescriptor]
         }
     }
 }
 
-impl NSObjectProtocol for MTLRenderPassDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLRenderPassDescriptorInternal").unwrap()
+impl RenderPassDescriptorRef {
+    pub fn color_attachments(&self) -> &RenderPassColorAttachmentDescriptorArrayRef {
+        unsafe {
+            msg_send![self, colorAttachments]
+        }
     }
-}*/
 
+    pub fn depth_attachment(&self) -> Option<&RenderPassDepthAttachmentDescriptorRef> {
+        unsafe {
+            msg_send![self, depthAttachment]
+        }
+    }
+
+    pub fn set_depth_attachment(&self, depth_attachment: Option<&RenderPassDepthAttachmentDescriptorRef>) {
+        unsafe {
+            msg_send![self, setDepthAttachment:depth_attachment]
+        }
+    }
+
+    pub fn stencil_attachment(&self) -> Option<&RenderPassStencilAttachmentDescriptorRef> {
+        unsafe {
+            msg_send![self, stencilAttachment]
+        }
+    }
+
+    pub fn set_stencil_attachment(&self, stencil_attachment: Option<&RenderPassStencilAttachmentDescriptorRef>) {
+        unsafe {
+            msg_send![self, setStencilAttachment:stencil_attachment]
+        }
+    }
+
+    pub fn visibility_result_buffer(&self) -> Option<&BufferRef> {
+        unsafe {
+            msg_send![self, visibilityResultBuffer]
+        }
+    }
+
+    pub fn render_target_array_length(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, renderTargetArrayLength]
+        }
+    }
+}

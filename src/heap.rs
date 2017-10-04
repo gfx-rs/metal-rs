@@ -5,9 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use buffer::MTLBuffer;
-use texture::{MTLTexture, MTLTextureDescriptor};
-use resource::{MTLResourceOptions, MTLStorageMode, MTLCPUCacheMode, MTLPurgeableState};
+use super::*;
 
 use cocoa::foundation::NSUInteger;
 use objc::runtime::Class;
@@ -19,57 +17,57 @@ foreign_obj_type! {
     pub struct Heap;
     pub struct HeapRef;
 }
-/*
-impl MTLHeap {
+
+impl HeapRef {
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
         unsafe {
-            msg_send![self.0, cpuCacheMode]
+            msg_send![self, cpuCacheMode]
         }
     }
 
     pub fn storage_mode(&self) -> MTLStorageMode {
         unsafe {
-            msg_send![self.0, storageMode]
+            msg_send![self, storageMode]
         }
     }
 
     pub fn set_purgeable_state(&self, state: MTLPurgeableState) -> MTLPurgeableState {
         unsafe {
-            msg_send![self.0, setPurgeableState:state]
+            msg_send![self, setPurgeableState:state]
         }
     }
 
     pub fn size(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, size]
+            msg_send![self, size]
         }
     }
 
     pub fn used_size(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, usedSize]
+            msg_send![self, usedSize]
         }
     }
 
     pub fn max_available_size(&self, alignment: NSUInteger) -> NSUInteger {
         unsafe {
-            msg_send![self.0, maxAvailableSize: alignment]
+            msg_send![self, maxAvailableSize: alignment]
         }
     }
 
-    pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> MTLBuffer {
+    pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> Buffer {
         unsafe {
-            msg_send![self.0, newBufferWithLength:length
-                                          options:options]
+            msg_send![self, newBufferWithLength:length
+                                        options:options]
         }
     }
 
-    pub fn new_texture(&self, descriptor: MTLTextureDescriptor) -> MTLTexture {
+    pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Texture {
         unsafe {
-            msg_send![self.0, newTextureWithDescriptor:descriptor.0]
+            msg_send![self, newTextureWithDescriptor:descriptor]
         }
     }
-}*/
+}
 
 pub enum MTLHeapDescriptor {}
 
@@ -78,59 +76,50 @@ foreign_obj_type! {
     pub struct HeapDescriptor;
     pub struct HeapDescriptorRef;
 }
-/*
-impl MTLHeapDescriptor {
+
+impl HeapDescriptor {
     pub fn new() -> Self {
         unsafe {
-            msg_send![Self::class(), new]
+            let class = Class::get("MTLHeapDescriptor").unwrap();
+            msg_send![class, new]
         }
     }
+}
 
-    pub fn alloc() -> Self {
-        unsafe {
-            msg_send![Self::class(), alloc]
-        }
-    }
-
-    pub fn init(&self) -> Self {
-        unsafe {
-            msg_send![self.0, init]
-        }
-    }
-
+impl HeapDescriptorRef {
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
         unsafe {
-            msg_send![self.0, cpuCacheMode]
+            msg_send![self, cpuCacheMode]
         }
     }
 
     pub fn set_cpu_cache_mode(&self, mode: MTLCPUCacheMode) {
         unsafe {
-            msg_send![self.0, setCpuCacheMode:mode]
+            msg_send![self, setCpuCacheMode:mode]
         }
     }
 
     pub fn storage_mode(&self) -> MTLStorageMode {
         unsafe {
-            msg_send![self.0, storageMode]
+            msg_send![self, storageMode]
         }
     }
 
     pub fn set_storage_mode(&self, mode: MTLStorageMode) {
         unsafe {
-            msg_send![self.0, setStorageMode:mode]
+            msg_send![self, setStorageMode:mode]
         }
     }
 
     pub fn size(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, size]
+            msg_send![self, size]
         }
     }
 
     pub fn set_size(&self, size: NSUInteger) {
         unsafe {
-            msg_send![self.0, setSize: size];
+            msg_send![self, setSize: size];
         }
     }
-}*/
+}

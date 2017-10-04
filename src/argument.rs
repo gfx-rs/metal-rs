@@ -5,11 +5,11 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use ::{Array, MTLTextureType};
+
 use cocoa::foundation::NSUInteger;
 use objc::runtime::{Class, YES, NO};
-use objc_foundation::{NSString, INSString, NSArray};
-
-use texture::MTLTextureType;
+use objc_foundation::{NSString, INSString};
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -119,137 +119,140 @@ foreign_obj_type! {
     pub struct StructMemberRef;
 }
 
-/*
-impl<'a> MTLStructMember {
-    pub fn name(&'a self) -> &'a str {
+impl StructMemberRef {
+    pub fn name(&self) -> &str {
         unsafe {
-            let name: &'a NSString = msg_send![self.0, name];
+            let name: &NSString = msg_send![self, name];
             name.as_str()
         }
     }
 
-    pub fn offset(&self) -> u64 {
+    pub fn offset(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, offset]
+            msg_send![self, offset]
         }
     }
 
     pub fn data_type(&self) -> MTLDataType {
         unsafe {
-            msg_send![self.0, dataType]
+            msg_send![self, dataType]
         }
     }
 
     pub fn struct_type(&self) -> MTLStructType {
         unsafe {
-            msg_send![self.0, structType]
+            msg_send![self, structType]
         }
     }
 
     pub fn array_type(&self) -> MTLArrayType {
         unsafe {
-            msg_send![self.0, arrayType]
-        }
-    }
-}*/
-/*
-pub enum MTLStructTypePrototype {}
-pub type MTLStructType = id<(MTLStructTypePrototype, (NSObjectPrototype, ()))>;
-
-impl<'a> MTLStructType {
-    pub fn members(&self) -> NSArray<MTLStructMember> {
-        unsafe {
-            msg_send![self.0, members]
-        }
-    }
-
-    pub fn member_from_name(&self, name: &str) -> MTLStructMember {
-        let nsname = NSString::from_str(name);
-
-        unsafe {
-            msg_send![self.0, memberByName:nsname]
+            msg_send![self, arrayType]
         }
     }
 }
 
-impl NSObjectProtocol for MTLStructType {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLStructType").unwrap()
-    }
-}*/
-/*
-pub enum MTLArrayTypePrototype {}
-pub type MTLArrayType = id<(MTLArrayTypePrototype, (NSObjectPrototype, ()))>;
+pub enum MTLStructType {}
 
-impl MTLArrayType {
-    pub fn array_length(&self) -> u64 {
+foreign_obj_type! {
+    type CType = MTLStructType;
+    pub struct StructType;
+    pub struct StructTypeRef;
+}
+
+impl StructTypeRef {
+    pub fn members(&self) -> &Array<StructMember> {
         unsafe {
-            msg_send![self.0, arrayLength]
+            msg_send![self, members]
         }
     }
 
-    pub fn stride(&self) -> u64 {
+    pub fn member_from_name(&self, name: &str) -> Option<&StructMemberRef> {
+        let nsname = NSString::from_str(name);
+
         unsafe {
-            msg_send![self.0, stride]
+            msg_send![self, memberByName:nsname]
+        }
+    }
+}
+
+pub enum MTLArrayType {}
+
+foreign_obj_type! {
+    type CType = MTLArrayType;
+    pub struct ArrayType;
+    pub struct ArrayTypeRef;
+}
+
+impl ArrayTypeRef {
+    pub fn array_length(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, arrayLength]
+        }
+    }
+
+    pub fn stride(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, stride]
         }
     }
 
     pub fn element_type(&self) -> MTLDataType {
         unsafe {
-            msg_send![self.0, elementType]
+            msg_send![self, elementType]
         }
     }
 
     pub fn element_struct_type(&self) -> MTLStructType {
         unsafe {
-            msg_send![self.0, elementStructType]
+            msg_send![self, elementStructType]
         }
     }
 
     pub fn element_array_type(&self) -> MTLArrayType {
         unsafe {
-            msg_send![self.0, elementArrayType]
+            msg_send![self, elementArrayType]
         }
     }
 }
 
-impl NSObjectProtocol for MTLArrayType {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLArrayType").unwrap()
-    }
-}*/
-/*
-pub enum MTLArgumentPrototype {}
-pub type MTLArgument = id<(MTLArgumentPrototype, (NSObjectPrototype, ()))>;
-impl<'a> MTLArgument {
-    pub fn name(&'a self) -> &'a str {
+pub enum MTLArgument {}
+
+foreign_obj_type! {
+    type CType = MTLArgument;
+    pub struct Argument;
+    pub struct ArgumentRef;
+}
+
+impl ArgumentRef {
+    pub fn name(&self) -> &str {
         unsafe {
-            let name: &'a NSString = msg_send![self.0, name];
+            let name: &NSString = msg_send![self, name];
             name.as_str()
         }
     }
 
     pub fn type_(&self) -> MTLArgumentType {
         unsafe {
-            msg_send![self.0, type]
+            msg_send![self, type]
         }
     }
 
     pub fn access(&self) -> MTLArgumentAccess {
         unsafe {
-            msg_send![self.0, access]
+            msg_send![self, access]
         }
     }
 
-    pub fn index(&self) -> u64 {
+    pub fn index(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, index]
+            msg_send![self, index]
         }
     }
 
     pub fn is_active(&self) -> bool {
         unsafe {
-            match msg_send![self.0, isActive] {
+            match msg_send![self, isActive] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -257,104 +260,100 @@ impl<'a> MTLArgument {
         }
     }
 
-    pub fn buffer_alignment(&self) -> u64 {
+    pub fn buffer_alignment(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, bufferAlignment]
+            msg_send![self, bufferAlignment]
         }
     }
 
-    pub fn buffer_data_size(&self) -> u64 {
+    pub fn buffer_data_size(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, bufferDataSize]
+            msg_send![self, bufferDataSize]
         }
     }
 
     pub fn buffer_data_type(&self) -> MTLDataType {
         unsafe {
-            msg_send![self.0, bufferDataType]
+            msg_send![self, bufferDataType]
         }
     }
 
-    pub fn buffer_struct_type(&self) -> MTLStructType {
+    pub fn buffer_struct_type(&self) -> &StructTypeRef {
         unsafe {
-            msg_send![self.0, bufferStructType]
+            msg_send![self, bufferStructType]
         }
     }
 
-    pub fn threadgroup_memory_alignment(&self) -> u64 {
+    pub fn threadgroup_memory_alignment(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, threadgroupMemoryAlignment]
+            msg_send![self, threadgroupMemoryAlignment]
         }
     }
 
-    pub fn threadgroup_memory_data_size(&self) -> u64 {
+    pub fn threadgroup_memory_data_size(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, threadgroupMemoryDataSize]
+            msg_send![self, threadgroupMemoryDataSize]
         }
     }
 
     pub fn texture_type(&self) -> MTLTextureType {
         unsafe {
-            msg_send![self.0, textureType]
+            msg_send![self, textureType]
         }
     }
 
     pub fn texture_data_type(&self) -> MTLDataType {
         unsafe {
-            msg_send![self.0, textureDataType]
+            msg_send![self, textureDataType]
         }
     }
 }
 
-impl NSObjectProtocol for MTLArgument {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLArgument").unwrap()
-    }
-}*/
+pub enum MTLArgumentDescriptor {}
 
-/*
-pub enum MTLArgumentDescriptorPrototype {}
-pub type MTLArgumentDescriptor = id<(MTLArgumentDescriptorPrototype, (NSObjectPrototype, ()))>;
-impl NSObjectProtocol for MTLArgumentDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLArgumentDescriptor").unwrap()
-    }
+foreign_obj_type! {
+    type CType = MTLArgumentDescriptor;
+    pub struct ArgumentDescriptor;
+    pub struct ArgumentDescriptorRef;
 }
 
-impl MTLArgumentDescriptor {
-    pub fn new() -> Self {
+impl ArgumentDescriptor {
+    pub fn new<'a>() -> &'a ArgumentDescriptorRef {
         unsafe {
-            msg_send![Self::class(), argumentDescriptor]
+            let class = Class::get("MTLArgumentDescriptor").unwrap();
+            msg_send![class, argumentDescriptor]
         }
     }
+}
 
+impl ArgumentDescriptorRef {
     pub fn set_data_type(&self, ty: MTLDataType) {
         unsafe {
-            msg_send![self.0, setDataType:ty]
+            msg_send![self, setDataType:ty]
         }
     }
 
     pub fn set_index(&self, index: NSUInteger) {
         unsafe {
-            msg_send![self.0, setIndex:index]
+            msg_send![self, setIndex:index]
         }
     }
 
     pub fn set_access(&self, access: MTLArgumentAccess) {
         unsafe {
-            msg_send![self.0, setAccess:access]
+            msg_send![self, setAccess:access]
         }
     }
 
     pub fn set_array_length(&self, length: NSUInteger) {
         unsafe {
-            msg_send![self.0, setArrayLength:length]
+            msg_send![self, setArrayLength:length]
         }
     }
 
     pub fn set_texture_type(&self, ty: MTLTextureType) {
         unsafe {
-            msg_send![self.0, setTextureType:ty]
+            msg_send![self, setTextureType:ty]
         }
     }
-}*/
+}
