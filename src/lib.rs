@@ -15,21 +15,16 @@ extern crate libc;
 #[macro_use]
 extern crate objc;
 extern crate objc_foundation;
+extern crate objc_id;
 extern crate block;
 #[macro_use]
 extern crate foreign_types;
 
-use objc::Message;
-use objc::runtime::{Object, Class, BOOL, YES, NO};
-
-use cocoa::foundation::NSSize;
-
-use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
-use std::ops::Deref;
-use std::any::Any;
-use std::fmt;
-use std::mem;
+
+use objc::runtime::{Object, Class, YES, NO};
+use cocoa::foundation::NSSize;
+use foreign_types::ForeignType;
 
 #[cfg(target_pointer_width = "64")]
 pub type CGFloat = libc::c_double;
@@ -37,6 +32,25 @@ pub type CGFloat = libc::c_double;
 pub type CGFloat = libc::c_float;
 
 macro_rules! foreign_obj_type {
+    {type CType = $raw_ident:ident;
+    pub struct $owned_ident:ident;
+    pub struct $ref_ident:ident;
+    type ParentType = $parent_ref:ident;
+    } => {
+        foreign_obj_type! {
+            type CType = $raw_ident;
+            pub struct $owned_ident;
+            pub struct $ref_ident;
+        }
+
+        impl ::std::ops::Deref for $ref_ident {
+            type Target = $parent_ref;
+
+            fn deref(&self) -> &$parent_ref {
+                unsafe { &*(self as *const $ref_ident as *const $parent_ref)  }
+            }
+        }
+    };
     {type CType = $raw_ident:ident;
     pub struct $owned_ident:ident;
     pub struct $ref_ident:ident;
@@ -52,6 +66,23 @@ macro_rules! foreign_obj_type {
         unsafe impl ::objc::Message for $raw_ident {
         }
         unsafe impl ::objc::Message for $ref_ident {
+        }
+
+        impl ::std::fmt::Debug for $ref_ident {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                unsafe {
+                    use ::objc_foundation::INSString;
+                    // TODO: might leak, not 100% sure...
+                    let string: &::objc_foundation::NSString = msg_send![self, debugDescription];
+                    write!(f, "{}", string.as_str())
+                }
+            }
+        }
+
+        impl ::std::fmt::Debug for $owned_ident {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                ::std::ops::Deref::deref(self).fmt(f)
+            }
         }
     };
 }
@@ -74,137 +105,152 @@ macro_rules! try_objc {
         }
     };
 }
-/*
-pub enum NSArrayPrototype {}
-pub type NSArray<T> = id<(NSArrayPrototype, (NSObjectPrototype, (T)))>;
 
-impl<T> NSArray<T> where T: Any {
-    pub fn array_with_objects(slice: &[T]) -> Self {
-        unsafe {
-            msg_send![Self::class(), arrayWithObjects:slice.as_ptr()
-                                                count:slice.len() as u64]
-        }
-    }
+pub struct NSArray<T> {
+    _phantom: PhantomData<T>,
+}
 
-    pub fn object_at(&self, index: u64) -> T {
-        unsafe {
-            msg_send![self.0, objectAtIndex:index]
-        }
-    }
+pub struct Array<T>(*mut NSArray<T>) where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static;
+pub struct ArrayRef<T>(foreign_types::Opaque, PhantomData<T>) where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static;
 
-    pub fn count(&self) -> u64 {
+impl<T> Drop for Array<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+    fn drop(&mut self) {
         unsafe {
-            msg_send![self.0, count]
+            msg_send![self.0, release];
         }
     }
 }
 
-impl<T> NSObjectProtocol for NSArray<T> {
-    unsafe fn class() -> &'static Class {
-        Class::get("NSArray").unwrap()
-    }
-}
-
-pub enum NSAutoreleasePoolPrototype {}
-pub type NSAutoreleasePool = id<(NSAutoreleasePoolPrototype, (NSObjectPrototype, ()))>;
-
-impl NSAutoreleasePool {
-    pub fn alloc() -> Self {
+impl<T> Clone for Array<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+    fn clone(&self) -> Self {
         unsafe {
-            msg_send![Self::class(), alloc]
-        }
-    }
-
-    pub fn init(&self) -> Self {
-        unsafe {
-            msg_send![self.0, init]
-        }
-    }
-
-    pub fn drain(&self) {
-        unsafe {
-            msg_send![self.0, drain]
+            Array(msg_send![self.0, retain])
         }
     }
 }
 
-impl NSObjectProtocol for NSAutoreleasePool {
-    unsafe fn class() -> &'static Class {
-        Class::get("NSAutoreleasePool").unwrap()
-    }
-}
+unsafe impl<T> objc::Message for NSArray<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{}
+unsafe impl<T> objc::Message for ArrayRef<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{}
 
-pub enum NSObjectPrototype {}
-pub type NSObject = id<(NSObjectPrototype, ())>;
-
-impl NSObjectProtocol for NSObject {}
-
-pub enum CAMetalDrawablePrototype {}
-pub type CAMetalDrawable = id<(CAMetalDrawablePrototype, (MTLDrawablePrototype, (NSObjectPrototype, ())))>;
-
-impl CAMetalDrawable {
-    pub fn texture(&self) -> MTLTexture {
+impl<T> Array<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+ {
+    pub fn from_slice(s: &[&T::Ref]) -> Self {
         unsafe {
-            msg_send![self.0, texture]
+            let class = Class::get("NSArray").unwrap();
+            msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
         }
     }
 }
 
-impl NSObjectProtocol for CAMetalDrawable {
-    unsafe fn class() -> &'static Class {
-        Class::get("CAMetalDrawable").unwrap()
+impl<T> foreign_types::ForeignType for Array<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+    type CType = NSArray<T>;
+    type Ref = ArrayRef<T>;
+
+    unsafe fn from_ptr(p: *mut NSArray<T>) -> Self {
+        Array(p)
+    }
+
+    fn as_ptr(&self) -> *mut NSArray<T> {
+        self.0
     }
 }
 
-pub enum CAMetalLayerPrototype {}
-pub type CAMetalLayer = id<(CAMetalLayerPrototype, (NSObjectPrototype, ()))>;
+impl<T> foreign_types::ForeignTypeRef for ArrayRef<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+    type CType = NSArray<T>;
+}
 
-impl CAMetalLayer {
-    pub fn new() -> CAMetalLayer {
+pub enum CAMetalDrawable {}
+
+foreign_obj_type! {
+    type CType = CAMetalDrawable;
+    pub struct CoreAnimationDrawable;
+    pub struct CoreAnimationDrawableRef;
+    type ParentType = DrawableRef;
+}
+
+impl CoreAnimationDrawableRef {
+    pub fn texture(&self) -> &TextureRef {
         unsafe {
-            msg_send![Self::class(), new]
+            msg_send![self, texture]
         }
     }
+}
 
-    pub fn layer() -> CAMetalLayer {
+pub enum CAMetalLayer {}
+
+foreign_obj_type! {
+    type CType = CAMetalLayer;
+    pub struct CoreAnimationLayer;
+    pub struct CoreAnimationLayerRef;
+}
+
+impl CoreAnimationLayer {
+    pub fn new() -> Self {
         unsafe {
-            msg_send![Self::class(), layer]
+            let class = Class::get("CAMetalLayer").unwrap();
+            msg_send![class, new]
         }
     }
+}
 
-    pub fn set_device(&self, device: MTLDevice) {
+impl CoreAnimationLayerRef {
+    pub fn set_device(&self, device: &DeviceRef) {
         unsafe {
-            msg_send![self.0, setDevice:device.0]
+            msg_send![self, setDevice:device]
         }
     }
 
     pub fn pixel_format(&self) -> MTLPixelFormat {
         unsafe {
-            msg_send![self.0, pixelFormat]
+            msg_send![self, pixelFormat]
         }
     }
 
     pub fn set_pixel_format(&self, pixel_format: MTLPixelFormat) {
         unsafe {
-            msg_send![self.0, setPixelFormat:pixel_format]
+            msg_send![self, setPixelFormat:pixel_format]
         }
     }
 
     pub fn drawable_size(&self) -> NSSize {
         unsafe {
-            msg_send![self.0, drawableSize]
+            msg_send![self, drawableSize]
         }
     }
 
     pub fn set_drawable_size(&self, size: NSSize) {
         unsafe {
-            msg_send![self.0, setDrawableSize:size]
+            msg_send![self, setDrawableSize:size]
         }
     }
 
     pub fn presents_with_transaction(&self) -> bool {
         unsafe {
-            match msg_send![self.0, presentsWithTransaction] {
+            match msg_send![self, presentsWithTransaction] {
                 YES => true,
                 NO => false,
                 _ => unreachable!()
@@ -214,52 +260,40 @@ impl CAMetalLayer {
 
     pub fn set_presents_with_transaction(&self, transaction: bool) {
         unsafe {
-            msg_send![self.0, setPresentsWithTransaction:transaction];
+            msg_send![self, setPresentsWithTransaction:transaction];
         }
     }
 
     pub fn set_edge_antialiasing_mask(&self, mask: u64) {
         unsafe {
-            msg_send![self.0, setEdgeAntialiasingMask:mask]
+            msg_send![self, setEdgeAntialiasingMask:mask]
         }
     }
 
     pub fn set_masks_to_bounds(&self, masks: bool) {
         unsafe {
-            msg_send![self.0, setMasksToBounds:masks]
+            msg_send![self, setMasksToBounds:masks]
         }
     }
 
     pub fn remove_all_animations(&self) {
         unsafe {
-            msg_send![self.0, removeAllAnimations];
+            msg_send![self, removeAllAnimations];
         }
     }
 
-    pub fn next_drawable(&self) -> Option<CAMetalDrawable> {
+    pub fn next_drawable(&self) -> Option<&CoreAnimationDrawableRef> {
         unsafe {
-            let drawable: CAMetalDrawable = msg_send![self.0, nextDrawable];
-
-            match drawable.is_null() {
-                true => None,
-                false => Some(drawable)
-            }
+            msg_send![self, nextDrawable]
         }
     }
 
     pub fn set_contents_scale(&self, scale: CGFloat) {
         unsafe {
-            msg_send![self.0, setContentsScale:scale];
+            msg_send![self, setContentsScale:scale];
         }
     }
 }
-
-
-impl NSObjectProtocol for CAMetalLayer {
-    unsafe fn class() -> &'static Class {
-        Class::get("CAMetalLayer").unwrap()
-    }
-}*/
 
 mod constants;
 mod types;

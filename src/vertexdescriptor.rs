@@ -6,6 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 use objc::runtime::Class;
+use cocoa::foundation::NSUInteger;
 
 use libc;
 
@@ -62,168 +63,162 @@ pub enum MTLVertexStepFunction {
     PerVertex = 1,
     PerInstance = 2,
 }
-/*
-pub enum MTLVertexBufferLayoutDescriptorPrototype {}
-pub type MTLVertexBufferLayoutDescriptor = id<(MTLVertexBufferLayoutDescriptorPrototype, (NSObjectPrototype, ()))>;
 
-impl MTLVertexBufferLayoutDescriptor {
-    pub fn alloc() -> Self {
+pub enum MTLVertexBufferLayoutDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLVertexBufferLayoutDescriptor;
+    pub struct VertexBufferLayoutDescriptor;
+    pub struct VertexBufferLayoutDescriptorRef;
+}
+
+impl VertexBufferLayoutDescriptor {
+    pub fn new () -> Self {
         unsafe {
-            msg_send![Self::class(), alloc]
+            let class = Class::get("MTLVertexBufferLayoutDescriptor").unwrap();
+            msg_send![class, new]
+        }
+    }
+}
+
+impl VertexBufferLayoutDescriptorRef {
+    pub fn stride(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, stride]
         }
     }
 
-    pub fn init(&self) -> Self {
+    pub fn set_stride(&self, stride: NSUInteger) {
         unsafe {
-            msg_send![self.0, init]
-        }
-    }
-
-    pub fn stride(&self) -> u64 {
-        unsafe {
-            msg_send![self.0, stride]
-        }
-    }
-
-    pub fn set_stride(&self, stride: u64) {
-        unsafe {
-            msg_send![self.0, setStride:stride]
+            msg_send![self, setStride:stride]
         }
     }
 
     pub fn step_function(&self) -> MTLVertexStepFunction {
         unsafe {
-            msg_send![self.0, stepFunction]
+            msg_send![self, stepFunction]
         }
     }
 
     pub fn set_step_function(&self, func: MTLVertexStepFunction) {
         unsafe {
-            msg_send![self.0, setStepFunction:func]
+            msg_send![self, setStepFunction:func]
         }
     }
 
-    pub fn step_rate(&self) -> u64 {
+    pub fn step_rate(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, stepRate]
+            msg_send![self, stepRate]
         }
     }
 
-    pub fn set_step_rate(&self, step_rate: u64) {
+    pub fn set_step_rate(&self, step_rate: NSUInteger) {
         unsafe {
-            msg_send![self.0, setStepRate:step_rate]
+            msg_send![self, setStepRate:step_rate]
         }
     }
 }
 
-impl NSObjectProtocol for MTLVertexBufferLayoutDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLVertexBufferLayoutDescriptor").unwrap()
-    }
+pub enum MTLVertexBufferLayoutDescriptorArray {}
+
+foreign_obj_type! {
+    type CType = MTLVertexBufferLayoutDescriptorArray;
+    pub struct VertexBufferLayoutDescriptorArray;
+    pub struct VertexBufferLayoutDescriptorArrayRef;
 }
 
-
-pub enum MTLVertexBufferLayoutDescriptorArrayPrototype {}
-pub type MTLVertexBufferLayoutDescriptorArray = id<(MTLVertexBufferLayoutDescriptorArrayPrototype, (NSObjectPrototype, ()))>;
-
-impl MTLVertexBufferLayoutDescriptorArray {
-    pub fn object_at(&self, index: usize) -> MTLVertexBufferLayoutDescriptor {
+impl VertexBufferLayoutDescriptorArrayRef {
+    pub fn object_at(&self, index: usize) -> Option<&VertexBufferLayoutDescriptorRef> {
         unsafe {
-            msg_send![self.0, objectAtIndexedSubscript:index]
+            msg_send![self, objectAtIndexedSubscript:index]
         }
     }
 
-    pub fn set_object_at(&self, index: usize, layout: MTLVertexBufferLayoutDescriptor) {
+    pub fn set_object_at(&self, index: usize, layout: Option<&VertexBufferLayoutDescriptorRef>) {
         unsafe {
-            msg_send![self.0, setObject:layout.0
-                     atIndexedSubscript:index]
+            msg_send![self, setObject:layout
+                   atIndexedSubscript:index]
         }
     }
 }
 
-impl NSObjectProtocol for MTLVertexBufferLayoutDescriptorArray {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLVertexBufferLayoutDescriptorArray").unwrap()
+pub enum MTLVertexAttributeDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLVertexAttributeDescriptor;
+    pub struct VertexAttributeDescriptor;
+    pub struct VertexAttributeDescriptorRef;
+}
+
+impl VertexAttributeDescriptor {
+    pub fn new() -> Self {
+        unsafe {
+            let class = Class::get("MTLVertexAttributeDescriptor").unwrap();
+            msg_send![class, new]
+        }
     }
 }
 
-
-pub enum MTLVertexAttributeDescriptorPrototype {}
-pub type MTLVertexAttributeDescriptor = id<(MTLVertexAttributeDescriptorPrototype, (NSObjectPrototype, ()))>;
-
-impl MTLVertexAttributeDescriptor {
-    pub fn alloc() -> Self {
-        unsafe {
-            msg_send![Self::class(), alloc]
-        }
-    }
-
+impl VertexAttributeDescriptorRef {
     pub fn format(&self) -> MTLVertexFormat {
         unsafe {
-            msg_send![self.0, format]
+            msg_send![self, format]
         }
     }
 
     pub fn set_format(&self, format: MTLVertexFormat) {
         unsafe {
-            msg_send![self.0, setFormat:format]
+            msg_send![self, setFormat:format]
         }
     }
 
-    pub fn offset(&self) -> u64 {
+    pub fn offset(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, offset]
+            msg_send![self, offset]
         }
     }
 
-    pub fn set_offset(&self, offset: u64) {
+    pub fn set_offset(&self, offset: NSUInteger) {
         unsafe {
-            msg_send![self.0, setOffset:offset]
+            msg_send![self, setOffset:offset]
         }
     }
 
-    pub fn buffer_index(&self) -> u64 {
+    pub fn buffer_index(&self) -> NSUInteger {
         unsafe {
-            msg_send![self.0, bufferIndex]
+            msg_send![self, bufferIndex]
         }
     }
 
-    pub fn set_buffer_index(&self, index: u64) {
+    pub fn set_buffer_index(&self, index: NSUInteger) {
         unsafe {
-            msg_send![self.0, setBufferIndex:index]
+            msg_send![self, setBufferIndex:index]
         }
     }
 }
 
-impl NSObjectProtocol for MTLVertexAttributeDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLVertexAttributeDescriptor").unwrap()
-    }
-}
+pub enum MTLVertexAttributeDescriptorArray {}
 
-pub enum MTLVertexAttributeDescriptorArrayPrototype {}
-pub type MTLVertexAttributeDescriptorArray = id<(MTLVertexAttributeDescriptorArrayPrototype, (NSObjectPrototype, ()))>;
+foreign_obj_type! {
+    type CType = MTLVertexAttributeDescriptorArray;
+    pub struct VertexAttributeDescriptorArray;
+    pub struct VertexAttributeDescriptorArrayRef;
+}
 
 impl MTLVertexAttributeDescriptorArray {
-    pub fn object_at(&self, index: usize) -> MTLVertexAttributeDescriptor {
+    pub fn object_at(&self, index: usize) -> Option<&VertexAttributeDescriptorRef> {
         unsafe {
-            msg_send![self.0, objectAtIndexedSubscript:index]
+            msg_send![self, objectAtIndexedSubscript:index]
         }
     }
 
-    pub fn set_object_at(&self, index: usize, attribute: MTLVertexAttributeDescriptor) {
+    pub fn set_object_at(&self, index: usize, attribute: Option<&VertexAttributeDescriptorRef>) {
         unsafe {
-            msg_send![self.0, setObject:attribute
-                     atIndexedSubscript:index]
+            msg_send![self, setObject:attribute
+                   atIndexedSubscript:index]
         }
     }
 }
-
-impl NSObjectProtocol for MTLVertexAttributeDescriptorArray {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLVertexAttributeDescriptorArray").unwrap()
-    }
-}*/
 
 pub enum MTLVertexDescriptor {}
 
@@ -232,42 +227,36 @@ foreign_obj_type! {
     pub struct VertexDescriptor;
     pub struct VertexDescriptorRef;
 }
-/*
-impl MTLVertexDescriptor {
-    pub fn new() -> Self {
-        unsafe {
-            msg_send![Self::class(), vertexDescriptor]
-        }
-    }
 
-    pub fn layouts(&self) -> MTLVertexBufferLayoutDescriptorArray {
+impl VertexDescriptor {
+    pub fn new<'a>() -> &'a VertexDescriptorRef {
         unsafe {
-            msg_send![self.0, layouts]
-        }
-    }
-
-    pub fn attributes(&self) -> MTLVertexAttributeDescriptorArray {
-        unsafe {
-            msg_send![self.0, attributes]
-        }
-    }
-
-    pub fn serialize_descriptor(&self) -> *mut libc::c_void {
-        unsafe {
-            msg_send![self.0, newSerializedDescriptor]
-        }
-    }
-
-    pub fn reset(&self) {
-        unsafe {
-            msg_send![self.0, reset]
+            let class = Class::get("MTLVertexDescriptor").unwrap();
+            msg_send![class, vertexDescriptor]
         }
     }
 }
 
-impl NSObjectProtocol for MTLVertexDescriptor {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLVertexDescriptor").unwrap()
+impl VertexDescriptorRef {
+    pub fn layouts(&self) -> &VertexBufferLayoutDescriptorArrayRef {
+        unsafe {
+            msg_send![self, layouts]
+        }
     }
-}*/
 
+    pub fn attributes(&self) -> &VertexAttributeDescriptorArrayRef {
+        unsafe {
+            msg_send![self, attributes]
+        }
+    }
+
+    pub unsafe fn serialize_descriptor(&self) -> *mut libc::c_void {
+        msg_send![self, newSerializedDescriptor]
+    }
+
+    pub fn reset(&self) {
+        unsafe {
+            msg_send![self, reset]
+        }
+    }
+}

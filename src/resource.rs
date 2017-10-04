@@ -6,7 +6,6 @@
 // copied, modified, or distributed except according to those terms.
 
 use cocoa::foundation::NSUInteger;
-use objc::runtime::Class;
 use objc_foundation::{NSString, INSString};
 
 #[repr(u64)]
@@ -72,11 +71,10 @@ foreign_obj_type! {
     pub struct ResourceRef;
 }
 
-/*
-impl<'a> MTLResource {
-    pub fn label(&'a self) -> &'a str {
+impl ResourceRef {
+    pub fn label(&self) -> &str {
         unsafe {
-            let label: &'a NSString = msg_send![self.0, label];
+            let label: &NSString = msg_send![self, label];
             label.as_str()
         }
     }
@@ -84,32 +82,25 @@ impl<'a> MTLResource {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self.0, setLabel:nslabel]
+            msg_send![self, setLabel:nslabel]
         }
     }
 
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
         unsafe {
-            msg_send![self.0, cpuCacheMode]
+            msg_send![self, cpuCacheMode]
         }
     }
 
     pub fn storage_mode(&self) -> MTLStorageMode {
         unsafe {
-            msg_send![self.0, storageMode]
+            msg_send![self, storageMode]
         }
     }
 
     pub fn set_purgeable_state(&self, state: MTLPurgeableState) -> MTLPurgeableState {
         unsafe {
-            msg_send![self.0, setPurgeableState:state]
+            msg_send![self, setPurgeableState:state]
         }
     }
 }
-
-impl NSObjectProtocol for MTLResource {
-    unsafe fn class() -> &'static Class {
-        Class::get("MTLResource").unwrap()
-    }
-}*/
-

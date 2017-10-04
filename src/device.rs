@@ -6,15 +6,13 @@
 // copied, modified, or distributed except according to those terms.
 
 use cocoa::foundation::{NSUInteger};
-use objc::runtime::{Object, Class, YES, NO};
+use objc::runtime::{Object, BOOL, YES, NO};
 use objc_foundation::{NSString, INSString};
 
 use super::*;
 
 use libc;
 
-use std::ptr;
-use std::marker::PhantomData;
 use std::ffi::CStr;
 use std::path::Path;
 
@@ -80,7 +78,7 @@ foreign_obj_type! {
 }
 
 impl Device {
-    pub fn system_default_device() -> Device {
+    pub fn system_default() -> Device {
         unsafe { Device(MTLCreateSystemDefaultDevice()) }
     }
 }
@@ -163,25 +161,24 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_command_queue(&self) -> &CommandQueue {
+    pub fn new_command_queue(&self) -> CommandQueue {
         unsafe {
             msg_send![self, newCommandQueue]
         }
     }
 
-    pub fn new_default_library(&self) -> &Library {
+    pub fn new_default_library(&self) -> Library {
         unsafe {
             msg_send![self, newDefaultLibrary]
         }
     }
 
-    pub fn new_library_with_source(&self, src: &str, options: MTLCompileOptions) -> Result<Library, String> {
+    pub fn new_library_with_source(&self, src: &str, options: &CompileOptionsRef) -> Result<Library, String> {
         use cocoa::foundation::NSString as cocoa_NSString;
         use cocoa::base::nil as cocoa_nil;
 
         unsafe {
             let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
-            
 
             let library: *mut MTLLibrary = try_objc!{ err =>
                  msg_send![self, newLibraryWithSource:source
@@ -200,7 +197,6 @@ impl DeviceRef {
         unsafe {
             let filename = cocoa_NSString::alloc(cocoa_nil)
                 .init_str(file.as_ref().to_string_lossy().as_ref());
-            let mut err: *mut Object = ptr::null_mut();
 
             let library: *mut MTLLibrary = try_objc!{ err =>
                 msg_send![self, newLibraryWithFile:filename
@@ -214,7 +210,6 @@ impl DeviceRef {
     pub fn new_render_pipeline_state_with_reflection(&self, descriptor: &RenderPipelineDescriptorRef, reflection: &RenderPipelineReflectionRef) -> Result<RenderPipelineState, String> {
         unsafe {
             let reflection_options = MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo;
-            let mut err: *mut Object = ptr::null_mut();
 
             let pipeline_state: *mut MTLRenderPipelineState = try_objc!{ err =>
                 msg_send![self, newRenderPipelineStateWithDescriptor:descriptor
@@ -271,17 +266,22 @@ impl DeviceRef {
         }
     }
 
-    pub fn argument_buffers_support(&self) -> MTLArgumentBuffersTier {
+    pub fn argument_buffers_support(&self) -> Option<MTLArgumentBuffersTier> {
         unsafe {
-            msg_send![self, argumentBuffersSupport]
+            let has_arg_buffers: BOOL = msg_send![self, respondsToSelector: sel!(argumentBuffersSupport)];
+            if has_arg_buffers == YES {
+                Some(msg_send![self, argumentBuffersSupport])
+            } else {
+                None
+            }
         }
     }
-/*
-    pub fn new_argument_encoder(&self, arguments: NSArray<MTLArgumentDescriptor>) -> MTLArgumentEncoder {
+
+    pub fn new_argument_encoder(&self, arguments: &Array<ArgumentDescriptor>) -> ArgumentEncoder {
         unsafe {
             msg_send![self, newArgumentEncoderWithArguments:arguments]
         }
-    }*/
+    }
 
     pub fn new_heap(&self, descriptor: &HeapDescriptorRef) -> Heap {
         unsafe {

@@ -15,6 +15,7 @@ cocoa = "0.9.0"
 bitflags = "0.9"
 libc = "0.2"
 objc-foundation = "0.1"
+objc_id = "0.1"
 block = "0.1.5"
 foreign-types = "0.3"
 
