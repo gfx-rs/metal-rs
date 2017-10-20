@@ -158,6 +158,13 @@ impl<T> Array<T> where
             msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
         }
     }
+    
+    pub fn from_owned_slice(s: &[T]) -> Self {
+        unsafe {
+            let class = Class::get("NSArray").unwrap();
+            msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
+        }
+    }
 }
 
 impl<T> foreign_types::ForeignType for Array<T> where

@@ -258,7 +258,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn set_vertex_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: &BufferRef) {
+    pub fn set_vertex_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
         unsafe {
             msg_send![self, setVertexBuffer:buffer
                                        offset:offset
@@ -266,21 +266,21 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn set_vertex_texture(&self, index: u64, texture: &TextureRef) {
+    pub fn set_vertex_texture(&self, index: u64, texture: Option<&TextureRef>) {
         unsafe {
             msg_send![self, setVertexTexture:texture
                                        atIndex:index]
         }
     }
 
-    pub fn set_vertex_sampler_state(&self, index: u64, sampler: &SamplerState) {
+    pub fn set_vertex_sampler_state(&self, index: u64, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self, setVertexSamplerState:sampler
                                           atIndex:index]
         }
     }
 
-    pub fn set_vertex_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: &SamplerState) {
+    pub fn set_vertex_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self, setVertexSamplerState:sampler
                                         lodMinClamp:lod_min_clamp
@@ -299,7 +299,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn set_fragment_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: MTLBuffer) {
+    pub fn set_fragment_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
         unsafe {
             msg_send![self, setFragmentBuffer:buffer
                                        offset:offset
@@ -307,21 +307,21 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn set_fragment_texture(&self, index: NSUInteger, texture: &TextureRef) {
+    pub fn set_fragment_texture(&self, index: NSUInteger, texture: Option<&TextureRef>) {
         unsafe {
             msg_send![self, setFragmentTexture:texture
                                        atIndex:index]
         }
     }
 
-    pub fn set_fragment_sampler_state(&self, index: NSUInteger, sampler: MTLSamplerState) {
+    pub fn set_fragment_sampler_state(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self, setFragmentSamplerState:sampler
                                             atIndex:index]
         }
     }
 
-    pub fn set_fragment_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: MTLSamplerState) {
+    pub fn set_fragment_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self, setFragmentSamplerState:sampler
                                           lodMinClamp:lod_min_clamp
@@ -437,7 +437,7 @@ impl ArgumentEncoderRef {
         }
     }
 
-    pub fn set_buffers(&self, data: &[Buffer], offset: NSUInteger) {
+    pub fn set_buffers(&self, data: &[&BufferRef], offset: NSUInteger) {
         let range = NSRange {
             location: offset,
             length: data.len() as NSUInteger,
@@ -448,7 +448,7 @@ impl ArgumentEncoderRef {
         }
     }
 
-    pub fn set_textures(&self, data: &[Texture], offset: NSUInteger) {
+    pub fn set_textures(&self, data: &[&TextureRef], offset: NSUInteger) {
         let range = NSRange {
             location: offset,
             length: data.len() as NSUInteger,

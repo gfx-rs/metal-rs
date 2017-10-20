@@ -55,16 +55,26 @@ impl HeapRef {
         }
     }
 
-    pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> Buffer {
+    pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> Option<Buffer> {
         unsafe {
-            msg_send![self, newBufferWithLength:length
-                                        options:options]
+            let ptr: *mut MTLBuffer = msg_send![self, newBufferWithLength:length
+                                                                  options:options];
+            if !ptr.is_null() {
+                Some(Buffer::from_ptr(ptr))
+            } else {
+                None
+            }
         }
     }
 
-    pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Texture {
+    pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Option<Texture> {
         unsafe {
-            msg_send![self, newTextureWithDescriptor:descriptor]
+            let ptr: *mut MTLTexture = msg_send![self, newTextureWithDescriptor:descriptor];
+            if !ptr.is_null() {
+                Some(Texture::from_ptr(ptr))
+            } else {
+                None
+            }
         }
     }
 }

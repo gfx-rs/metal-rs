@@ -205,7 +205,7 @@ foreign_obj_type! {
     pub struct VertexAttributeDescriptorArrayRef;
 }
 
-impl MTLVertexAttributeDescriptorArray {
+impl VertexAttributeDescriptorArrayRef {
     pub fn object_at(&self, index: usize) -> Option<&VertexAttributeDescriptorRef> {
         unsafe {
             msg_send![self, objectAtIndexedSubscript:index]
