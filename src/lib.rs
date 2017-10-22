@@ -20,7 +20,10 @@ extern crate block;
 #[macro_use]
 extern crate foreign_types;
 
+use std::mem;
 use std::marker::PhantomData;
+use std::ops::Deref;
+use std::borrow::{Borrow, ToOwned};
 
 use objc::runtime::{Object, Class, YES, NO};
 use cocoa::foundation::NSSize;
@@ -188,6 +191,37 @@ impl<T> foreign_types::ForeignTypeRef for ArrayRef<T> where
     T::Ref: objc::Message + 'static,
 {
     type CType = NSArray<T>;
+}
+
+impl<T> Deref for Array<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+    type Target = ArrayRef<T>;
+
+    fn deref(&self) -> &ArrayRef<T> {
+        unsafe { mem::transmute(self.as_ptr()) }
+    }
+}
+
+impl<T> Borrow<ArrayRef<T>> for Array<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+    fn borrow(&self) -> &ArrayRef<T> {
+        unsafe { mem::transmute(self.as_ptr()) }
+    }
+}
+
+impl<T> ToOwned for ArrayRef<T> where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+    type Owned = Array<T>;
+
+    fn to_owned(&self) -> Array<T> {
+        unsafe { Array::from_ptr(msg_send![self, retain]) }
+    }
 }
 
 pub enum CAMetalDrawable {}

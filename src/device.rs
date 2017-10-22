@@ -277,7 +277,7 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_argument_encoder(&self, arguments: Array<ArgumentDescriptor>) -> ArgumentEncoder {
+    pub fn new_argument_encoder(&self, arguments: &ArrayRef<ArgumentDescriptor>) -> ArgumentEncoder {
         unsafe {
             msg_send![self, newArgumentEncoderWithArguments:arguments]
         }
