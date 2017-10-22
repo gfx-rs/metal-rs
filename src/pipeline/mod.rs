@@ -7,8 +7,8 @@
 
 use super::*;
 
-mod compute_pipeline;
-mod render_pipeline;
+mod compute;
+mod render;
 
-pub use self::compute_pipeline::*;
-pub use self::render_pipeline::*;
+pub use self::compute::*;
+pub use self::render::*;
