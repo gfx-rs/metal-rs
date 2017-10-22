@@ -15,6 +15,7 @@ use libc;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLBlendFactor {
     Zero = 0,
     One = 1,
@@ -35,6 +36,7 @@ pub enum MTLBlendFactor {
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLBlendOperation {
     Add = 0,
     Subtract = 1,
@@ -56,6 +58,7 @@ bitflags! {
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLPrimitiveTopologyClass {
     Unspecified = 0,
     Point = 1,
