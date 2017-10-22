@@ -52,9 +52,9 @@ pub enum MTLArgumentBuffersTier {
 
 bitflags! {
     struct MTLPipelineOption: NSUInteger {
-        const MTLPipelineOptionNone           = 0;
-        const MTLPipelineOptionArgumentInfo   = 1 << 0;
-        const MTLPipelineOptionBufferTypeInfo = 1 << 1;
+        const None           = 0;
+        const ArgumentInfo   = 1 << 0;
+        const BufferTypeInfo = 1 << 1;
     }
 }
 
@@ -209,7 +209,7 @@ impl DeviceRef {
 
     pub fn new_render_pipeline_state_with_reflection(&self, descriptor: &RenderPipelineDescriptorRef, reflection: &RenderPipelineReflectionRef) -> Result<RenderPipelineState, String> {
         unsafe {
-            let reflection_options = MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo;
+            let reflection_options = MTLPipelineOption::ArgumentInfo | MTLPipelineOption::BufferTypeInfo;
 
             let pipeline_state: *mut MTLRenderPipelineState = try_objc!{ err =>
                 msg_send![self, newRenderPipelineStateWithDescriptor:descriptor
