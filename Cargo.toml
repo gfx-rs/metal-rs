@@ -1,6 +1,6 @@
 [package]
 name = "metal-rs"
-version = "0.5.0"
+version = "0.5.1"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal-rs"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -47,5 +47,5 @@ name = "caps"
 path = "examples/caps/main.rs"
 
 [[example]]
-name = "indirect"
-path = "examples/indirect/main.rs"
+name = "argument-buffer"
+path = "examples/argument-buffer/main.rs"
