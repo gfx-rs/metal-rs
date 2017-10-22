@@ -340,13 +340,13 @@ foreign_obj_type! {
 }
 
 impl AttributeDescriptorRef {
-	pub fn buffer_index(&self) -> NSUInteger {
-		unsafe {
-			msg_send![self, bufferIndex]
-		}
-	}
+    pub fn buffer_index(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, bufferIndex]
+        }
+    }
 
-	pub fn set_buffer_index(&self, buffer_index: NSUInteger) {
+    pub fn set_buffer_index(&self, buffer_index: NSUInteger) {
         unsafe {
             msg_send![self, setBufferIndex:buffer_index]
         }
@@ -402,9 +402,9 @@ impl BufferLayoutDescriptorArrayRef {
 pub enum MTLBufferLayoutDescriptor {}
 
 foreign_obj_type! {
-	type CType = MTLBufferLayoutDescriptor;
-	pub struct BufferLayoutDescriptor;
-	pub struct BufferLayoutDescriptorRef;
+    type CType = MTLBufferLayoutDescriptor;
+    pub struct BufferLayoutDescriptor;
+    pub struct BufferLayoutDescriptorRef;
 }
 
 impl BufferLayoutDescriptorRef {
