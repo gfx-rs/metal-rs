@@ -1,4 +1,4 @@
-// Copyright 2016 GFX developers
+// Copyright 2017 GFX developers
 //
 // Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
 // http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
@@ -15,6 +15,7 @@ use libc;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLBlendFactor {
     Zero = 0,
     One = 1,
@@ -35,6 +36,7 @@ pub enum MTLBlendFactor {
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLBlendOperation {
     Add = 0,
     Subtract = 1,
@@ -56,6 +58,7 @@ bitflags! {
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLPrimitiveTopologyClass {
     Unspecified = 0,
     Point = 1,
