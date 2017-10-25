@@ -6,3 +6,7 @@ rust:
   - stable
 os:
   - osx
+
+branches:
+  except:
+    - staging.tmp
