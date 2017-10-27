@@ -31,6 +31,10 @@ pub enum MTLBlendFactor {
     OneMinusBlendColor = 12,
     BlendAlpha = 13,
     OneMinusBlendAlpha = 14,
+    Source1Color = 15,
+    OneMinusSource1Color = 16,
+    Source1Alpha = 17,
+    OneMinusSource1Alpha = 18,
 }
 
 #[repr(u64)]
