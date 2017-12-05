@@ -225,7 +225,7 @@ impl LibraryRef {
             use cocoa::base::nil as cocoa_nil;
 
             let nsname = cocoa_NSString::alloc(cocoa_nil).init_str(name);
-            
+
             let function: *mut MTLFunction = match constants {
                 Some(c) => try_objc!{ err => msg_send![self, newFunctionWithName:nsname constantValues:c error:&mut err] },
                 None => msg_send![self, newFunctionWithName:nsname]
