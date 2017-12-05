@@ -9,7 +9,9 @@ use super::*;
 
 use objc::runtime::{Class, Object, YES, NO};
 use objc_foundation::{NSString, INSString, NSArray};
+use cocoa::foundation::{NSUInteger};
 use foreign_types::ForeignType;
+use std::ffi::CStr;
 
 pub enum MTLVertexAttribute {}
 
@@ -98,6 +100,28 @@ pub enum MTLLanguageVersion {
     V2_0 = 0x20000,
 }
 
+pub enum MTLFunctionConstantValues {}
+
+foreign_obj_type! {
+    type CType = MTLFunctionConstantValues;
+    pub struct FunctionConstantValues;
+    pub struct FunctionConstantValuesRef;
+}
+
+impl FunctionConstantValues {
+    pub fn new() -> Self {
+        unsafe {
+            let class = Class::get("MTLFunctionConstantValues").unwrap();
+            msg_send![class, new]
+        }
+    }
+}
+
+impl FunctionConstantValuesRef {
+    pub unsafe fn set_constant_value_at_index(&self, index: NSUInteger, ty: MTLDataType, value: *const std::os::raw::c_void) {
+        msg_send![self, setConstantValue:value type:ty atIndex:index]
+    }
+}
 
 pub enum MTLCompileOptions {}
 
@@ -195,18 +219,22 @@ impl LibraryRef {
         }
     }
 
-    pub fn get_function(&self, name: &str) -> Option<Function> {
+    pub fn get_function(&self, name: &str, constants: Option<FunctionConstantValues>) -> Result<Function, String> {
         unsafe {
             use cocoa::foundation::NSString as cocoa_NSString;
             use cocoa::base::nil as cocoa_nil;
 
             let nsname = cocoa_NSString::alloc(cocoa_nil).init_str(name);
-            //let nsname = NSString::from_str(name);
-            let function: *mut MTLFunction = msg_send![self, newFunctionWithName:nsname];
+            
+            let function: *mut MTLFunction = match constants {
+                Some(c) => try_objc!{ err => msg_send![self, newFunctionWithName:nsname constantValues:c error:&mut err] },
+                None => msg_send![self, newFunctionWithName:nsname]
+            };
+
             if !function.is_null() {
-                Some(Function::from_ptr(function))
+                Ok(Function::from_ptr(function))
             } else {
-                None
+                Err(format!("Function '{}' does not exist", name))
             }
         }
     }
