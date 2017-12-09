@@ -409,6 +409,26 @@ foreign_obj_type! {
     type ParentType = CommandEncoderRef;
 }
 
+impl ComputeCommandEncoderRef {
+    pub fn set_compute_pipeline_state(&self, state: &ComputePipelineStateRef) {
+        unsafe {
+            msg_send![self, setComputePipelineState:state]
+        }
+    }
+
+    pub fn set_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
+        unsafe {
+            msg_send![self, setBuffer:buffer offset:offset atIndex:index]
+        }
+    }
+
+    pub fn dispatch_thread_groups(&self, thread_groups_count: MTLSize, threads_per_thread_group: MTLSize) {
+        unsafe {
+            msg_send![self, dispatchThreadgroups:thread_groups_count threadsPerThreadgroup:threads_per_thread_group]
+        }
+    }
+}
+
 pub enum MTLArgumentEncoder {}
 
 foreign_obj_type! {

@@ -103,7 +103,7 @@ impl CommandBufferRef {
 
     pub fn new_compute_command_encoder(&self) -> &ComputeCommandEncoderRef {
         unsafe {
-            msg_send![self, blitCommandEncoder]
+            msg_send![self, computeCommandEncoder]
         }
     }
 

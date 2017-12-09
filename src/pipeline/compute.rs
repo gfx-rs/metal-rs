@@ -106,6 +106,15 @@ foreign_obj_type! {
     pub struct ComputePipelineDescriptorRef;
 }
 
+impl ComputePipelineDescriptor {
+    pub fn new() -> Self {
+        unsafe {
+            let class = Class::get("MTLComputePipelineDescriptor").unwrap();
+            msg_send![class, new]
+        }
+    }
+}
+
 impl ComputePipelineDescriptorRef {
     pub fn label(&self) -> &str {
         unsafe {
@@ -149,13 +158,13 @@ impl ComputePipelineDescriptorRef {
         }
     }
 
-    pub fn stage_input_descriptor(&self) -> Option<&StageInputOutputDescriptor> {
+    pub fn stage_input_descriptor(&self) -> Option<&StageInputOutputDescriptorRef> {
         unsafe {
             msg_send![self, stageInputDescriptor]
         }
     }
 
-    pub fn set_stage_input_descriptor(&self, descriptor: Option<&StageInputOutputDescriptor>) {
+    pub fn set_stage_input_descriptor(&self, descriptor: Option<&StageInputOutputDescriptorRef>) {
         unsafe {
             msg_send![self, setStageInputDescriptor:descriptor]
         }
@@ -257,7 +266,7 @@ foreign_obj_type! {
 }
 
 impl StageInputOutputDescriptor {
-    pub fn new() -> Self {
+    pub fn new<'a>() -> &'a StageInputOutputDescriptorRef {
         unsafe {
             let class = Class::get("MTLStageInputOutputDescriptor").unwrap();
             msg_send![class, stageInputOutputDescriptor]
