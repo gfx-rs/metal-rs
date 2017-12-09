@@ -49,3 +49,7 @@ path = "examples/caps/main.rs"
 [[example]]
 name = "argument-buffer"
 path = "examples/argument-buffer/main.rs"
+
+[[example]]
+name = "compute"
+path = "examples/compute/main.rs"
