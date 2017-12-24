@@ -33,6 +33,15 @@ pub enum MTLSamplerAddressMode {
     Repeat = 2,
     MirrorRepeat = 3,
     ClampToZero = 4,
+    ClampToBorderColor = 5
+}
+
+#[repr(u64)]
+#[derive(Copy, Clone)]
+pub enum MTLSamplerBorderColor {
+    TransparentBlack = 0,
+    OpaqueBlack = 1,
+    OpaqueWhite = 2,
 }
 
 pub enum MTLSamplerDescriptor {}
@@ -117,6 +126,30 @@ impl SamplerDescriptorRef {
     pub fn set_lod_max_clamp(&self, clamp: f32) {
         unsafe {
             msg_send![self, setLodMaxClamp:clamp]
+        }
+    }
+
+    pub fn set_lod_average(&self, enable: bool) {
+        unsafe {
+            msg_send![self, setLodAverage:enable]
+        }
+    }
+
+    pub fn set_normalized_coordinates(&self, enable: bool) {
+        unsafe {
+            msg_send![self, setNormalizedCoordinates:enable]
+        }
+    }
+
+    pub fn set_support_argument_buffers(&self, enable: bool) {
+        unsafe {
+            msg_send![self, setSupportArgumentBuffers:enable]
+        }
+    }
+
+    pub fn set_border_color(&self, color: MTLSamplerBorderColor) {
+        unsafe {
+            msg_send![self, setBorderColor:color]
         }
     }
 }
