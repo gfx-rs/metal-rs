@@ -55,6 +55,7 @@ impl VertexAttributeRef {
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Debug)]
 pub enum MTLFunctionType {
     Vertex = 1,
     Fragment = 2,
