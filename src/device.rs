@@ -5,6 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use cocoa::base::id;
 use cocoa::foundation::{NSUInteger};
 use objc::runtime::{Object, BOOL, YES, NO};
 use objc_foundation::{NSString, INSString};
@@ -12,6 +13,8 @@ use objc_foundation::{NSString, INSString};
 use super::*;
 
 use libc;
+
+use block::{Block, ConcreteBlock};
 
 use std::ffi::CStr;
 use std::path::Path;
@@ -61,6 +64,29 @@ bitflags! {
 #[link(name = "Metal", kind = "framework")]
 extern {
     fn MTLCreateSystemDefaultDevice() -> *mut MTLDevice;
+}
+
+#[allow(non_camel_case_types)]
+type dispatch_data_t = id;
+#[allow(non_camel_case_types)]
+type dispatch_queue_t = id;
+#[allow(non_camel_case_types)]
+type dispatch_block_t = *const Block<(), ()>;
+
+#[cfg_attr(any(target_os = "macos", target_os = "ios"),
+           link(name = "System", kind = "dylib"))]
+#[cfg_attr(not(any(target_os = "macos", target_os = "ios")),
+           link(name = "dispatch", kind = "dylib"))]
+#[allow(improper_ctypes)]
+extern {
+    static _dispatch_main_q: dispatch_queue_t;
+
+    fn dispatch_data_create(
+        buffer: *const libc::c_void,
+        size: libc::size_t,
+        queue: dispatch_queue_t,
+        destructor: dispatch_block_t
+    ) -> dispatch_data_t;
 }
 
 /*type MTLNewLibraryCompletionHandler = extern fn(library: id, error: id);
@@ -201,6 +227,25 @@ impl DeviceRef {
             let library: *mut MTLLibrary = try_objc!{ err =>
                 msg_send![self, newLibraryWithFile:filename
                                              error:&mut err]
+            };
+
+            Ok(Library::from_ptr(library))
+        }
+    }
+
+    pub fn new_library_with_data(&self, library_data: &[u8]) -> Result<Library, String> {
+        unsafe {
+            let destructor_block = ConcreteBlock::new(|| {}).copy();
+            let data = dispatch_data_create(
+                library_data.as_ptr() as *const libc::c_void,
+                library_data.len() as libc::size_t,
+                &_dispatch_main_q as *const _ as dispatch_queue_t,
+                &*destructor_block.deref()
+            );
+
+            let library: *mut MTLLibrary = try_objc! { err =>
+                 msg_send![self, newLibraryWithData:data
+                                              error:&mut err]
             };
 
             Ok(Library::from_ptr(library))
