@@ -52,6 +52,14 @@ bitflags! {
     }
 }
 
+bitflags! {
+    pub struct MTLResourceUsage: NSUInteger {
+        const ResourceUsageRead   = 1 << 0;
+        const ResourceUsageWrite  = 1 << 1;
+        const ResourceUsageSample = 1 << 2;
+    }
+}
+
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 #[repr(C)]
 pub struct MTLSizeAndAlign {
