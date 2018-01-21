@@ -54,7 +54,6 @@ impl VertexAttributeRef {
 }
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
 #[derive(Debug)]
 pub enum MTLFunctionType {
     Vertex = 1,
@@ -69,7 +68,6 @@ foreign_obj_type! {
     pub struct Function;
     pub struct FunctionRef;
 }
-
 
 impl FunctionRef {
     pub fn name(&self) -> &str {
@@ -88,6 +86,13 @@ impl FunctionRef {
     pub fn vertex_attributes(&self) -> &Array<VertexAttribute> {
         unsafe {
             msg_send![self, vertexAttributes]
+        }
+    }
+
+    pub fn new_argument_encoder(&self, buffer_index: NSUInteger) -> ArgumentEncoder {
+        unsafe {
+            let ptr = msg_send![self, newArgumentEncoderWithBufferIndex:buffer_index];
+            ArgumentEncoder::from_ptr(ptr)
         }
     }
 }

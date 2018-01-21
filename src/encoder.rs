@@ -379,7 +379,19 @@ impl RenderCommandEncoderRef {
     // fn setVertexTextures_withRange(self, textures: *const id, range: NSRange);
     // fn setVertexSamplerStates_withRange(self, samplers: *const id, range: NSRange);
     // fn setVertexSamplerStates_lodMinClamps_lodMaxClamps_withRange(self, samplers: *const id, lodMinClamps: *const f32, lodMaxClamps: *const f32, range: NSRange);
- 
+
+    pub fn use_resource(&self, resource: &ResourceRef, usage: MTLResourceUsage) {
+        unsafe {
+            msg_send![self, useResource:resource
+                                  usage:usage]
+        }
+    }
+
+    pub fn use_heap(&self, heap: &HeapRef) {
+        unsafe {
+            msg_send![self, useHeap:heap]
+        }
+    }
 }
 
 pub enum MTLBlitCommandEncoder {}
@@ -427,6 +439,19 @@ impl ComputeCommandEncoderRef {
             msg_send![self, dispatchThreadgroups:thread_groups_count threadsPerThreadgroup:threads_per_thread_group]
         }
     }
+
+    pub fn use_resource(&self, resource: &ResourceRef, usage: MTLResourceUsage) {
+        unsafe {
+            msg_send![self, useResource:resource
+                                  usage:usage]
+        }
+    }
+
+    pub fn use_heap(&self, heap: &HeapRef) {
+        unsafe {
+            msg_send![self, useHeap:heap]
+        }
+    }
 }
 
 pub enum MTLArgumentEncoder {}
@@ -454,6 +479,14 @@ impl ArgumentEncoderRef {
         unsafe {
             msg_send![self, setArgumentBuffer:buffer
                                        offset:offset]
+        }
+    }
+
+    pub fn set_buffer(&self, buffer: &BufferRef, offset: NSUInteger, at_index: NSUInteger) {
+        unsafe {
+            msg_send![self, setBuffer:buffer
+                               offset:offset
+                              atIndex:at_index]
         }
     }
 
@@ -487,6 +520,19 @@ impl ArgumentEncoderRef {
         unsafe {
             msg_send![self, setSamplerStates:data.as_ptr()
                                    withRange:range]
+        }
+    }
+
+    pub fn constant_data(&self, index: NSUInteger) -> *mut libc::c_void {
+        unsafe {
+            msg_send![self, constantDataAtIndex:index]
+        }
+    }
+
+    pub fn new_argument_encoder_for_buffer(&self, index: NSUInteger) -> ArgumentEncoder {
+        unsafe {
+            let ptr = msg_send![self, newArgumentEncoderForBufferAtIndex:index];
+            ArgumentEncoder::from_ptr(ptr)
         }
     }
 }
