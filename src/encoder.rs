@@ -11,6 +11,8 @@ use cocoa::foundation::{NSRange, NSUInteger, NSInteger};
 use objc_foundation::{NSString, INSString};
 
 use libc;
+use std::ops::Range;
+
 
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -280,6 +282,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    //TODO: use `Range` for the next breaking change
     pub fn set_vertex_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self, setVertexSamplerState:sampler
@@ -321,6 +324,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    //TODO: use `Range` for the next breaking change
     pub fn set_fragment_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self, setFragmentSamplerState:sampler
@@ -434,9 +438,41 @@ impl ComputeCommandEncoderRef {
         }
     }
 
+    pub fn set_texture(&self, index: u64, texture: Option<&TextureRef>) {
+        unsafe {
+            msg_send![self, setTexture:texture
+                               atIndex:index]
+        }
+    }
+
+    pub fn set_sampler_state(&self, index: u64, sampler: Option<&SamplerStateRef>) {
+        unsafe {
+            msg_send![self, setSamplerState:sampler
+                                    atIndex:index]
+        }
+    }
+
+    pub fn set_sampler_state_with_lod(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>) {
+        unsafe {
+            msg_send![self, setSamplerState:sampler
+                                lodMinClamp:lod_clamp.start
+                                lodMaxClamp:lod_clamp.end
+                                    atIndex:index]
+        }
+    }
+
     pub fn dispatch_thread_groups(&self, thread_groups_count: MTLSize, threads_per_thread_group: MTLSize) {
         unsafe {
-            msg_send![self, dispatchThreadgroups:thread_groups_count threadsPerThreadgroup:threads_per_thread_group]
+            msg_send![self, dispatchThreadgroups:thread_groups_count
+                           threadsPerThreadgroup:threads_per_thread_group]
+        }
+    }
+
+    pub fn dispatch_thread_groups_indirect(&self, buffer: &BufferRef, offset: NSUInteger, threads_per_thread_group: MTLSize) {
+        unsafe {
+            msg_send![self, dispatchThreadgroupsWithIndirectBuffer:buffer
+                                              indirectBufferOffset:offset
+                                             threadsPerThreadgroup:threads_per_thread_group]
         }
     }
 
