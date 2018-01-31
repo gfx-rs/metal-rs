@@ -438,14 +438,14 @@ impl ComputeCommandEncoderRef {
         }
     }
 
-    pub fn set_texture(&self, index: u64, texture: Option<&TextureRef>) {
+    pub fn set_texture(&self, index: NSUInteger, texture: Option<&TextureRef>) {
         unsafe {
             msg_send![self, setTexture:texture
                                atIndex:index]
         }
     }
 
-    pub fn set_sampler_state(&self, index: u64, sampler: Option<&SamplerStateRef>) {
+    pub fn set_sampler_state(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self, setSamplerState:sampler
                                     atIndex:index]
