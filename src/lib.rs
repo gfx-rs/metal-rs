@@ -13,6 +13,8 @@ extern crate cocoa;
 extern crate bitflags;
 extern crate libc;
 #[macro_use]
+extern crate log;
+#[macro_use]
 extern crate objc;
 extern crate objc_foundation;
 extern crate objc_id;

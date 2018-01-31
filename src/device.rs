@@ -18,6 +18,7 @@ use block::{Block, ConcreteBlock};
 
 use std::ffi::CStr;
 use std::path::Path;
+use std::ptr;
 
 use foreign_types::ForeignType;
 
@@ -205,13 +206,23 @@ impl DeviceRef {
 
         unsafe {
             let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
+            let mut err: *mut Object = ptr::null_mut();
+            let library: *mut MTLLibrary = msg_send![self, newLibraryWithSource:source
+                                                                        options:options
+                                                                          error:&mut err];
+            if !err.is_null() {
+                let desc: *mut Object = msg_send![err, localizedDescription];
+                let compile_error: *const libc::c_char = msg_send![desc, UTF8String];
+                let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
+                msg_send![err, release];
+                if library.is_null() {
+                    return Err(message);
+                } else {
+                    warn!("Shader warnings: {}", message);
+                }
+            }
 
-            let library: *mut MTLLibrary = try_objc!{ err =>
-                 msg_send![self, newLibraryWithSource:source
-                                              options:options
-                                                error:&mut err]
-            };
-
+            assert!(!library.is_null());
             Ok(Library::from_ptr(library))
         }
     }
