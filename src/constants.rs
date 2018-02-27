@@ -7,7 +7,7 @@
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum MTLPixelFormat {
    Invalid                = 0,
    A8Unorm                = 1,
@@ -43,6 +43,7 @@ pub enum MTLPixelFormat {
    RGB10A2Uint            = 91,
    RG11B10Float           = 92,
    RGB9E5Float            = 93,
+   BGR10A2Unorm           = 94,
    RG32Uint               = 103,
    RG32Sint               = 104,
    RG32Float              = 105,
@@ -70,8 +71,11 @@ pub enum MTLPixelFormat {
    BC7_RGBAUnorm_sRGB     = 153,
    GBGR422                = 240,
    BGRG422                = 241,
+   Depth16Unorm           = 250,
    Depth32Float           = 252,
    Stencil8               = 253,
    Depth24Unorm_Stencil8  = 255,
    Depth32Float_Stencil8  = 260,
+   X32_Stencil8           = 261,
+   X24_Stencil8           = 262
 }
