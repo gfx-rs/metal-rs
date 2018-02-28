@@ -1,4 +1,6 @@
 # metal-rs
+[![Build Status](https://travis-ci.org/gfx-rs/metal-rs.svg?branch=master)](https://travis-ci.org/gfx-rs/metal-rs)
+
 Unsafe Rust bindings for the Metal 3D Graphics API.
 
 ## License
