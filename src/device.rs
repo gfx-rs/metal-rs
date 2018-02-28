@@ -132,6 +132,12 @@ impl DeviceRef {
         }
     }
 
+    pub fn registry_id(&self) -> u64 {
+        unsafe {
+            msg_send![self, registryID]
+        }
+    }
+
     pub fn max_threads_per_threadgroup(&self) -> MTLSize {
         unsafe {
             msg_send![self, maxThreadsPerThreadgroup]
