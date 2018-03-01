@@ -513,55 +513,92 @@ impl ArgumentEncoderRef {
 
     pub fn set_argument_buffer(&self, buffer: &BufferRef, offset: NSUInteger) {
         unsafe {
-            msg_send![self, setArgumentBuffer:buffer
-                                       offset:offset]
+            msg_send![self,
+                setArgumentBuffer: buffer
+                offset: offset
+            ]
+        }
+    }
+
+    pub fn set_argument_buffer_to_element(&self, buffer: &BufferRef, offset: NSUInteger, array_element: NSUInteger) {
+        unsafe {
+            msg_send![self,
+                setArgumentBuffer: buffer
+                startOffset: offset
+                arrayElement: array_element
+            ]
         }
     }
 
     pub fn set_buffer(&self, buffer: &BufferRef, offset: NSUInteger, at_index: NSUInteger) {
         unsafe {
-            msg_send![self, setBuffer:buffer
-                               offset:offset
-                              atIndex:at_index]
+            msg_send![self,
+                setBuffer: buffer
+                offset: offset
+                atIndex: at_index
+            ]
         }
     }
 
-    pub fn set_buffers(&self, data: &[&BufferRef], offset: NSUInteger) {
-        let range = NSRange {
-            location: offset,
-            length: data.len() as NSUInteger,
-        };
+    pub fn set_buffers(&self, data: &[&BufferRef], offsets: &[NSUInteger], start_index: NSUInteger) {
+        assert_eq!(offsets.len(), data.len());
         unsafe {
-            msg_send![self, setBuffers:data.as_ptr()
-                             withRange:range]
+            msg_send![self,
+                setBuffers: data.as_ptr()
+                offsets: offsets.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
-    pub fn set_textures(&self, data: &[&TextureRef], offset: NSUInteger) {
-        let range = NSRange {
-            location: offset,
-            length: data.len() as NSUInteger,
-        };
+    pub fn set_texture(&self, texture: &TextureRef, at_index: NSUInteger) {
         unsafe {
-            msg_send![self, setTextures:data.as_ptr()
-                              withRange:range]
+            msg_send![self,
+                setTexture: texture
+                atIndex: at_index
+            ]
         }
     }
 
-    pub fn set_sampler_states(&self, data: &[&SamplerStateRef], offset: NSUInteger) {
-        let range = NSRange {
-            location: offset,
-            length: data.len() as NSUInteger,
-        };
+    pub fn set_textures(&self, data: &[&TextureRef], start_index: NSUInteger) {
         unsafe {
-            msg_send![self, setSamplerStates:data.as_ptr()
-                                   withRange:range]
+            msg_send![self,
+                setTextures: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
-    pub fn constant_data(&self, index: NSUInteger) -> *mut libc::c_void {
+    pub fn set_sampler_state(&self, sampler_state: &SamplerStateRef, at_index: NSUInteger) {
         unsafe {
-            msg_send![self, constantDataAtIndex:index]
+            msg_send![self,
+                setSamplerState: sampler_state
+                atIndex: at_index
+            ]
+        }
+    }
+
+    pub fn set_sampler_states(&self, data: &[&SamplerStateRef], start_index: NSUInteger) {
+        unsafe {
+            msg_send![self,
+                setSamplerStates: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
+    pub fn constant_data(&self, at_index: NSUInteger) -> *mut libc::c_void {
+        unsafe {
+            msg_send![self, constantDataAtIndex:at_index]
         }
     }
 
