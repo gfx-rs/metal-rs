@@ -356,6 +356,7 @@ mod argument;
 mod vertexdescriptor;
 mod depthstencil;
 mod heap;
+mod capturemanager;
 
 pub use constants::*;
 pub use types::*;
@@ -375,6 +376,7 @@ pub use argument::*;
 pub use vertexdescriptor::*;
 pub use depthstencil::*;
 pub use heap::*;
+pub use capturemanager::*;
 
 #[inline]
 unsafe fn obj_drop<T>(p: *mut T) {
