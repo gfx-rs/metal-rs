@@ -353,6 +353,16 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    pub fn draw_primitives_instanced_base_instance(&self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger, instance_count: NSUInteger, base_instance: NSUInteger) {
+        unsafe {
+            msg_send![self, drawPrimitives:primitive_type
+                               vertexStart:vertex_start
+                               vertexCount:vertex_count
+                             instanceCount:instance_count
+                              baseInstance:base_instance]
+        }
+    }
+
     pub fn draw_indexed_primitives(&self, primitive_type: MTLPrimitiveType, index_count: NSUInteger, index_type: MTLIndexType, index_buffer: &BufferRef, index_buffer_offset: NSUInteger) {
         unsafe {
             msg_send![self, drawIndexedPrimitives:primitive_type
@@ -414,6 +424,45 @@ impl BlitCommandEncoderRef {
         }
     }
 
+    pub fn copy_from_buffer(&self, source_buffer: &BufferRef, source_offset: NSUInteger, destination_buffer: &BufferRef, destination_offset: NSUInteger, size: NSUInteger) {
+        unsafe {
+            msg_send![self, copyFromBuffer:source_buffer
+                              sourceOffset:source_offset
+                                  toBuffer:destination_buffer
+                         destinationOffset:destination_offset
+                                      size:size]
+        }
+    }
+
+    pub fn copy_from_buffer_to_texture(&self, source_buffer: &BufferRef, source_offset: NSUInteger, source_bytes_per_row: NSUInteger, source_bytes_per_image: NSUInteger, source_size: MTLSize, destination_texture: &TextureRef, destination_slice: NSUInteger, destination_level: NSUInteger, destination_origin: MTLOrigin) {
+        unsafe {
+            msg_send![self, copyFromBuffer:source_buffer
+                              sourceOffset:source_offset
+                         sourceBytesPerRow:source_bytes_per_row
+                       sourceBytesPerImage:source_bytes_per_image
+                                sourceSize:source_size
+                                 toTexture:destination_texture
+                          destinationSlice:destination_slice
+                          destinationLevel:destination_level
+                         destinationOrigin:destination_origin
+            ]
+        }
+    }
+
+    pub fn copy_from_texture_to_buffer(&self, source_texture: &TextureRef, source_slice: NSUInteger, source_level: NSUInteger, source_origin: MTLOrigin, source_size: MTLSize, destination_buffer: &BufferRef, destination_offset: NSUInteger, destination_bytes_per_row: NSUInteger, destination_bytes_per_image: NSUInteger) {
+        unsafe {
+            msg_send![self, copyFromTexture:source_texture
+                                sourceSlice:source_slice
+                                sourceLevel:source_level
+                               sourceOrigin:source_origin
+                                 sourceSize:source_size
+                                   toBuffer:destination_buffer
+                          destinationOffset:destination_offset
+                     destinationBytesPerRow:destination_bytes_per_row
+                   destinationBytesPerImage:destination_bytes_per_image
+            ]
+        }
+    }
 }
 
 pub enum MTLComputeCommandEncoder {}
