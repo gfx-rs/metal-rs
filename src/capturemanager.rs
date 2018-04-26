@@ -72,6 +72,10 @@ impl CaptureManagerRef {
         unsafe { msg_send![self, defaultCaptureScope] }
     }
 
+    pub fn set_default_capture_scope(&self, scope: &CaptureScopeRef) {
+        unsafe { msg_send![self, setDefaultCaptureScope:scope] }
+    }
+
     pub fn start_capture_with_device(&self, device: &DeviceRef) {
         unsafe {
             msg_send![self, startCaptureWithDevice: device];

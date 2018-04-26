@@ -336,4 +336,10 @@ impl RenderPassDescriptorRef {
             msg_send![self, renderTargetArrayLength]
         }
     }
+
+    pub fn set_render_target_array_length(&self, length: NSUInteger) {
+        unsafe {
+            msg_send![self, setRenderTargetArrayLength:length]
+        }
+    }
 }

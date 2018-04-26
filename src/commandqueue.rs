@@ -43,4 +43,10 @@ impl CommandQueueRef {
             msg_send![self, commandBufferWithUnretainedReferences]
         }
     }
+
+    pub fn device(&self) -> &DeviceRef {
+        unsafe {
+            msg_send![self, device]
+        }
+    }
 }

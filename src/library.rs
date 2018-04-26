@@ -95,6 +95,12 @@ impl FunctionRef {
             ArgumentEncoder::from_ptr(ptr)
         }
     }
+
+    pub fn function_constants_dictionary(&self) -> *mut Object {
+        unsafe {
+            msg_send![self, functionConstantsDictionary]
+        }
+    }
 }
 
 #[repr(u64)]
