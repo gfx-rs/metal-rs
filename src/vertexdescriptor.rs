@@ -11,6 +11,7 @@ use cocoa::foundation::NSUInteger;
 use libc;
 
 #[repr(u64)]
+#[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVertexFormat {
     Invalid = 0,
@@ -55,6 +56,16 @@ pub enum MTLVertexFormat {
     UInt4 = 39,
     Int1010102Normalized = 40,
     UInt1010102Normalized = 41,
+    UChar4Normalized_BGRA = 42,
+    UChar = 45,
+    Char = 46,
+    UCharNormalized = 47,
+    CharNormalized = 48,
+    UShort = 49,
+    Short = 50,
+    UShortNormalized = 51,
+    ShortNormalized = 52,
+    Half = 53,
 }
 
 #[repr(u64)]
