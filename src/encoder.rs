@@ -543,6 +543,16 @@ impl ComputeCommandEncoderRef {
         }
     }
 
+    pub fn set_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const libc::c_void) {
+        unsafe {
+            msg_send![self,
+                setBytes: bytes
+                length: length
+                atIndex: index
+            ]
+        }
+    }
+
     pub fn dispatch_thread_groups(&self, thread_groups_count: MTLSize, threads_per_thread_group: MTLSize) {
         unsafe {
             msg_send![self, dispatchThreadgroups:thread_groups_count
