@@ -176,12 +176,6 @@ impl ComputePipelineDescriptorRef {
         }
     }
 
-    pub fn set_buffers(&self, buffers: Option<&PipelineBufferDescriptorArrayRef>) {
-        unsafe {
-            msg_send![self, setBuffers:buffers]
-        }
-    }
-
     pub fn reset(&self) {
         unsafe {
             msg_send![self, reset]
