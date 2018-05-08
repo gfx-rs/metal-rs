@@ -14,7 +14,7 @@ use libc;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum MTLTextureType {
     D1 = 0,
     D1Array = 1,

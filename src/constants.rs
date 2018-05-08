@@ -7,7 +7,7 @@
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum MTLPixelFormat {
    Invalid                = 0,
    A8Unorm                = 1,
