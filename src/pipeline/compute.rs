@@ -205,6 +205,24 @@ impl ComputePipelineStateRef {
             msg_send![self, setLabel:nslabel]
         }
     }
+
+    pub fn max_total_threads_per_group(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, maxTotalThreadsPerThreadgroup]
+        }
+    }
+
+    pub fn thread_execution_width(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, threadExecutionWidth]
+        }
+    }
+
+    pub fn static_threadgroup_memory_length(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, staticThreadgroupMemoryLength]
+        }
+    }
 }
 
 pub enum MTLPipelineBufferDescriptorArray {}
