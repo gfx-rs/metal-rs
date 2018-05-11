@@ -200,6 +200,12 @@ impl DeviceRef {
         }
     }
 
+    pub fn new_command_queue_with_max_command_buffer_count(&self, count: NSUInteger) -> CommandQueue {
+        unsafe {
+            msg_send![self, newCommandQueueWithMaxCommandBufferCount:count]
+        }
+    }
+
     pub fn new_default_library(&self) -> Library {
         unsafe {
             msg_send![self, newDefaultLibrary]
