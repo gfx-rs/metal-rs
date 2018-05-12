@@ -195,7 +195,7 @@ impl RenderPassColorAttachmentDescriptor {
     }
 }
 
-impl RenderPassAttachmentDescriptorRef {
+impl RenderPassColorAttachmentDescriptorRef {
     pub fn clear_color(&self) -> MTLClearColor {
         unsafe {
             msg_send![self, clearColor]
@@ -238,6 +238,7 @@ foreign_obj_type! {
     type CType = MTLRenderPassStencilAttachmentDescriptor;
     pub struct RenderPassStencilAttachmentDescriptor;
     pub struct RenderPassStencilAttachmentDescriptorRef;
+    type ParentType = RenderPassAttachmentDescriptorRef;
 }
 
 impl RenderPassStencilAttachmentDescriptorRef {
