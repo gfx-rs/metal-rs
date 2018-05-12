@@ -1,6 +1,6 @@
 [package]
 name = "metal-rs"
-version = "0.9.2"
+version = "0.9.3"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal-rs"
 homepage = "https://github.com/gfx-rs/metal-rs"
