@@ -11,7 +11,7 @@ use objc::runtime::Class;
 use cocoa::foundation::NSUInteger;
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Clone, Debug)]
 pub enum MTLLoadAction {
     DontCare = 0,
     Load = 1,
@@ -19,7 +19,7 @@ pub enum MTLLoadAction {
 }
 
 #[repr(u64)]
-#[allow(non_camel_case_types)]
+#[derive(Clone, Debug)]
 pub enum MTLStoreAction {
     DontCare = 0,
     Store = 1,
@@ -27,7 +27,7 @@ pub enum MTLStoreAction {
 }
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MTLClearColor {
     red: f64,
     green: f64,
