@@ -54,9 +54,9 @@ bitflags! {
 
 bitflags! {
     pub struct MTLResourceUsage: NSUInteger {
-        const ResourceUsageRead   = 1 << 0;
-        const ResourceUsageWrite  = 1 << 1;
-        const ResourceUsageSample = 1 << 2;
+        const Read   = 1 << 0;
+        const Write  = 1 << 1;
+        const Sample = 1 << 2;
     }
 }
 
