@@ -51,12 +51,10 @@ pub enum MTLBlendOperation {
 
 bitflags! {
     pub struct MTLColorWriteMask: NSUInteger {
-        const MTLColorWriteMaskNone  = 0;
-        const MTLColorWriteMaskRed   = 0x1 << 3;
-        const MTLColorWriteMaskGreen = 0x1 << 2;
-        const MTLColorWriteMaskBlue  = 0x1 << 1;
-        const MTLColorWriteMaskAlpha = 0x1 << 0;
-        const MTLColorWriteMaskAll   = 0xf;
+        const Red   = 0x1 << 3;
+        const Green = 0x1 << 2;
+        const Blue  = 0x1 << 1;
+        const Alpha = 0x1 << 0;
     }
 }
 

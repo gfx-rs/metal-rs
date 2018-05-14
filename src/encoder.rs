@@ -68,6 +68,15 @@ pub enum MTLTriangleFillMode {
     Lines = 1,
 }
 
+bitflags! {
+    #[allow(non_upper_case_globals)]
+    pub struct MTLBlitOption: NSUInteger {
+        const DepthFromDepthStencil   = 1 << 0;
+        const StencilFromDepthStencil = 1 << 1;
+        const RowLinearPVRTC          = 1 << 2;
+    }
+}
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct MTLScissorRect {
@@ -462,6 +471,7 @@ impl BlitCommandEncoderRef {
     pub fn copy_from_buffer_to_texture(&self,
         source_buffer: &BufferRef, source_offset: NSUInteger, source_bytes_per_row: NSUInteger, source_bytes_per_image: NSUInteger, source_size: MTLSize,
         destination_texture: &TextureRef, destination_slice: NSUInteger, destination_level: NSUInteger, destination_origin: MTLOrigin,
+        options: MTLBlitOption,
     ) {
         unsafe {
             msg_send![self,
@@ -474,6 +484,7 @@ impl BlitCommandEncoderRef {
                 destinationSlice: destination_slice
                 destinationLevel: destination_level
                 destinationOrigin: destination_origin
+                options: options
             ]
         }
     }
@@ -481,6 +492,7 @@ impl BlitCommandEncoderRef {
     pub fn copy_from_texture_to_buffer(&self,
         source_texture: &TextureRef, source_slice: NSUInteger, source_level: NSUInteger, source_origin: MTLOrigin, source_size: MTLSize,
         destination_buffer: &BufferRef, destination_offset: NSUInteger, destination_bytes_per_row: NSUInteger, destination_bytes_per_image: NSUInteger,
+        options: MTLBlitOption,
     ) {
         unsafe {
             msg_send![self,
@@ -493,6 +505,7 @@ impl BlitCommandEncoderRef {
                 destinationOffset: destination_offset
                 destinationBytesPerRow: destination_bytes_per_row
                 destinationBytesPerImage: destination_bytes_per_image
+                options: options
             ]
         }
     }

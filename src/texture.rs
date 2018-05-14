@@ -27,13 +27,12 @@ pub enum MTLTextureType {
 }
 
 bitflags! {
-    #[allow(non_upper_case_globals)]
     pub struct MTLTextureUsage: NSUInteger {
-        const MTLTextureUsageUnknown         = 0x0000;
-        const MTLTextureUsageShaderRead      = 0x0001;
-        const MTLTextureUsageShaderWrite     = 0x0002;
-        const MTLTextureUsageRenderTarget    = 0x0004;
-        const MTLTextureUsagePixelFormatView = 0x0010;
+        const Unknown         = 0x0000;
+        const ShaderRead      = 0x0001;
+        const ShaderWrite     = 0x0002;
+        const RenderTarget    = 0x0004;
+        const PixelFormatView = 0x0010;
     }
 }
 

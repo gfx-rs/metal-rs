@@ -56,7 +56,6 @@ pub enum MTLArgumentBuffersTier {
 
 bitflags! {
     struct MTLPipelineOption: NSUInteger {
-        const None           = 0;
         const ArgumentInfo   = 1 << 0;
         const BufferTypeInfo = 1 << 1;
     }
