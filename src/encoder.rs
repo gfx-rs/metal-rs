@@ -345,53 +345,117 @@ impl RenderCommandEncoderRef {
 
     // Drawing Geometric Primitives
 
-    pub fn draw_primitives(&self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger) {
+    pub fn draw_primitives(
+        &self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger
+    ) {
         unsafe {
-            msg_send![self, drawPrimitives:primitive_type
-                               vertexStart:vertex_start
-                               vertexCount:vertex_count]
+            msg_send![self,
+                drawPrimitives: primitive_type
+                vertexStart: vertex_start
+                vertexCount: vertex_count
+            ]
         }
     }
 
-    pub fn draw_primitives_instanced(&self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger, instance_count: NSUInteger) {
+    #[deprecated(since = "0.10.1", note = "use draw_primitives_instanced_base_instance instead")]
+    pub fn draw_primitives_instanced(
+        &self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger, instance_count: NSUInteger, base_instance: NSUInteger
+    ) {
         unsafe {
-            msg_send![self, drawPrimitives:primitive_type
-                                 vertexStart:vertex_start
-                                 vertexCount:vertex_count
-                               instanceCount:instance_count]
+            msg_send![self,
+                drawPrimitives: primitive_type
+                vertexStart: vertex_start
+                vertexCount: vertex_count
+                instanceCount: instance_count
+                baseInstance: base_instance
+            ]
         }
     }
 
-    pub fn draw_primitives_instanced_base_instance(&self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger, instance_count: NSUInteger, base_instance: NSUInteger) {
+    pub fn draw_primitives_instanced_base_instance(
+        &self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger, instance_count: NSUInteger, base_instance: NSUInteger
+    ) {
         unsafe {
-            msg_send![self, drawPrimitives:primitive_type
-                               vertexStart:vertex_start
-                               vertexCount:vertex_count
-                             instanceCount:instance_count
-                              baseInstance:base_instance]
+            msg_send![self,
+                drawPrimitives: primitive_type
+                vertexStart: vertex_start
+                vertexCount: vertex_count
+                instanceCount: instance_count
+                baseInstance: base_instance
+            ]
         }
     }
 
-    pub fn draw_indexed_primitives(&self, primitive_type: MTLPrimitiveType, index_count: NSUInteger, index_type: MTLIndexType, index_buffer: &BufferRef, index_buffer_offset: NSUInteger) {
+    pub fn draw_primitives_indirect(
+        &self, primitive_type: MTLPrimitiveType, indirect_buffer: &BufferRef, indirect_buffer_offset: NSUInteger
+    ) {
         unsafe {
-            msg_send![self, drawIndexedPrimitives:primitive_type
-                                         indexCount:index_count
-                                          indexType:index_type
-                                        indexBuffer:index_buffer
-                                  indexBufferOffset:index_buffer_offset]
+            msg_send![self,
+                drawPrimitives: primitive_type
+                indirectBuffer: indirect_buffer
+                indirectBufferOffset: indirect_buffer_offset
+            ]
         }
     }
 
-    pub fn draw_indexed_primitives_instanced(&self, primitive_type: MTLPrimitiveType, index_count: NSUInteger, index_type: MTLIndexType, index_buffer: &BufferRef, index_buffer_offset: NSUInteger, instance_count: NSUInteger, base_vertex: NSInteger, base_instance: NSUInteger) {
+    pub fn draw_indexed_primitives(
+        &self, primitive_type: MTLPrimitiveType, index_count: NSUInteger, index_type: MTLIndexType, index_buffer: &BufferRef, index_buffer_offset: NSUInteger
+    ) {
         unsafe {
-            msg_send![self, drawIndexedPrimitives:primitive_type
-                                         indexCount:index_count
-                                          indexType:index_type
-                                        indexBuffer:index_buffer
-                                  indexBufferOffset:index_buffer_offset
-                                      instanceCount:instance_count
-                                         baseVertex:base_vertex
-                                       baseInstance:base_instance]
+            msg_send![self,
+                drawIndexedPrimitives: primitive_type
+                indexCount: index_count
+                indexType: index_type
+                indexBuffer: index_buffer
+                indexBufferOffset: index_buffer_offset
+            ]
+        }
+    }
+
+    pub fn draw_indexed_primitives_instanced(
+        &self, primitive_type: MTLPrimitiveType, index_count: NSUInteger, index_type: MTLIndexType, index_buffer: &BufferRef, index_buffer_offset: NSUInteger, instance_count: NSUInteger
+    ) {
+        unsafe {
+            msg_send![self,
+                drawIndexedPrimitives: primitive_type
+                indexCount: index_count
+                indexType: index_type
+                indexBuffer: index_buffer
+                indexBufferOffset: index_buffer_offset
+                instanceCount: instance_count
+            ]
+        }
+    }
+
+    pub fn draw_indexed_primitives_instanced_base_instance(
+        &self, primitive_type: MTLPrimitiveType, index_count: NSUInteger, index_type: MTLIndexType, index_buffer: &BufferRef, index_buffer_offset: NSUInteger, instance_count: NSUInteger, base_vertex: NSInteger, base_instance: NSUInteger
+    ) {
+        unsafe {
+            msg_send![self,
+                drawIndexedPrimitives: primitive_type
+                indexCount: index_count
+                indexType: index_type
+                indexBuffer: index_buffer
+                indexBufferOffset: index_buffer_offset
+                instanceCount: instance_count
+                baseVertex: base_vertex
+                baseInstance: base_instance
+            ]
+        }
+    }
+
+    pub fn draw_indexed_primitives_indirect(
+        &self, primitive_type: MTLPrimitiveType, index_type: MTLIndexType, index_buffer: &BufferRef, index_buffer_offset: NSUInteger, indirect_buffer: &BufferRef, indirect_buffer_offset: NSUInteger
+    ) {
+        unsafe {
+            msg_send![self,
+                drawIndexedPrimitives: primitive_type
+                indexType: index_type
+                indexBuffer: index_buffer
+                indexBufferOffset: index_buffer_offset
+                indirectBuffer: indirect_buffer
+                indirectBufferOffset: indirect_buffer_offset
+            ]
         }
     }
 
