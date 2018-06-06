@@ -129,5 +129,9 @@ pub enum MTLPixelFormat {
    Depth24Unorm_Stencil8  = 255,
    Depth32Float_Stencil8  = 260,
    X32_Stencil8           = 261,
-   X24_Stencil8           = 262
+   X24_Stencil8           = 262,
+   BGRA10_XR              = 552,
+   BGRA10_XR_SRGB         = 553,
+   BGR10_XR               = 554,
+   BGR10_XR_SRGB          = 555,
 }
