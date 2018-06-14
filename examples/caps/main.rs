@@ -12,6 +12,7 @@ use metal::*;
 fn main() {
     let device = Device::system_default();
 
+    println!("Name: {:?}", device.name());
     println!("Vendor: {:?}", device.vendor());
     println!("Family: {:?}", device.family_name());
     println!("Max threads per threadgroup: {:?}", device.max_threads_per_threadgroup());
