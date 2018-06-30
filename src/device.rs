@@ -229,8 +229,8 @@ impl DeviceRef {
                 let desc: *mut Object = msg_send![err, localizedDescription];
                 let compile_error: *const libc::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
-                msg_send![err, release];
                 if library.is_null() {
+                    msg_send![err, release];
                     return Err(message);
                 } else {
                     warn!("Shader warnings: {}", message);
