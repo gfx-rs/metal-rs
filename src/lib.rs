@@ -111,6 +111,58 @@ macro_rules! try_objc {
     };
 }
 
+macro_rules! class {
+    (
+        $name:ident {
+            $( fn $fun:ident(&self) -> $ret:ty; )*
+        }
+    ) => (
+        mod sel_simple {
+            $(
+                #[link_section="__TEXT,__objc_methname,cstring_literals"]
+                pub static $fun: &'static str = concat!(stringify!($fun), '\0');
+            )*
+        }
+        impl $name {
+            $(
+                pub fn $fun (&self) -> $ret {
+                    use std::mem;
+                    use objc;
+                    unsafe {
+                        let sel = mem::transmute(sel_simple::$fun.as_ptr());
+                        objc::__send_message(self, sel, ())
+                    }.expect("ObjC message send failure")
+                }
+            )*
+        }
+    );
+    (
+        $name:ident {
+            $( fn $fun:ident(&self $(, $param:ident : $ty:ty)+) -> $ret:ty; )*
+        }
+    ) => (
+        mod sel_complex {
+            $(
+                #[link_section="__TEXT,__objc_methname,cstring_literals"]
+                pub static $fun: &'static str = concat!($( stringify!($param), ':' )+, '\0');
+            )*
+        }
+        impl $name {
+            $(
+                pub fn $fun (&self $(, $param: $ty)+ ) -> $ret {
+                    use std::mem;
+                    use objc;
+                    unsafe {
+                        let sel = mem::transmute(sel_complex::$fun.as_ptr());
+                        objc::__send_message(self, sel $(,$param)+)
+                    }.expect("ObjC message send failure")
+                }
+            )*
+        }
+    );
+}
+
+
 pub struct NSArray<T> {
     _phantom: PhantomData<T>,
 }

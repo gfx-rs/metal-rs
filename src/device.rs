@@ -22,6 +22,7 @@ use std::ptr;
 
 use foreign_types::ForeignType;
 
+
 #[allow(non_camel_case_types)]
 #[repr(u64)]
 #[derive(Copy, Clone, Debug)]
@@ -113,13 +114,18 @@ impl Device {
     }
 }
 
+class!(DeviceRef {
+    fn name(&self) -> &NSString;
+});
+
 impl DeviceRef {
+    /*
     pub fn name(&self) -> &str {
         unsafe {
             let name: &NSString = msg_send![self, name];
             name.as_str()
         }
-    }
+    }*/
 
     pub fn vendor(&self) -> &str {
         unsafe {
