@@ -10,6 +10,9 @@ readme = "README.md"
 keywords = ["metal", "graphics", "bindings"]
 license = "MIT OR Apache-2.0"
 
+[lib]
+crate-type = ["staticlib", "rlib"]
+
 [package.metadata.docs.rs]
 default-target = "x86_64-apple-darwin"
 

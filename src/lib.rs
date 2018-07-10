@@ -28,7 +28,17 @@ use std::ops::Deref;
 use std::borrow::{Borrow, ToOwned};
 
 use objc::runtime::{Object, Class, YES, NO};
+#[cfg(target_os = "macos")]
 use cocoa::foundation::NSSize;
+#[cfg(target_os = "ios")]
+#[repr(C)]
+#[derive(Debug, Clone)]
+pub struct CGSize {
+    pub width: CGFloat,
+    pub height: CGFloat,
+}
+#[cfg(target_os = "ios")]
+type NSSize = CGSize;
 use foreign_types::ForeignType;
 
 #[cfg(target_pointer_width = "64")]
