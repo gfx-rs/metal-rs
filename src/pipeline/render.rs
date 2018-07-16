@@ -8,7 +8,7 @@
 use super::*;
 
 use cocoa::foundation::NSUInteger;
-use objc::runtime::{Class, Object, YES, NO};
+use objc::runtime::{Object, YES, NO};
 use objc_foundation::{INSString, NSString};
 
 use libc;
@@ -203,7 +203,7 @@ impl RenderPipelineReflection {
             fragment_data: *mut libc::c_void, vertex_desc: *mut libc::c_void,
             device: &DeviceRef, options: u64, flags: u64) -> Self
     {
-        let class = Class::get("MTLRenderPipelineReflection").unwrap();
+        let class = class!(MTLRenderPipelineReflection);
         let this: RenderPipelineReflection = msg_send![class, alloc];
         let this_alias: *mut Object = msg_send![this.as_ref(), initWithVertexData:vertex_data
                                                                 fragmentData:fragment_data
@@ -243,7 +243,7 @@ foreign_obj_type! {
 impl RenderPipelineDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLRenderPipelineDescriptor").unwrap();
+            let class = class!(MTLRenderPipelineDescriptor);
             msg_send![class, new]
         }
     }

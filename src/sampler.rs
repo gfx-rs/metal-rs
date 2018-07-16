@@ -5,7 +5,6 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use objc::runtime::Class;
 use cocoa::foundation::NSUInteger;
 
 use depthstencil::MTLCompareFunction;
@@ -56,7 +55,7 @@ foreign_obj_type! {
 impl SamplerDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLSamplerDescriptor").unwrap();
+            let class = class!(MTLSamplerDescriptor);
             msg_send![class, new]
         }
     }

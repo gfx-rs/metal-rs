@@ -7,7 +7,6 @@
 
 use super::*;
 
-use objc::runtime::Class;
 use cocoa::foundation::NSUInteger;
 
 #[repr(u64)]
@@ -189,7 +188,7 @@ foreign_obj_type! {
 impl RenderPassColorAttachmentDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLRenderPassColorAttachmentDescriptor").unwrap();
+            let class = class!(MTLRenderPassColorAttachmentDescriptor);
             msg_send![class, new]
         }
     }
@@ -289,7 +288,7 @@ foreign_obj_type! {
 impl RenderPassDescriptor {
     pub fn new<'a>() -> &'a RenderPassDescriptorRef {
         unsafe {
-            let class = Class::get("MTLRenderPassDescriptorInternal").unwrap();
+            let class = class!(MTLRenderPassDescriptorInternal);
             msg_send![class, renderPassDescriptor]
         }
     }

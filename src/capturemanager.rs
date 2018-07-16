@@ -7,7 +7,6 @@
 
 use super::*;
 
-use objc::runtime::Class;
 use objc_foundation::{INSString, NSString};
 
 pub enum MTLCaptureScope {}
@@ -50,7 +49,7 @@ foreign_obj_type! {
 impl CaptureManager {
     pub fn shared<'a>() -> &'a CaptureManagerRef {
         unsafe {
-            let class = Class::get("MTLCaptureManager").unwrap();
+            let class = class!(MTLCaptureManager);
             msg_send![class, sharedCaptureManager]
         }
     }

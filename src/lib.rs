@@ -27,7 +27,7 @@ use std::marker::PhantomData;
 use std::ops::Deref;
 use std::borrow::{Borrow, ToOwned};
 
-use objc::runtime::{Object, Class, YES, NO};
+use objc::runtime::{Object, YES, NO};
 use cocoa::foundation::NSSize;
 use foreign_types::ForeignType;
 
@@ -159,14 +159,14 @@ impl<T> Array<T> where
  {
     pub fn from_slice(s: &[&T::Ref]) -> Self {
         unsafe {
-            let class = Class::get("NSArray").unwrap();
+            let class = class!(NSArray);
             msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
         }
     }
     
     pub fn from_owned_slice(s: &[T]) -> Self {
         unsafe {
-            let class = Class::get("NSArray").unwrap();
+            let class = class!(NSArray);
             msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
         }
     }
@@ -254,7 +254,7 @@ foreign_obj_type! {
 impl CoreAnimationLayer {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("CAMetalLayer").unwrap();
+            let class = class!(CAMetalLayer);
             msg_send![class, new]
         }
     }

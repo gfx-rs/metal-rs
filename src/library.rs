@@ -7,7 +7,7 @@
 
 use super::*;
 
-use objc::runtime::{Class, Object, YES, NO};
+use objc::runtime::{Object, YES, NO};
 use objc_foundation::{NSString, INSString, NSArray};
 use cocoa::foundation::{NSUInteger};
 use foreign_types::ForeignType;
@@ -123,7 +123,7 @@ foreign_obj_type! {
 impl FunctionConstantValues {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLFunctionConstantValues").unwrap();
+            let class = class!(MTLFunctionConstantValues);
             msg_send![class, new]
         }
     }
@@ -146,7 +146,7 @@ foreign_obj_type! {
 impl CompileOptions {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLCompileOptions").unwrap();
+            let class = class!(MTLCompileOptions);
             msg_send![class, new]
         }
     }

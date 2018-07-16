@@ -8,7 +8,6 @@
 use super::*;
 
 use cocoa::foundation::NSUInteger;
-use objc::runtime::Class;
 
 pub enum MTLHeap {}
 
@@ -90,7 +89,7 @@ foreign_obj_type! {
 impl HeapDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLHeapDescriptor").unwrap();
+            let class = class!(MTLHeapDescriptor);
             msg_send![class, new]
         }
     }
