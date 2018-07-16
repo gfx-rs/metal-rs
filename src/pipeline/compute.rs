@@ -8,7 +8,7 @@
 use super::*;
 
 use cocoa::foundation::NSUInteger;
-use objc::runtime::{Class, YES, NO};
+use objc::runtime::{YES, NO};
 use objc_foundation::{INSString, NSString};
 
 #[repr(u64)]
@@ -109,7 +109,7 @@ foreign_obj_type! {
 impl ComputePipelineDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLComputePipelineDescriptor").unwrap();
+            let class = class!(MTLComputePipelineDescriptor);
             msg_send![class, new]
         }
     }
@@ -280,7 +280,7 @@ foreign_obj_type! {
 impl StageInputOutputDescriptor {
     pub fn new<'a>() -> &'a StageInputOutputDescriptorRef {
         unsafe {
-            let class = Class::get("MTLStageInputOutputDescriptor").unwrap();
+            let class = class!(MTLStageInputOutputDescriptor);
             msg_send![class, stageInputOutputDescriptor]
         }
     }

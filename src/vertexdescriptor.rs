@@ -5,7 +5,6 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use objc::runtime::Class;
 use cocoa::foundation::NSUInteger;
 
 use libc;
@@ -86,7 +85,7 @@ foreign_obj_type! {
 impl VertexBufferLayoutDescriptor {
     pub fn new () -> Self {
         unsafe {
-            let class = Class::get("MTLVertexBufferLayoutDescriptor").unwrap();
+            let class = class!(MTLVertexBufferLayoutDescriptor);
             msg_send![class, new]
         }
     }
@@ -164,7 +163,7 @@ foreign_obj_type! {
 impl VertexAttributeDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLVertexAttributeDescriptor").unwrap();
+            let class = class!(MTLVertexAttributeDescriptor);
             msg_send![class, new]
         }
     }
@@ -242,7 +241,7 @@ foreign_obj_type! {
 impl VertexDescriptor {
     pub fn new<'a>() -> &'a VertexDescriptorRef {
         unsafe {
-            let class = Class::get("MTLVertexDescriptor").unwrap();
+            let class = class!(MTLVertexDescriptor);
             msg_send![class, vertexDescriptor]
         }
     }

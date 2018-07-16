@@ -8,7 +8,7 @@
 use ::{Array, MTLTextureType};
 
 use cocoa::foundation::NSUInteger;
-use objc::runtime::{Class, YES, NO};
+use objc::runtime::{YES, NO};
 use objc_foundation::{NSString, INSString};
 
 #[repr(u64)]
@@ -320,7 +320,7 @@ foreign_obj_type! {
 impl ArgumentDescriptor {
     pub fn new<'a>() -> &'a ArgumentDescriptorRef {
         unsafe {
-            let class = Class::get("MTLArgumentDescriptor").unwrap();
+            let class = class!(MTLArgumentDescriptor);
             msg_send![class, argumentDescriptor]
         }
     }

@@ -5,7 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use objc::runtime::{Class, YES, NO};
+use objc::runtime::{YES, NO};
 
 #[repr(u64)]
 pub enum MTLCompareFunction {
@@ -42,7 +42,7 @@ foreign_obj_type! {
 impl StencilDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLStencilDescriptor").unwrap();
+            let class = class!(MTLStencilDescriptor);
             msg_send![class, new]
         }
     }
@@ -134,7 +134,7 @@ foreign_obj_type! {
 impl DepthStencilDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLDepthStencilDescriptor").unwrap();
+            let class = class!(MTLDepthStencilDescriptor);
             msg_send![class, new]
         }
     }

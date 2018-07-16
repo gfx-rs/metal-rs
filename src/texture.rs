@@ -8,7 +8,7 @@
 use super::*;
 
 use cocoa::foundation::{NSUInteger, NSRange};
-use objc::runtime::{Class, YES, NO};
+use objc::runtime::{YES, NO};
 
 use libc;
 
@@ -47,7 +47,7 @@ foreign_obj_type! {
 impl TextureDescriptor {
     pub fn new() -> Self {
         unsafe {
-            let class = Class::get("MTLTextureDescriptor").unwrap();
+            let class = class!(MTLTextureDescriptor);
             msg_send![class, new]
         }
     }
