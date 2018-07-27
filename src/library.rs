@@ -105,6 +105,7 @@ impl FunctionRef {
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
+#[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub enum MTLLanguageVersion {
     V1_0 = 0x10000,
     V1_1 = 0x10001,
