@@ -68,6 +68,7 @@ bitflags! {
 #[link(name = "Metal", kind = "framework")]
 extern {
     fn MTLCreateSystemDefaultDevice() -> *mut MTLDevice;
+    fn MTLCopyAllDevices() -> *mut Object; //TODO: Array
 }
 
 #[allow(non_camel_case_types)]
@@ -110,6 +111,16 @@ foreign_obj_type! {
 impl Device {
     pub fn system_default() -> Device {
         unsafe { Device(MTLCreateSystemDefaultDevice()) }
+    }
+
+    pub fn all() -> Vec<Device> {
+        unsafe {
+            let array = MTLCopyAllDevices();
+            let count: NSUInteger = msg_send![array, count];
+            (0 .. count)
+                .map(|i| msg_send![array, objectAtIndex: i])
+                .collect()
+        }
     }
 }
 
