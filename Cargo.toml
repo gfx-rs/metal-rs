@@ -1,8 +1,8 @@
 [package]
-name = "metal-rs"
-version = "0.10.4"
+name = "metal"
+version = "0.11.0"
 description = "Rust bindings for Metal"
-documentation = "https://docs.rs/crate/metal-rs"
+documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
 repository = "https://github.com/gfx-rs/metal-rs"
 authors = ["GFX Developers"]
@@ -14,7 +14,7 @@ license = "MIT OR Apache-2.0"
 default-target = "x86_64-apple-darwin"
 
 [dependencies]
-cocoa = "0.15"
+cocoa = "0.17"
 bitflags = "1"
 libc = "0.2"
 log = "0.4"
@@ -28,7 +28,7 @@ version = "0.2.3"
 features = ["objc_exception"]
 
 [dev-dependencies]
-winit = "0.13"
+winit = "0.17"
 sema = "0.1.4"
 
 [[example]]

@@ -5,22 +5,20 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use block::{Block, ConcreteBlock};
 use cocoa::base::id;
 use cocoa::foundation::{NSUInteger};
+use foreign_types::ForeignType;
+use libc;
 use objc::runtime::{Object, BOOL, YES, NO};
 use objc_foundation::{NSString, INSString};
 
 use super::*;
 
-use libc;
-
-use block::{Block, ConcreteBlock};
-
 use std::ffi::CStr;
 use std::path::Path;
 use std::ptr;
 
-use foreign_types::ForeignType;
 
 #[allow(non_camel_case_types)]
 #[repr(u64)]
@@ -61,6 +59,7 @@ bitflags! {
     }
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 enum OS {
     iOS, tvOS, macOS

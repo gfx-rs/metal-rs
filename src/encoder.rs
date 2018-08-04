@@ -357,9 +357,8 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    #[deprecated(since = "0.10.1", note = "use draw_primitives_instanced_base_instance instead")]
     pub fn draw_primitives_instanced(
-        &self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger, instance_count: NSUInteger, base_instance: NSUInteger
+        &self, primitive_type: MTLPrimitiveType, vertex_start: NSUInteger, vertex_count: NSUInteger, instance_count: NSUInteger
     ) {
         unsafe {
             msg_send![self,
@@ -367,7 +366,6 @@ impl RenderCommandEncoderRef {
                 vertexStart: vertex_start
                 vertexCount: vertex_count
                 instanceCount: instance_count
-                baseInstance: base_instance
             ]
         }
     }
@@ -599,24 +597,30 @@ impl ComputeCommandEncoderRef {
 
     pub fn set_texture(&self, index: NSUInteger, texture: Option<&TextureRef>) {
         unsafe {
-            msg_send![self, setTexture:texture
-                               atIndex:index]
+            msg_send![self,
+                setTexture:texture
+                atIndex:index
+            ]
         }
     }
 
     pub fn set_sampler_state(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>) {
         unsafe {
-            msg_send![self, setSamplerState:sampler
-                                    atIndex:index]
+            msg_send![self,
+                setSamplerState:sampler
+                atIndex:index
+            ]
         }
     }
 
     pub fn set_sampler_state_with_lod(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>) {
         unsafe {
-            msg_send![self, setSamplerState:sampler
-                                lodMinClamp:lod_clamp.start
-                                lodMaxClamp:lod_clamp.end
-                                    atIndex:index]
+            msg_send![self,
+                setSamplerState:sampler
+                lodMinClamp:lod_clamp.start
+                lodMaxClamp:lod_clamp.end
+                atIndex:index
+            ]
         }
     }
 
@@ -632,23 +636,29 @@ impl ComputeCommandEncoderRef {
 
     pub fn dispatch_thread_groups(&self, thread_groups_count: MTLSize, threads_per_thread_group: MTLSize) {
         unsafe {
-            msg_send![self, dispatchThreadgroups:thread_groups_count
-                           threadsPerThreadgroup:threads_per_thread_group]
+            msg_send![self,
+                dispatchThreadgroups:thread_groups_count
+                threadsPerThreadgroup:threads_per_thread_group
+            ]
         }
     }
 
     pub fn dispatch_thread_groups_indirect(&self, buffer: &BufferRef, offset: NSUInteger, threads_per_thread_group: MTLSize) {
         unsafe {
-            msg_send![self, dispatchThreadgroupsWithIndirectBuffer:buffer
-                                              indirectBufferOffset:offset
-                                             threadsPerThreadgroup:threads_per_thread_group]
+            msg_send![self,
+                dispatchThreadgroupsWithIndirectBuffer:buffer
+                indirectBufferOffset:offset
+                threadsPerThreadgroup:threads_per_thread_group
+            ]
         }
     }
 
     pub fn use_resource(&self, resource: &ResourceRef, usage: MTLResourceUsage) {
         unsafe {
-            msg_send![self, useResource:resource
-                                  usage:usage]
+            msg_send![self,
+                useResource:resource
+                usage:usage
+            ]
         }
     }
 
