@@ -40,9 +40,11 @@ impl BufferRef {
 
     pub fn new_texture_from_contents(&self, descriptor: &TextureDescriptorRef, offset: u64, stride: u64) -> Texture {
         unsafe {
-            msg_send![self, newTextureWithDescriptor:descriptor
-                                              offset:offset
-                                         bytesPerRow:stride]
+            msg_send![self,
+                newTextureWithDescriptor:descriptor
+                offset:offset
+                bytesPerRow:stride
+            ]
         }
     }
 }
