@@ -1,6 +1,6 @@
 [package]
-name = "metal"
-version = "0.11.0"
+name = "metal-rs"
+version = "0.10.5"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -9,6 +9,7 @@ authors = ["GFX Developers"]
 readme = "README.md"
 keywords = ["metal", "graphics", "bindings"]
 license = "MIT OR Apache-2.0"
+maintenance = { status = "deprecated" }
 
 [package.metadata.docs.rs]
 default-target = "x86_64-apple-darwin"
