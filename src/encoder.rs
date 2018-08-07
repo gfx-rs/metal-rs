@@ -391,8 +391,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn set_fragment_textures(&self, start_index: NSUInteger, data: &[Option<&TextureRef>], offsets: &[NSUInteger]) {
-        debug_assert_eq!(offsets.len(), data.len());
+    pub fn set_fragment_textures(&self, start_index: NSUInteger, data: &[Option<&TextureRef>]) {
         unsafe {
             msg_send![self,
                 setFragmentTextures: data.as_ptr()
