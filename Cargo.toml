@@ -1,6 +1,6 @@
 [package]
 name = "metal"
-version = "0.11.0"
+version = "0.11.1"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -31,25 +31,21 @@ features = ["objc_exception"]
 winit = "0.17"
 sema = "0.1.4"
 
+
 [[example]]
 name = "window"
-path = "examples/window/main.rs"
 
 [[example]]
 name = "library"
-path = "examples/library/main.rs"
 
 [[example]]
 name = "reflection"
-path = "examples/reflection/main.rs"
 
 [[example]]
 name = "caps"
-path = "examples/caps/main.rs"
 
 [[example]]
 name = "argument-buffer"
-path = "examples/argument-buffer/main.rs"
 
 [[example]]
 name = "compute"
@@ -62,3 +58,6 @@ path = "examples/compute/embedded-lib.rs"
 [[example]]
 name = "compute-argument-buffer"
 path = "examples/compute/compute-argument-buffer.rs"
+
+[[example]]
+name = "bind"

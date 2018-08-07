@@ -263,31 +263,78 @@ impl RenderCommandEncoderRef {
 
     pub fn set_vertex_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const libc::c_void) {
         unsafe {
-            msg_send![self, setVertexBytes:bytes
-                                    length:length
-                                   atIndex:index]
+            msg_send![self,
+                setVertexBytes:bytes
+                length:length
+                atIndex:index
+            ]
         }
     }
 
+    // TODO: change the order of arguments
     pub fn set_vertex_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
         unsafe {
-            msg_send![self, setVertexBuffer:buffer
-                                       offset:offset
-                                      atIndex:index]
+            msg_send![self,
+                setVertexBuffer:buffer
+                offset:offset
+                atIndex:index
+            ]
+        }
+    }
+
+    pub fn set_vertex_buffers(&self, start_index: NSUInteger, data: &[Option<&BufferRef>], offsets: &[NSUInteger]) {
+        debug_assert_eq!(offsets.len(), data.len());
+        unsafe {
+            msg_send![self,
+                setVertexBuffers: data.as_ptr()
+                offsets: offsets.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
     pub fn set_vertex_texture(&self, index: u64, texture: Option<&TextureRef>) {
         unsafe {
-            msg_send![self, setVertexTexture:texture
-                                       atIndex:index]
+            msg_send![self,
+                setVertexTexture:texture
+                atIndex:index
+            ]
+        }
+    }
+
+    pub fn set_vertex_textures(&self, start_index: NSUInteger, data: &[Option<&TextureRef>]) {
+        unsafe {
+            msg_send![self,
+                setVertexTextures: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
     pub fn set_vertex_sampler_state(&self, index: u64, sampler: Option<&SamplerStateRef>) {
         unsafe {
-            msg_send![self, setVertexSamplerState:sampler
-                                          atIndex:index]
+            msg_send![self,
+                setVertexSamplerState:sampler
+                atIndex:index
+            ]
+        }
+    }
+
+    pub fn set_vertex_sampler_states(&self, start_index: NSUInteger, data: &[Option<&SamplerStateRef>]) {
+        unsafe {
+            msg_send![self,
+                setVertexSamplerStates: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
@@ -313,16 +360,47 @@ impl RenderCommandEncoderRef {
 
     pub fn set_fragment_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
         unsafe {
-            msg_send![self, setFragmentBuffer:buffer
-                                       offset:offset
-                                      atIndex:index]
+            msg_send![self,
+                setFragmentBuffer:buffer
+                offset:offset
+                atIndex:index
+            ]
+        }
+    }
+
+    pub fn set_fragment_buffers(&self, start_index: NSUInteger, data: &[Option<&BufferRef>], offsets: &[NSUInteger]) {
+        debug_assert_eq!(offsets.len(), data.len());
+        unsafe {
+            msg_send![self,
+                setFragmentBuffers: data.as_ptr()
+                offsets: offsets.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
     pub fn set_fragment_texture(&self, index: NSUInteger, texture: Option<&TextureRef>) {
         unsafe {
-            msg_send![self, setFragmentTexture:texture
-                                       atIndex:index]
+            msg_send![self,
+                setFragmentTexture:texture
+                atIndex:index
+            ]
+        }
+    }
+
+    pub fn set_fragment_textures(&self, start_index: NSUInteger, data: &[Option<&TextureRef>], offsets: &[NSUInteger]) {
+        debug_assert_eq!(offsets.len(), data.len());
+        unsafe {
+            msg_send![self,
+                setFragmentTextures: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
@@ -330,6 +408,18 @@ impl RenderCommandEncoderRef {
         unsafe {
             msg_send![self, setFragmentSamplerState:sampler
                                             atIndex:index]
+        }
+    }
+
+    pub fn set_fragment_sampler_states(&self, start_index: NSUInteger, data: &[Option<&SamplerStateRef>]) {
+        unsafe {
+            msg_send![self,
+                setFragmentSamplerStates: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
@@ -589,9 +679,24 @@ impl ComputeCommandEncoderRef {
         }
     }
 
+    //TODO: change the arguments order in the next breaking change
     pub fn set_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
         unsafe {
             msg_send![self, setBuffer:buffer offset:offset atIndex:index]
+        }
+    }
+
+    pub fn set_buffers(&self, start_index: NSUInteger, data: &[Option<&BufferRef>], offsets: &[NSUInteger]) {
+        debug_assert_eq!(offsets.len(), data.len());
+        unsafe {
+            msg_send![self,
+                setBuffers: data.as_ptr()
+                offsets: offsets.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
         }
     }
 
@@ -604,11 +709,35 @@ impl ComputeCommandEncoderRef {
         }
     }
 
+    pub fn set_textures(&self, start_index: NSUInteger, data: &[Option<&TextureRef>]) {
+        unsafe {
+            msg_send![self,
+                setTextures: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
     pub fn set_sampler_state(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self,
                 setSamplerState:sampler
                 atIndex:index
+            ]
+        }
+    }
+
+    pub fn set_sampler_states(&self, start_index: NSUInteger, data: &[Option<&SamplerStateRef>]) {
+        unsafe {
+            msg_send![self,
+                setSamplerStates: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
             ]
         }
     }
