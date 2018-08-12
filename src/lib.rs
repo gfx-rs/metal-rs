@@ -29,8 +29,8 @@ use std::ops::Deref;
 use std::borrow::{Borrow, ToOwned};
 
 use objc::runtime::{Object, YES, NO};
-pub use core_graphics::base::CGFloat;
-pub use core_graphics::geometry::CGSize;
+use core_graphics::base::CGFloat;
+use core_graphics::geometry::CGSize;
 use foreign_types::ForeignType;
 
 macro_rules! foreign_obj_type {
