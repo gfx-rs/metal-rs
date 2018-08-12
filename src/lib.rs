@@ -9,6 +9,7 @@
 #![allow(non_upper_case_globals)]
 
 extern crate cocoa;
+extern crate core_graphics;
 #[macro_use]
 extern crate bitflags;
 extern crate libc;
@@ -28,13 +29,9 @@ use std::ops::Deref;
 use std::borrow::{Borrow, ToOwned};
 
 use objc::runtime::{Object, YES, NO};
-use cocoa::foundation::NSSize;
+use core_graphics::base::CGFloat;
+use core_graphics::geometry::CGSize;
 use foreign_types::ForeignType;
-
-#[cfg(target_pointer_width = "64")]
-pub type CGFloat = libc::c_double;
-#[cfg(not(target_pointer_width = "64"))]
-pub type CGFloat = libc::c_float;
 
 macro_rules! foreign_obj_type {
     {type CType = $raw_ident:ident;
@@ -279,13 +276,13 @@ impl CoreAnimationLayerRef {
         }
     }
 
-    pub fn drawable_size(&self) -> NSSize {
+    pub fn drawable_size(&self) -> CGSize {
         unsafe {
             msg_send![self, drawableSize]
         }
     }
 
-    pub fn set_drawable_size(&self, size: NSSize) {
+    pub fn set_drawable_size(&self, size: CGSize) {
         unsafe {
             msg_send![self, setDrawableSize:size]
         }
