@@ -271,8 +271,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    // TODO: change the order of arguments
-    pub fn set_vertex_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
+    pub fn set_vertex_buffer(&self, index: NSUInteger, buffer: Option<&BufferRef>, offset: NSUInteger) {
         unsafe {
             msg_send![self,
                 setVertexBuffer:buffer
@@ -355,13 +354,15 @@ impl RenderCommandEncoderRef {
 
     pub fn set_fragment_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const libc::c_void) {
         unsafe {
-            msg_send![self, setFragmentBytes:bytes
-                                        length:length
-                                       atIndex:index]
+            msg_send![self,
+                setFragmentBytes:bytes
+                length:length
+                atIndex:index
+            ]
         }
     }
 
-    pub fn set_fragment_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
+    pub fn set_fragment_buffer(&self, index: NSUInteger, buffer: Option<&BufferRef>, offset: NSUInteger) {
         unsafe {
             msg_send![self,
                 setFragmentBuffer:buffer
@@ -553,11 +554,8 @@ impl RenderCommandEncoderRef {
     }
 
     // TODO: more draws
-
     // fn setVertexBufferOffset_atIndex(self, offset: NSUInteger, index: NSUInteger);
     // fn setVertexBuffers_offsets_withRange(self, buffers: *const id, offsets: *const NSUInteger, range: NSRange);
-    // fn setVertexTextures_withRange(self, textures: *const id, range: NSRange);
-    // fn setVertexSamplerStates_withRange(self, samplers: *const id, range: NSRange);
     // fn setVertexSamplerStates_lodMinClamps_lodMaxClamps_withRange(self, samplers: *const id, lodMinClamps: *const f32, lodMaxClamps: *const f32, range: NSRange);
 
     pub fn use_resource(&self, resource: &ResourceRef, usage: MTLResourceUsage) {
@@ -684,8 +682,7 @@ impl ComputeCommandEncoderRef {
         }
     }
 
-    //TODO: change the arguments order in the next breaking change
-    pub fn set_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
+    pub fn set_buffer(&self, index: NSUInteger, buffer: Option<&BufferRef>, offset: NSUInteger) {
         unsafe {
             msg_send![self, setBuffer:buffer offset:offset atIndex:index]
         }
