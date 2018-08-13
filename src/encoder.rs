@@ -338,13 +338,16 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    //TODO: use `Range` for the next breaking change
-    pub fn set_vertex_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: Option<&SamplerStateRef>) {
+    pub fn set_vertex_sampler_state_with_lod(
+        &self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>
+    ) {
         unsafe {
-            msg_send![self, setVertexSamplerState:sampler
-                                        lodMinClamp:lod_min_clamp
-                                        lodMaxClamp:lod_max_clamp
-                                            atIndex:index]
+            msg_send![self,
+                setVertexSamplerState:sampler
+                lodMinClamp:lod_clamp.start
+                lodMaxClamp:lod_clamp.end
+                atIndex:index
+            ]
         }
     }
 
@@ -422,13 +425,16 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    //TODO: use `Range` for the next breaking change
-    pub fn set_fragment_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: Option<&SamplerStateRef>) {
+    pub fn set_fragment_sampler_state_with_lod(
+        &self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>
+    ) {
         unsafe {
-            msg_send![self, setFragmentSamplerState:sampler
-                                          lodMinClamp:lod_min_clamp
-                                          lodMaxClamp:lod_max_clamp
-                                              atIndex:index]
+            msg_send![self,
+                setFragmentSamplerState:sampler
+                lodMinClamp:lod_clamp.start
+                lodMaxClamp:lod_clamp.end
+                atIndex:index
+            ]
         }
     }
 
@@ -741,7 +747,9 @@ impl ComputeCommandEncoderRef {
         }
     }
 
-    pub fn set_sampler_state_with_lod(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>) {
+    pub fn set_sampler_state_with_lod(
+        &self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>
+    ) {
         unsafe {
             msg_send![self,
                 setSamplerState:sampler
