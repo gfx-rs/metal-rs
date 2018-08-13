@@ -1,6 +1,6 @@
 [package]
 name = "metal"
-version = "0.11.1"
+version = "0.12.0"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -14,8 +14,8 @@ license = "MIT OR Apache-2.0"
 default-target = "x86_64-apple-darwin"
 
 [dependencies]
-cocoa = "0.17"
-core-graphics = "0.17.0"
+cocoa = "0.18"
+core-graphics = "0.17"
 bitflags = "1"
 libc = "0.2"
 log = "0.4"

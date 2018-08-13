@@ -271,8 +271,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    // TODO: change the order of arguments
-    pub fn set_vertex_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
+    pub fn set_vertex_buffer(&self, index: NSUInteger, buffer: Option<&BufferRef>, offset: NSUInteger) {
         unsafe {
             msg_send![self,
                 setVertexBuffer:buffer
@@ -338,13 +337,16 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    //TODO: use `Range` for the next breaking change
-    pub fn set_vertex_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: Option<&SamplerStateRef>) {
+    pub fn set_vertex_sampler_state_with_lod(
+        &self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>
+    ) {
         unsafe {
-            msg_send![self, setVertexSamplerState:sampler
-                                        lodMinClamp:lod_min_clamp
-                                        lodMaxClamp:lod_max_clamp
-                                            atIndex:index]
+            msg_send![self,
+                setVertexSamplerState:sampler
+                lodMinClamp:lod_clamp.start
+                lodMaxClamp:lod_clamp.end
+                atIndex:index
+            ]
         }
     }
 
@@ -352,13 +354,15 @@ impl RenderCommandEncoderRef {
 
     pub fn set_fragment_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const libc::c_void) {
         unsafe {
-            msg_send![self, setFragmentBytes:bytes
-                                        length:length
-                                       atIndex:index]
+            msg_send![self,
+                setFragmentBytes:bytes
+                length:length
+                atIndex:index
+            ]
         }
     }
 
-    pub fn set_fragment_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
+    pub fn set_fragment_buffer(&self, index: NSUInteger, buffer: Option<&BufferRef>, offset: NSUInteger) {
         unsafe {
             msg_send![self,
                 setFragmentBuffer:buffer
@@ -422,13 +426,16 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    //TODO: use `Range` for the next breaking change
-    pub fn set_fragment_sampler_state_with_lod(&self, index: NSUInteger, lod_min_clamp: f32, lod_max_clamp: f32, sampler: Option<&SamplerStateRef>) {
+    pub fn set_fragment_sampler_state_with_lod(
+        &self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>
+    ) {
         unsafe {
-            msg_send![self, setFragmentSamplerState:sampler
-                                          lodMinClamp:lod_min_clamp
-                                          lodMaxClamp:lod_max_clamp
-                                              atIndex:index]
+            msg_send![self,
+                setFragmentSamplerState:sampler
+                lodMinClamp:lod_clamp.start
+                lodMaxClamp:lod_clamp.end
+                atIndex:index
+            ]
         }
     }
 
@@ -547,11 +554,8 @@ impl RenderCommandEncoderRef {
     }
 
     // TODO: more draws
-
     // fn setVertexBufferOffset_atIndex(self, offset: NSUInteger, index: NSUInteger);
     // fn setVertexBuffers_offsets_withRange(self, buffers: *const id, offsets: *const NSUInteger, range: NSRange);
-    // fn setVertexTextures_withRange(self, textures: *const id, range: NSRange);
-    // fn setVertexSamplerStates_withRange(self, samplers: *const id, range: NSRange);
     // fn setVertexSamplerStates_lodMinClamps_lodMaxClamps_withRange(self, samplers: *const id, lodMinClamps: *const f32, lodMaxClamps: *const f32, range: NSRange);
 
     pub fn use_resource(&self, resource: &ResourceRef, usage: MTLResourceUsage) {
@@ -678,8 +682,7 @@ impl ComputeCommandEncoderRef {
         }
     }
 
-    //TODO: change the arguments order in the next breaking change
-    pub fn set_buffer(&self, index: NSUInteger, offset: NSUInteger, buffer: Option<&BufferRef>) {
+    pub fn set_buffer(&self, index: NSUInteger, buffer: Option<&BufferRef>, offset: NSUInteger) {
         unsafe {
             msg_send![self, setBuffer:buffer offset:offset atIndex:index]
         }
@@ -741,7 +744,9 @@ impl ComputeCommandEncoderRef {
         }
     }
 
-    pub fn set_sampler_state_with_lod(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>) {
+    pub fn set_sampler_state_with_lod(
+        &self, index: NSUInteger, sampler: Option<&SamplerStateRef>, lod_clamp: Range<f32>
+    ) {
         unsafe {
             msg_send![self,
                 setSamplerState:sampler
