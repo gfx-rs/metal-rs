@@ -252,6 +252,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    //TODO: change argument order
     pub fn set_visibility_result_mode(&self, offset: NSUInteger, mode: MTLVisibilityResultMode) {
         unsafe {
             msg_send![self, setVisibilityResultMode:mode
@@ -585,6 +586,18 @@ impl BlitCommandEncoderRef {
     pub fn synchronize_resource(&self, resource: &ResourceRef) {
         unsafe {
             msg_send![self, synchronizeResource:resource]
+        }
+    }
+
+    pub fn fill_buffer(&self,
+        destination_buffer: &BufferRef, range: NSRange, value: u8,
+    ) {
+        unsafe {
+            msg_send![self,
+                fillBuffer: destination_buffer
+                range: range
+                value: value
+            ]
         }
     }
 
