@@ -331,6 +331,12 @@ impl RenderPassDescriptorRef {
         }
     }
 
+    pub fn set_visibility_result_buffer(&self, buffer: Option<&BufferRef>) {
+        unsafe {
+            msg_send![self, setVisibilityResultBuffer:buffer]
+        }
+    }
+
     pub fn render_target_array_length(&self) -> NSUInteger {
         unsafe {
             msg_send![self, renderTargetArrayLength]
