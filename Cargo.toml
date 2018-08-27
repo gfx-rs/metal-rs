@@ -1,6 +1,6 @@
 [package]
 name = "metal-rs"
-version = "0.10.5"
+version = "0.10.6"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -15,7 +15,7 @@ maintenance = { status = "deprecated" }
 default-target = "x86_64-apple-darwin"
 
 [dependencies]
-cocoa = "0.17"
+cocoa = "0.15"
 bitflags = "1"
 libc = "0.2"
 log = "0.4"
