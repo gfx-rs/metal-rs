@@ -1333,12 +1333,16 @@ impl Device {
     }
 
     pub fn all() -> Vec<Device> {
-        unsafe {
-            let array = MTLCopyAllDevices();
-            let count: NSUInteger = msg_send![array, count];
-            (0 .. count)
-                .map(|i| msg_send![array, objectAtIndex: i])
-                .collect()
+        if cfg!(target_os = "ios") {
+            vec![Device::system_default()]
+        } else {
+            unsafe {
+                let array = MTLCopyAllDevices();
+                let count: NSUInteger = msg_send![array, count];
+                (0 .. count)
+                    .map(|i| msg_send![array, objectAtIndex: i])
+                    .collect()
+            }
         }
     }
 }
