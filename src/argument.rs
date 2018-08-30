@@ -92,6 +92,22 @@ pub enum MTLDataType {
     Texture = 58,
     Sampler = 59,
     Pointer = 60,
+    R8Unorm = 62,
+    R8Snorm = 63,
+    R16Unorm = 64,
+    R16Snorm = 65,
+    RG8Unorm = 66,
+    RG8Snorm = 67,
+    RG16Unorm = 68,
+    RG16Snorm = 69,
+    RGBA8Unorm = 70,
+    RGBA8Unorm_sRGB = 71,
+    RGBA8Snorm = 72,
+    RGBA16Unorm = 73,
+    RGBA16Snorm = 74,
+    RGB10A2Unorm = 75,
+    RG11B10Float = 76,
+    RGB9E5Float = 77,
 }
 
 #[repr(u32)]
@@ -101,6 +117,8 @@ pub enum MTLArgumentType {
     ThreadgroupMemory = 1,
     Texture = 2,
     Sampler = 3,
+    ImageblockData = 16,
+    Imageblock = 17,
 }
 
 #[repr(u32)]

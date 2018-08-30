@@ -209,6 +209,7 @@ foreign_obj_type! {
 }
 
 impl TextureRef {
+    #[deprecated(since="0.13.0")]
     pub fn root_resource(&self) -> Option<&ResourceRef> {
        unsafe {
            msg_send![self, rootResource]

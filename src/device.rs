@@ -36,10 +36,18 @@ pub enum MTLFeatureSet {
     iOS_GPUFamily2_v4 = 9,
     iOS_GPUFamily3_v3 = 10,
     iOS_GPUFamily4_v1 = 11,
+    // iOS_GPUFamily1_v5 = 12, TODO: Uncomment when feature tables updated
+    // iOS_GPUFamily2_v5 = 13,
+    // iOS_GPUFamily3_v4 = 14,
+    // iOS_GPUFamily4_v2 = 15,
+    
     tvOS_GPUFamily1_v1 = 30000,
     tvOS_GPUFamily1_v2 = 30001,
     tvOS_GPUFamily1_v3 = 30002,
     tvOS_GPUFamily2_v1 = 30003,
+    // tvOS_GPUFamily1_v4 = 30004,
+    // tvOS_GPUFamily2_v2 = 30005,
+
     macOS_GPUFamily1_v1 = 10000,
     macOS_GPUFamily1_v2 = 10001,
     //macOS_ReadWriteTextureTier2 = 10002, TODO: Uncomment when feature tables updated
@@ -1355,18 +1363,16 @@ impl DeviceRef {
         }
     }
 
-    pub fn vendor(&self) -> &str {
-        unsafe {
-            let name: &NSString = msg_send![self, vendorName];
-            name.as_str()
-        }
+    #[cfg(feature = "private")]
+    pub unsafe fn vendor(&self) -> &str {
+        let name: &NSString = msg_send![self, vendorName];
+        name.as_str()
     }
 
-    pub fn family_name(&self) -> &str {
-        unsafe {
-            let name: &NSString = msg_send![self, familyName];
-            name.as_str()
-        }
+    #[cfg(feature = "private")]
+    pub unsafe fn family_name(&self) -> &str {
+        let name: &NSString = msg_send![self, familyName];
+        name.as_str()
     }
 
     pub fn registry_id(&self) -> u64 {
@@ -1538,15 +1544,25 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_compute_pipeline_state(&self, descriptor: &ComputePipelineDescriptorRef) -> Result<ComputePipelineState, String> {
+    pub fn new_compute_pipeline_state_with_function(&self, function: &FunctionRef) -> Result<ComputePipelineState, String> {
         unsafe {
             let pipeline_state: *mut MTLComputePipelineState = try_objc!{ err =>
-                msg_send![self, newComputePipelineStateWithDescriptor:descriptor
-                                                               error:&mut err]
+                msg_send![self, newComputePipelineStateWithFunction:function
+                                                              error:&mut err]
             };
 
             Ok(ComputePipelineState::from_ptr(pipeline_state))
         }
+    }
+
+    #[cfg(feature = "private")]
+    pub unsafe fn new_compute_pipeline_state(&self, descriptor: &ComputePipelineDescriptorRef) -> Result<ComputePipelineState, String> {
+        let pipeline_state: *mut MTLComputePipelineState = try_objc!{ err =>
+            msg_send![self, newComputePipelineStateWithDescriptor:descriptor
+                                                            error:&mut err]
+        };
+
+        Ok(ComputePipelineState::from_ptr(pipeline_state))
     }
 
     pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> Buffer {

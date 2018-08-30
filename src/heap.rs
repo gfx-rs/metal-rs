@@ -50,7 +50,7 @@ impl HeapRef {
 
     pub fn max_available_size(&self, alignment: NSUInteger) -> NSUInteger {
         unsafe {
-            msg_send![self, maxAvailableSize: alignment]
+            msg_send![self, maxAvailableSizeWithAlignment: alignment]
         }
     }
 

@@ -200,14 +200,6 @@ pub enum MTLLibraryError {
     CompileWarning   = 4,
 }
 
-#[repr(u64)]
-#[allow(non_camel_case_types)]
-pub enum MTLRenderPipelineError {
-    Internal          = 1,
-    Unsupported       = 2,
-    InvalidInput      = 3,
-}
-
 pub enum MTLLibrary {}
 
 foreign_obj_type! {

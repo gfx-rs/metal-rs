@@ -32,6 +32,8 @@ pub enum MTLCommandBufferError {
     NotPermitted = 7,
     OutOfMemory = 8,
     InvalidResource = 9,
+    Memoryless = 10,
+    DeviceRemoved = 11,
 }
 
 type _MTLCommandBufferHandler = Block<(MTLCommandBuffer), ()>;

@@ -81,6 +81,16 @@ pub enum MTLAttributeFormat {
     UInt4 = 39,
     Int1010102Normalized = 40,
     UInt1010102Normalized = 41,
+    UChar4Normalized_BGRA = 42,
+    UChar = 45,
+    Char = 46,
+    UCharNormalized = 47,
+    CharNormalized = 48,
+    UShort = 49,
+    Short = 50,
+    UShortNormalized = 51,
+    ShortNormalized = 52,
+    Half = 53,
 }
 
 #[repr(u64)]

@@ -8,9 +8,10 @@
 use super::*;
 
 use cocoa::foundation::NSUInteger;
-use objc::runtime::{Object, YES, NO};
+use objc::runtime::{YES, NO};
 use objc_foundation::{INSString, NSString};
 
+#[cfg(feature = "private")]
 use libc;
 
 #[repr(u64)]
@@ -199,6 +200,7 @@ foreign_obj_type! {
 }
 
 impl RenderPipelineReflection {
+    #[cfg(feature = "private")]
     pub unsafe fn new(vertex_data: *mut libc::c_void,
             fragment_data: *mut libc::c_void, vertex_desc: *mut libc::c_void,
             device: &DeviceRef, options: u64, flags: u64) -> Self
@@ -402,6 +404,7 @@ impl RenderPipelineDescriptorRef {
         }
     }
 
+    #[cfg(feature = "private")]
     pub unsafe fn serialize_vertex_data(&self) -> *mut libc::c_void {
         use std::ptr;
         let flags = 0;
@@ -410,6 +413,7 @@ impl RenderPipelineDescriptorRef {
                                                     error:err]
     }
 
+    #[cfg(feature = "private")]
     pub unsafe fn serialize_fragment_data(&self) -> *mut libc::c_void {
         msg_send![self, serializeFragmentData]
     }
