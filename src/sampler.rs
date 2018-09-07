@@ -110,10 +110,9 @@ impl SamplerDescriptorRef {
         }
     }
 
-    pub fn set_lod_bias(&self, bias: f32) {
-        unsafe {
-            msg_send![self, setLodBias:bias]
-        }
+    #[cfg(feature = "private")]
+    pub unsafe fn set_lod_bias(&self, bias: f32) {
+        msg_send![self, setLodBias:bias]
     }
 
     pub fn set_lod_min_clamp(&self, clamp: f32) {

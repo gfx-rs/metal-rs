@@ -33,6 +33,7 @@ pub enum MTLStorageMode {
     Shared  = 0,
     Managed = 1,
     Private = 2,
+    Memoryless = 3,
 }
 
 pub const MTLResourceCPUCacheModeShift: NSUInteger = 0;
@@ -49,6 +50,7 @@ bitflags! {
         const StorageModeShared  = (MTLStorageMode::Shared as NSUInteger)  << MTLResourceStorageModeShift;
         const StorageModeManaged = (MTLStorageMode::Managed as NSUInteger) << MTLResourceStorageModeShift;
         const StorageModePrivate = (MTLStorageMode::Private as NSUInteger) << MTLResourceStorageModeShift;
+        const StorageModeMemoryless = (MTLStorageMode::Memoryless as NSUInteger) << MTLResourceStorageModeShift;
     }
 }
 
