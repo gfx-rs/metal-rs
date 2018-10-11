@@ -1336,7 +1336,7 @@ foreign_obj_type! {
 }
 
 impl Device {
-    pub fn system_default() -> Device {
+    pub fn system_default() -> Self {
         unsafe { Device(MTLCreateSystemDefaultDevice()) }
     }
 
@@ -1630,6 +1630,12 @@ impl DeviceRef {
     pub fn heap_texture_size_and_align(&self, descriptor: &TextureDescriptorRef) -> MTLSizeAndAlign {
         unsafe {
             msg_send![self, heapTextureSizeAndAlignWithDescriptor: descriptor]
+        }
+    }
+
+    pub fn minimum_linear_texture_alignment_for_pixel_format(&self, format: MTLPixelFormat) -> NSUInteger {
+        unsafe {
+            msg_send![self, minimumLinearTextureAlignmentForPixelFormat: format]
         }
     }
 }
