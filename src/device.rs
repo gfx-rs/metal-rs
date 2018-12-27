@@ -1407,6 +1407,16 @@ impl DeviceRef {
         }
     }
 
+    pub fn is_removable(&self) -> bool {
+        unsafe {
+            match msg_send![self, isRemovable] {
+                YES => true,
+                NO => false,
+                _ => unreachable!()
+            }
+        }
+    }
+
     pub fn supports_feature_set(&self, feature: MTLFeatureSet) -> bool {
         unsafe {
             match msg_send![self, supportsFeatureSet:feature] {
