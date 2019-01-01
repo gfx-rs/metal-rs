@@ -36,24 +36,25 @@ pub enum MTLFeatureSet {
     iOS_GPUFamily2_v4 = 9,
     iOS_GPUFamily3_v3 = 10,
     iOS_GPUFamily4_v1 = 11,
-    // iOS_GPUFamily1_v5 = 12, TODO: Uncomment when feature tables updated
-    // iOS_GPUFamily2_v5 = 13,
-    // iOS_GPUFamily3_v4 = 14,
-    // iOS_GPUFamily4_v2 = 15,
+    iOS_GPUFamily1_v5 = 12,
+    iOS_GPUFamily2_v5 = 13,
+    iOS_GPUFamily3_v4 = 14,
+    iOS_GPUFamily4_v2 = 15,
+    iOS_GPUFamily5_v1 = 16,
     
     tvOS_GPUFamily1_v1 = 30000,
     tvOS_GPUFamily1_v2 = 30001,
     tvOS_GPUFamily1_v3 = 30002,
     tvOS_GPUFamily2_v1 = 30003,
-    // tvOS_GPUFamily1_v4 = 30004,
-    // tvOS_GPUFamily2_v2 = 30005,
+    tvOS_GPUFamily1_v4 = 30004,
+    tvOS_GPUFamily2_v2 = 30005,
 
     macOS_GPUFamily1_v1 = 10000,
     macOS_GPUFamily1_v2 = 10001,
     //macOS_ReadWriteTextureTier2 = 10002, TODO: Uncomment when feature tables updated
     macOS_GPUFamily1_v3 = 10003,
-    //macOS_GPUFamily1_v4 = 10004,
-    //macOS_GPUFamily2_v1 = 10005,
+    macOS_GPUFamily1_v4 = 10004,
+    macOS_GPUFamily2_v1 = 10005,
 }
 
 bitflags! {
@@ -91,6 +92,7 @@ impl MTLFeatureSet {
         }
     }
 
+    // returns the minor version on macos
     fn os_version(&self) -> u32 {
         use MTLFeatureSet::*;
         match self {
@@ -98,10 +100,15 @@ impl MTLFeatureSet {
             iOS_GPUFamily1_v2 | iOS_GPUFamily2_v2 | iOS_GPUFamily3_v1 => 9,
             iOS_GPUFamily1_v3 | iOS_GPUFamily2_v3 | iOS_GPUFamily3_v2 => 10,
             iOS_GPUFamily1_v4 | iOS_GPUFamily2_v4 | iOS_GPUFamily3_v3 | iOS_GPUFamily4_v1 => 11,
+            iOS_GPUFamily1_v5 | iOS_GPUFamily2_v5 | iOS_GPUFamily3_v4 | iOS_GPUFamily4_v2 | iOS_GPUFamily5_v1 => 12,
             tvOS_GPUFamily1_v1 => 9,
             tvOS_GPUFamily1_v2 => 10,
             tvOS_GPUFamily1_v3 | tvOS_GPUFamily2_v1 => 11,
-            macOS_GPUFamily1_v1 | macOS_GPUFamily1_v2 | macOS_GPUFamily1_v3 => 10,
+            tvOS_GPUFamily1_v4 | tvOS_GPUFamily2_v2 => 12,
+            macOS_GPUFamily1_v1 => 11,
+            macOS_GPUFamily1_v2 => 12,
+            macOS_GPUFamily1_v3 => 13,
+            macOS_GPUFamily1_v4 | macOS_GPUFamily2_v1 => 14,
         }
     }
 
@@ -112,21 +119,30 @@ impl MTLFeatureSet {
             | iOS_GPUFamily1_v2
             | iOS_GPUFamily1_v3
             | iOS_GPUFamily1_v4
+            | iOS_GPUFamily1_v5
             | tvOS_GPUFamily1_v1
             | tvOS_GPUFamily1_v2
             | tvOS_GPUFamily1_v3
+            | tvOS_GPUFamily1_v4
             | macOS_GPUFamily1_v1
             | macOS_GPUFamily1_v2
-            | macOS_GPUFamily1_v3 => 1,
+            | macOS_GPUFamily1_v3
+            | macOS_GPUFamily1_v4 => 1,
             iOS_GPUFamily2_v1
             | iOS_GPUFamily2_v2
             | iOS_GPUFamily2_v3
             | iOS_GPUFamily2_v4
-            | tvOS_GPUFamily2_v1 => 2,
+            | iOS_GPUFamily2_v5
+            | tvOS_GPUFamily2_v1
+            | tvOS_GPUFamily2_v2
+            | macOS_GPUFamily2_v1 => 2,
             iOS_GPUFamily3_v1
             | iOS_GPUFamily3_v2
-            | iOS_GPUFamily3_v3 => 3,
-            iOS_GPUFamily4_v1 => 4,
+            | iOS_GPUFamily3_v3
+            | iOS_GPUFamily3_v4 => 3,
+            iOS_GPUFamily4_v1
+            | iOS_GPUFamily4_v2 => 4,
+            iOS_GPUFamily5_v1 => 5,
         }
     }
 
@@ -137,21 +153,30 @@ impl MTLFeatureSet {
             | iOS_GPUFamily2_v1
             | iOS_GPUFamily3_v1
             | iOS_GPUFamily4_v1
+            | iOS_GPUFamily5_v1
             | macOS_GPUFamily1_v1
+            | macOS_GPUFamily2_v1
             | tvOS_GPUFamily1_v1
             | tvOS_GPUFamily2_v1 => 1,
             iOS_GPUFamily1_v2
             | iOS_GPUFamily2_v2
             | iOS_GPUFamily3_v2
+            | iOS_GPUFamily4_v2
             | macOS_GPUFamily1_v2
-            | tvOS_GPUFamily1_v2 => 2,
+            | tvOS_GPUFamily1_v2
+            | tvOS_GPUFamily2_v2 => 2,
             iOS_GPUFamily1_v3
             | iOS_GPUFamily2_v3
             | iOS_GPUFamily3_v3
             | macOS_GPUFamily1_v3
             | tvOS_GPUFamily1_v3 => 3,
             iOS_GPUFamily1_v4
-            | iOS_GPUFamily2_v4 => 4,
+            | iOS_GPUFamily2_v4
+            | iOS_GPUFamily3_v4
+            | tvOS_GPUFamily1_v4
+            | macOS_GPUFamily1_v4 => 4,
+            iOS_GPUFamily1_v5
+            | iOS_GPUFamily2_v5 => 5,
         }
     }
 
@@ -163,7 +188,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.gpu_family() >= 2,
             OS::tvOS => true,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -188,7 +213,7 @@ impl MTLFeatureSet {
     }
 
     pub fn supports_linear_textures(&self) -> bool {
-        self.os() != OS::macOS || self.version() >= 3
+        self.os() != OS::macOS || self.os_version() >= 13
     }
 
     pub fn supports_bc_pixel_formats(&self) -> bool {
@@ -240,14 +265,18 @@ impl MTLFeatureSet {
     }
 
     pub fn supports_layered_rendering(&self) -> bool {
-        self.os() == OS::macOS
+        match self.os() {
+            OS::iOS => self.gpu_family() >= 5,
+            OS::tvOS => false,
+            OS::macOS => true,
+        }
     }
 
     pub fn supports_tessellation(&self) -> bool {
         match self.os() {
             OS::iOS => self.gpu_family() >= 3 && self.os_version() >= 10,
             OS::tvOS => self.gpu_family() >= 2,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -255,7 +284,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -271,7 +300,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -279,7 +308,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.gpu_family() >= 3 && self.os_version() >= 10,
             OS::tvOS => self.gpu_family() >= 2,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -287,7 +316,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.gpu_family() >= 4,
             OS::tvOS => false,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -295,7 +324,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.gpu_family() >= 3 && self.os_version() >= 10,
             OS::tvOS => self.gpu_family() >= 2,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -303,7 +332,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.gpu_family() >= 3 && self.os_version() >= 11,
             OS::tvOS => self.gpu_family() >= 2,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -311,12 +340,12 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
     pub fn supports_depth_16_pixel_format(&self) -> bool {
-        self.os() == OS::macOS && self.version() >= 2
+        self.os() == OS::macOS && self.os_version() >= 12
     }
 
     pub fn supports_extended_range_pixel_formats(&self) -> bool {
@@ -331,7 +360,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 11,
             OS::tvOS => self.os_version() >= 11,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -339,7 +368,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.gpu_family() >= 3 && self.os_version() >= 10,
             OS::tvOS => self.gpu_family() >= 2,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -347,7 +376,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -363,7 +392,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.gpu_family() >= 3 || (self.gpu_family() >= 2 && self.version() >= 3),
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => false,
+            OS::macOS => self.gpu_family() >= 2,
         }
     }
 
@@ -371,7 +400,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -379,7 +408,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -387,7 +416,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => false,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -395,7 +424,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => false,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -403,19 +432,19 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 10,
             OS::tvOS => self.os_version() >= 10,
-            OS::macOS => false,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
     pub fn supports_border_color(&self) -> bool {
-        self.os() == OS::macOS && self.version() >= 2
+        self.os() == OS::macOS && self.os_version() >= 12
     }
 
     pub fn supports_dual_source_blending(&self) -> bool {
         match self.os() {
             OS::iOS => self.os_version() >= 11,
             OS::tvOS => self.os_version() >= 11,
-            OS::macOS => self.version() >= 2,
+            OS::macOS => self.os_version() >= 12,
         }
     }
 
@@ -423,7 +452,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 11,
             OS::tvOS => self.os_version() >= 11,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -431,7 +460,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 11,
             OS::tvOS => self.os_version() >= 11,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -439,7 +468,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.os_version() >= 11,
             OS::tvOS => self.os_version() >= 11,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -464,14 +493,18 @@ impl MTLFeatureSet {
     }
 
     pub fn supports_quad_scoped_permute_operations(&self) -> bool {
-        self.os() == OS::iOS && self.gpu_family() >= 4
+        match self.os() {
+            OS::iOS => self.gpu_family() >= 4,
+            OS::tvOS => false,
+            OS::macOS => self.os_version() >= 13,
+        }
     }
 
     pub fn supports_raster_order_groups(&self) -> bool {
         match self.os() {
             OS::iOS => self.gpu_family() >= 4,
             OS::tvOS => false,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
@@ -479,16 +512,36 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS => self.gpu_family() >= 4,
             OS::tvOS => false,
-            OS::macOS => self.version() >= 3,
+            OS::macOS => self.os_version() >= 13,
         }
     }
 
     pub fn supports_multiple_viewports(&self) -> bool {
-        self.os() == OS::macOS && self.version() >= 3
+        match self.os() {
+            OS::iOS => self.gpu_family() >= 5,
+            OS::tvOS => false,
+            OS::macOS => self.os_version() >= 13,
+        }
     }
 
     pub fn supports_device_notifications(&self) -> bool {
-        self.os() == OS::macOS && self.version() >= 3
+        self.os() == OS::macOS && self.os_version() >= 13
+    }
+
+    pub fn supports_stencil_feedback(&self) -> bool {
+        match self.os() {
+            OS::iOS => self.gpu_family() >= 5,
+            OS::tvOS => false,
+            OS::macOS => self.gpu_family() >= 2,
+        }
+    }
+
+    pub fn supports_stencil_resolve(&self) -> bool {
+        match self.os() {
+            OS::iOS => self.gpu_family() >= 5,
+            OS::tvOS => false,
+            OS::macOS => self.gpu_family() >= 2,
+        }
     }
 
     pub fn max_vertex_attributes(&self) -> u32 {
@@ -528,7 +581,7 @@ impl MTLFeatureSet {
     }
 
     pub fn max_threads_per_threadgroup(&self) -> u32 {
-        if self.os() == OS::macOS || self.gpu_family() == 4 {
+        if self.os() == OS::macOS || self.gpu_family() >= 4 {
             1024
         } else {
             512
@@ -537,7 +590,12 @@ impl MTLFeatureSet {
 
     pub fn max_total_threadgroup_memory_allocation(&self) -> u32 {
         match (self.os(), self.gpu_family()) {
-            (OS::iOS, 4) => 32 * KB,
+            (OS::iOS, 5) => 64 * KB,
+            (OS::iOS, 4) => if self.os_version() >= 12 {
+                64 * KB
+            } else {
+                32 * KB
+            },
             (OS::iOS, 3) => 16 * KB,
             (OS::iOS, _) => 16 * KB - 32,
             (OS::tvOS, 1) => 16 * KB - 32,
@@ -586,7 +644,7 @@ impl MTLFeatureSet {
         match self.os() {
             OS::iOS if self.os_version() >= 11 => 65536,
             OS::tvOS if self.os_version() >= 10 => 65536,
-            OS::macOS if self.version() >= 2 => 65536,
+            OS::macOS if self.os_version() >= 12 => 65536,
             _ => 0,
         }
     }
@@ -594,6 +652,7 @@ impl MTLFeatureSet {
     pub fn max_tessellation_factor(&self) -> u32 {
         if self.supports_tessellation() {
             match self.os() {
+                OS::iOS if self.gpu_family() >= 5 => 64,
                 OS::iOS => 16,
                 OS::tvOS => 16,
                 OS::macOS => 64,
@@ -620,7 +679,7 @@ impl MTLFeatureSet {
     }
 
     pub fn max_buffer_length(&self) -> u32 {
-        if self.os() == OS::macOS && self.version() >= 2 {
+        if self.os() == OS::macOS && self.os_version() >= 12 {
             1 * GB
         } else {
             256 * MB
