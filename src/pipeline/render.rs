@@ -417,6 +417,22 @@ impl RenderPipelineDescriptorRef {
     pub unsafe fn serialize_fragment_data(&self) -> *mut libc::c_void {
         msg_send![self, serializeFragmentData]
     }
+
+    pub fn support_indirect_command_buffers(&self) -> bool {
+        unsafe {
+            match msg_send![self, supportIndirectCommandBuffers] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn set_support_indirect_command_buffers(&self, support: bool) {
+        unsafe {
+            msg_send![self, setSupportIndirectCommandBuffers: support]
+        }
+    }
 }
 
 pub enum MTLRenderPipelineState {}
