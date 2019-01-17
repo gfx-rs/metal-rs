@@ -41,10 +41,10 @@ impl MTLClearColor {
     #[inline]
     pub fn new(red: f64, green: f64, blue: f64, alpha: f64) -> Self {
         MTLClearColor {
-            red: red,
-            green: green,
-            blue: blue,
-            alpha: alpha
+            red,
+            green,
+            blue,
+            alpha
         }
     }
 }
