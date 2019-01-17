@@ -49,6 +49,13 @@ impl MTLClearColor {
     }
 }
 
+#[repr(u32)]
+#[allow(non_camel_case_types)]
+pub enum MTLMultisampleStencilResolveFilter {
+    Sample0 = 0,
+    DepthResolvedSample = 1,
+}
+
 pub enum MTLRenderPassAttachmentDescriptor {}
 
 foreign_obj_type! {
