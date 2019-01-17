@@ -1707,4 +1707,10 @@ impl DeviceRef {
             msg_send![self, minimumLinearTextureAlignmentForPixelFormat: format]
         }
     }
+
+    pub fn minimum_texture_buffer_alignment_for_pixel_format(&self, format: MTLPixelFormat) -> NSUInteger {
+        unsafe {
+            msg_send![self, minimumTextureBufferAlignmentForPixelFormat: format]
+        }
+    }
 }
