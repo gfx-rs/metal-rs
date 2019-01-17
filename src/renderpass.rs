@@ -262,6 +262,18 @@ impl RenderPassStencilAttachmentDescriptorRef {
             msg_send![self, setClearStencil:clear_stencil]
         }
     }
+
+    pub fn stencil_resolve_filter(&self) -> MTLMultisampleStencilResolveFilter {
+        unsafe {
+            msg_send![self, stencilResolveFilter]
+        }
+    }
+
+    pub fn set_stencil_resolve_filter(&self, stencil_resolve_filter: MTLMultisampleStencilResolveFilter) {
+        unsafe {
+            msg_send![self, setStencilResolveFilter: stencil_resolve_filter]
+        }
+    }
 }
 
 pub enum MTLRenderPassColorAttachmentDescriptorArray {}
