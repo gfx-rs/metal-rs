@@ -30,3 +30,9 @@ pub struct MTLRegion {
     pub size: MTLSize
 }
 
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+pub struct MTLSamplePosition {
+    pub x: f32,
+    pub y: f32
+}
