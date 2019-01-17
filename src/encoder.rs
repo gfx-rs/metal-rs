@@ -677,6 +677,50 @@ impl BlitCommandEncoderRef {
             ]
         }
     }
+
+    pub fn optimize_contents_for_gpu_access(&self,
+        texture: &TextureRef
+    ) {
+        unsafe {
+            msg_send![self,
+                optimizeContentsForGPUAccess: texture
+            ]
+        }
+    }
+
+    pub fn optimize_contents_for_gpu_access_slice_level(&self,
+        texture: &TextureRef, slice: NSUInteger, level: NSUInteger
+    ) {
+        unsafe {
+            msg_send![self,
+                optimizeContentsForGPUAccess: texture
+                slice: slice
+                level: level
+            ]
+        }
+    }
+
+    pub fn optimize_contents_for_cpu_access(&self,
+        texture: &TextureRef
+    ) {
+        unsafe {
+            msg_send![self,
+                optimizeContentsForCPUAccess: texture
+            ]
+        }
+    }
+
+    pub fn optimize_contents_for_cpu_access_slice_level(&self,
+        texture: &TextureRef, slice: NSUInteger, level: NSUInteger
+    ) {
+        unsafe {
+            msg_send![self,
+                optimizeContentsForCPUAccess: texture
+                slice: slice
+                level: level
+            ]
+        }
+    }
 }
 
 pub enum MTLComputeCommandEncoder {}

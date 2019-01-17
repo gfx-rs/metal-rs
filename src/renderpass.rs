@@ -41,12 +41,19 @@ impl MTLClearColor {
     #[inline]
     pub fn new(red: f64, green: f64, blue: f64, alpha: f64) -> Self {
         MTLClearColor {
-            red: red,
-            green: green,
-            blue: blue,
-            alpha: alpha
+            red,
+            green,
+            blue,
+            alpha
         }
     }
+}
+
+#[repr(u32)]
+#[allow(non_camel_case_types)]
+pub enum MTLMultisampleStencilResolveFilter {
+    Sample0 = 0,
+    DepthResolvedSample = 1,
 }
 
 pub enum MTLRenderPassAttachmentDescriptor {}
@@ -253,6 +260,18 @@ impl RenderPassStencilAttachmentDescriptorRef {
     pub fn set_clear_stencil(&self, clear_stencil: u32) {
         unsafe {
             msg_send![self, setClearStencil:clear_stencil]
+        }
+    }
+
+    pub fn stencil_resolve_filter(&self) -> MTLMultisampleStencilResolveFilter {
+        unsafe {
+            msg_send![self, stencilResolveFilter]
+        }
+    }
+
+    pub fn set_stencil_resolve_filter(&self, stencil_resolve_filter: MTLMultisampleStencilResolveFilter) {
+        unsafe {
+            msg_send![self, setStencilResolveFilter: stencil_resolve_filter]
         }
     }
 }
