@@ -36,6 +36,13 @@ pub enum MTLCommandBufferError {
     DeviceRemoved = 11,
 }
 
+#[repr(u32)]
+#[allow(non_camel_case_types)]
+pub enum MTLDispatchType {
+    Serial = 0,
+    Concurrent = 1,
+}
+
 type _MTLCommandBufferHandler = Block<(MTLCommandBuffer), ()>;
 
 pub enum MTLCommandBuffer {}
@@ -118,6 +125,12 @@ impl CommandBufferRef {
     pub fn new_parallel_render_command_encoder(&self, descriptor: &RenderPassDescriptorRef) -> &ParallelRenderCommandEncoderRef {
         unsafe {
             msg_send![self, parallelRenderCommandEncoderWithDescriptor:descriptor]
+        }
+    }
+
+    pub fn compute_command_encoder_with_dispatch_type(&self, ty: MTLDispatchType) -> &ComputeCommandEncoderRef {
+        unsafe {
+            msg_send![self, computeCommandEncoderWithDispatchType: ty]
         }
     }
 }
