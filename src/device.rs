@@ -1713,4 +1713,10 @@ impl DeviceRef {
             msg_send![self, minimumTextureBufferAlignmentForPixelFormat: format]
         }
     }
+
+    pub fn max_argument_buffer_sampler_count(&self) -> NSUInteger {
+        unsafe {
+            msg_send![self, maxArgumentBufferSamplerCount]
+        }
+    }
 }
