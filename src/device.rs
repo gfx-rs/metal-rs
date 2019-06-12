@@ -1560,7 +1560,7 @@ impl DeviceRef {
                 .init_str(file.as_ref().to_string_lossy().as_ref());
 
             let library: *mut MTLLibrary = try_objc!{ err =>
-                msg_send![self, newLibraryWithFile:filename
+                msg_send![self, newLibraryWithFile:filename.as_ref()
                                              error:&mut err]
             };
 
