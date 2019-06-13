@@ -7,7 +7,7 @@
 
 use cocoa::foundation::NSUInteger;
 
-use depthstencil::MTLCompareFunction;
+use crate::depthstencil::MTLCompareFunction;
 
 #[repr(u64)]
 #[derive(Copy, Clone)]
@@ -32,7 +32,7 @@ pub enum MTLSamplerAddressMode {
     Repeat = 2,
     MirrorRepeat = 3,
     ClampToZero = 4,
-    ClampToBorderColor = 5
+    ClampToBorderColor = 5,
 }
 
 #[repr(u64)]
@@ -51,7 +51,6 @@ foreign_obj_type! {
     pub struct SamplerDescriptorRef;
 }
 
-
 impl SamplerDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -63,92 +62,64 @@ impl SamplerDescriptor {
 
 impl SamplerDescriptorRef {
     pub fn set_min_filter(&self, filter: MTLSamplerMinMagFilter) {
-        unsafe {
-            msg_send![self, setMinFilter:filter]
-        }
+        unsafe { msg_send![self, setMinFilter: filter] }
     }
 
     pub fn set_mag_filter(&self, filter: MTLSamplerMinMagFilter) {
-        unsafe {
-            msg_send![self, setMagFilter:filter]
-        }
+        unsafe { msg_send![self, setMagFilter: filter] }
     }
 
     pub fn set_mip_filter(&self, filter: MTLSamplerMipFilter) {
-        unsafe {
-            msg_send![self, setMipFilter:filter]
-        }
+        unsafe { msg_send![self, setMipFilter: filter] }
     }
 
     pub fn set_address_mode_s(&self, mode: MTLSamplerAddressMode) {
-        unsafe {
-            msg_send![self, setSAddressMode:mode]
-        }
+        unsafe { msg_send![self, setSAddressMode: mode] }
     }
 
     pub fn set_address_mode_t(&self, mode: MTLSamplerAddressMode) {
-        unsafe {
-            msg_send![self, setTAddressMode:mode]
-        }
+        unsafe { msg_send![self, setTAddressMode: mode] }
     }
 
     pub fn set_address_mode_r(&self, mode: MTLSamplerAddressMode) {
-        unsafe {
-            msg_send![self, setRAddressMode:mode]
-        }
+        unsafe { msg_send![self, setRAddressMode: mode] }
     }
 
     pub fn set_max_anisotropy(&self, anisotropy: NSUInteger) {
-        unsafe {
-            msg_send![self, setMaxAnisotropy:anisotropy]
-        }
+        unsafe { msg_send![self, setMaxAnisotropy: anisotropy] }
     }
 
     pub fn set_compare_function(&self, func: MTLCompareFunction) {
-        unsafe {
-            msg_send![self, setCompareFunction:func]
-        }
+        unsafe { msg_send![self, setCompareFunction: func] }
     }
 
     #[cfg(feature = "private")]
     pub unsafe fn set_lod_bias(&self, bias: f32) {
-        msg_send![self, setLodBias:bias]
+        msg_send![self, setLodBias: bias]
     }
 
     pub fn set_lod_min_clamp(&self, clamp: f32) {
-        unsafe {
-            msg_send![self, setLodMinClamp:clamp]
-        }
+        unsafe { msg_send![self, setLodMinClamp: clamp] }
     }
 
     pub fn set_lod_max_clamp(&self, clamp: f32) {
-        unsafe {
-            msg_send![self, setLodMaxClamp:clamp]
-        }
+        unsafe { msg_send![self, setLodMaxClamp: clamp] }
     }
 
     pub fn set_lod_average(&self, enable: bool) {
-        unsafe {
-            msg_send![self, setLodAverage:enable]
-        }
+        unsafe { msg_send![self, setLodAverage: enable] }
     }
 
     pub fn set_normalized_coordinates(&self, enable: bool) {
-        unsafe {
-            msg_send![self, setNormalizedCoordinates:enable]
-        }
+        unsafe { msg_send![self, setNormalizedCoordinates: enable] }
     }
 
     pub fn set_support_argument_buffers(&self, enable: bool) {
-        unsafe {
-            msg_send![self, setSupportArgumentBuffers:enable]
-        }
+        unsafe { msg_send![self, setSupportArgumentBuffers: enable] }
     }
 
     pub fn set_border_color(&self, color: MTLSamplerBorderColor) {
-        unsafe {
-            msg_send![self, setBorderColor:color]
-        }
+        unsafe { msg_send![self, setBorderColor: color] }
     }
 }
 

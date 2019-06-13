@@ -18,27 +18,25 @@ foreign_obj_type! {
     type ParentType = ResourceRef;
 }
 
-
 impl BufferRef {
     pub fn length(&self) -> u64 {
-        unsafe {
-            msg_send![self, length]
-        }
+        unsafe { msg_send![self, length] }
     }
 
-    pub fn contents(&self) -> *mut libc::c_void {
-        unsafe {
-            msg_send![self, contents]
-        }
+    pub fn contents(&self) -> *mut std::ffi::c_void {
+        unsafe { msg_send![self, contents] }
     }
 
     pub fn did_modify_range(&self, range: NSRange) {
-        unsafe {
-            msg_send![self, didModifyRange:range]
-        }
+        unsafe { msg_send![self, didModifyRange: range] }
     }
 
-    pub fn new_texture_from_contents(&self, descriptor: &TextureDescriptorRef, offset: u64, stride: u64) -> Texture {
+    pub fn new_texture_from_contents(
+        &self,
+        descriptor: &TextureDescriptorRef,
+        offset: u64,
+        stride: u64,
+    ) -> Texture {
         unsafe {
             msg_send![self,
                 newTextureWithDescriptor:descriptor

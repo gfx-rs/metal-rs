@@ -7,10 +7,8 @@
 
 use super::*;
 
-use cocoa::foundation::{NSUInteger, NSRange};
-use objc::runtime::{YES, NO};
-
-use libc;
+use cocoa::foundation::{NSRange, NSUInteger};
+use objc::runtime::{NO, YES};
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -55,147 +53,99 @@ impl TextureDescriptor {
 
 impl TextureDescriptorRef {
     pub fn texture_type(&self) -> MTLTextureType {
-        unsafe {
-            msg_send![self, textureType]
-        }
+        unsafe { msg_send![self, textureType] }
     }
 
     pub fn set_texture_type(&self, texture_type: MTLTextureType) {
-        unsafe {
-            msg_send![self, setTextureType:texture_type]
-        }
+        unsafe { msg_send![self, setTextureType: texture_type] }
     }
 
     pub fn pixel_format(&self) -> MTLPixelFormat {
-        unsafe {
-            msg_send![self, pixelFormat]
-        }
+        unsafe { msg_send![self, pixelFormat] }
     }
 
     pub fn set_pixel_format(&self, pixel_format: MTLPixelFormat) {
-        unsafe {
-            msg_send![self, setPixelFormat:pixel_format]
-        }
+        unsafe { msg_send![self, setPixelFormat: pixel_format] }
     }
 
     pub fn width(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, width]
-        }
+        unsafe { msg_send![self, width] }
     }
 
     pub fn set_width(&self, width: NSUInteger) {
-        unsafe {
-            msg_send![self, setWidth:width]
-        }
+        unsafe { msg_send![self, setWidth: width] }
     }
 
     pub fn height(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, height]
-        }
+        unsafe { msg_send![self, height] }
     }
 
     pub fn set_height(&self, height: NSUInteger) {
-        unsafe {
-            msg_send![self, setHeight:height]
-        }
+        unsafe { msg_send![self, setHeight: height] }
     }
 
     pub fn depth(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, depth]
-        }
+        unsafe { msg_send![self, depth] }
     }
 
     pub fn set_depth(&self, depth: NSUInteger) {
-        unsafe {
-            msg_send![self, setDepth:depth]
-        }
+        unsafe { msg_send![self, setDepth: depth] }
     }
 
     pub fn mipmap_level_count(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, mipmapLevelCount]
-        }
+        unsafe { msg_send![self, mipmapLevelCount] }
     }
 
     pub fn set_mipmap_level_count(&self, count: NSUInteger) {
-        unsafe {
-            msg_send![self, setMipmapLevelCount:count]
-        }
+        unsafe { msg_send![self, setMipmapLevelCount: count] }
     }
 
     pub fn sample_count(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, sampleCount]
-        }
+        unsafe { msg_send![self, sampleCount] }
     }
 
     pub fn set_sample_count(&self, count: NSUInteger) {
-        unsafe {
-            msg_send![self, setSampleCount:count]
-        }
+        unsafe { msg_send![self, setSampleCount: count] }
     }
 
     pub fn array_length(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, arrayLength]
-        }
+        unsafe { msg_send![self, arrayLength] }
     }
 
     pub fn set_array_length(&self, length: NSUInteger) {
-        unsafe {
-            msg_send![self, setArrayLength:length]
-        }
+        unsafe { msg_send![self, setArrayLength: length] }
     }
 
     pub fn resource_options(&self) -> MTLResourceOptions {
-        unsafe {
-            msg_send![self, resourceOptions]
-        }
+        unsafe { msg_send![self, resourceOptions] }
     }
 
     pub fn set_resource_options(&self, options: MTLResourceOptions) {
-        unsafe {
-            msg_send![self, setResourceOptions:options]
-        }
+        unsafe { msg_send![self, setResourceOptions: options] }
     }
 
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
-        unsafe {
-            msg_send![self, cpuCacheMode]
-        }
+        unsafe { msg_send![self, cpuCacheMode] }
     }
 
     pub fn set_cpu_cache_mode(&self, mode: MTLCPUCacheMode) {
-        unsafe {
-            msg_send![self, setCpuCacheMode:mode]
-        }
+        unsafe { msg_send![self, setCpuCacheMode: mode] }
     }
 
     pub fn storage_mode(&self) -> MTLStorageMode {
-        unsafe {
-            msg_send![self, storageMode]
-        }
+        unsafe { msg_send![self, storageMode] }
     }
 
     pub fn set_storage_mode(&self, mode: MTLStorageMode) {
-        unsafe {
-            msg_send![self, setStorageMode:mode]
-        }
+        unsafe { msg_send![self, setStorageMode: mode] }
     }
 
     pub fn usage(&self) -> MTLTextureUsage {
-        unsafe {
-            msg_send![self, usage]
-        }
+        unsafe { msg_send![self, usage] }
     }
 
     pub fn set_usage(&self, usage: MTLTextureUsage) {
-        unsafe {
-            msg_send![self, setUsage:usage]
-        }
+        unsafe { msg_send![self, setUsage: usage] }
     }
 }
 
@@ -209,101 +159,69 @@ foreign_obj_type! {
 }
 
 impl TextureRef {
-    #[deprecated(since="0.13.0")]
+    #[deprecated(since = "0.13.0")]
     pub fn root_resource(&self) -> Option<&ResourceRef> {
-       unsafe {
-           msg_send![self, rootResource]
-       }
+        unsafe { msg_send![self, rootResource] }
     }
 
     pub fn parent_texture(&self) -> Option<&TextureRef> {
-        unsafe {
-            msg_send![self, parentTexture]
-        }
+        unsafe { msg_send![self, parentTexture] }
     }
 
     pub fn parent_relative_level(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, parentRelativeLevel]
-        }
+        unsafe { msg_send![self, parentRelativeLevel] }
     }
 
     pub fn parent_relative_slice(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, parentRelativeSlice]
-        }
+        unsafe { msg_send![self, parentRelativeSlice] }
     }
 
     pub fn buffer(&self) -> Option<&BufferRef> {
-        unsafe {
-            msg_send![self, buffer]
-        }
+        unsafe { msg_send![self, buffer] }
     }
 
     pub fn buffer_offset(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, bufferOffset]
-        }
+        unsafe { msg_send![self, bufferOffset] }
     }
 
     pub fn buffer_stride(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, bufferBytesPerRow]
-        }
+        unsafe { msg_send![self, bufferBytesPerRow] }
     }
 
     pub fn texture_type(&self) -> MTLTextureType {
-        unsafe {
-            msg_send![self, textureType]
-        }
+        unsafe { msg_send![self, textureType] }
     }
 
     pub fn pixel_format(&self) -> MTLPixelFormat {
-        unsafe {
-            msg_send![self, pixelFormat]
-        }
+        unsafe { msg_send![self, pixelFormat] }
     }
 
     pub fn width(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, width]
-        }
+        unsafe { msg_send![self, width] }
     }
 
     pub fn height(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, height]
-        }
+        unsafe { msg_send![self, height] }
     }
 
     pub fn depth(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, depth]
-        }
+        unsafe { msg_send![self, depth] }
     }
 
     pub fn mipmap_level_count(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, mipmapLevelCount]
-        }
+        unsafe { msg_send![self, mipmapLevelCount] }
     }
 
     pub fn sample_count(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, sampleCount]
-        }
+        unsafe { msg_send![self, sampleCount] }
     }
 
     pub fn array_length(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, arrayLength]
-        }
+        unsafe { msg_send![self, arrayLength] }
     }
 
     pub fn usage(&self) -> MTLTextureUsage {
-        unsafe {
-            msg_send![self, usage]
-        }
+        unsafe { msg_send![self, usage] }
     }
 
     pub fn framebuffer_only(&self) -> bool {
@@ -311,12 +229,18 @@ impl TextureRef {
             match msg_send![self, framebufferOnly] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
-    pub fn get_bytes(&self, bytes: *mut libc::c_void, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger) {
+    pub fn get_bytes(
+        &self,
+        bytes: *mut std::ffi::c_void,
+        region: MTLRegion,
+        mipmap_level: NSUInteger,
+        stride: NSUInteger,
+    ) {
         unsafe {
             msg_send![self, getBytes:bytes
                          bytesPerRow:stride
@@ -325,7 +249,15 @@ impl TextureRef {
         }
     }
 
-    pub fn get_bytes_in_slice(&self, bytes: *mut libc::c_void, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger, image_stride: NSUInteger, slice: NSUInteger) {
+    pub fn get_bytes_in_slice(
+        &self,
+        bytes: *mut std::ffi::c_void,
+        region: MTLRegion,
+        mipmap_level: NSUInteger,
+        stride: NSUInteger,
+        image_stride: NSUInteger,
+        slice: NSUInteger,
+    ) {
         unsafe {
             msg_send![self, getBytes:bytes
                          bytesPerRow:stride
@@ -336,7 +268,13 @@ impl TextureRef {
         }
     }
 
-    pub fn replace_region(&self, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger, bytes: *const libc::c_void) {
+    pub fn replace_region(
+        &self,
+        region: MTLRegion,
+        mipmap_level: NSUInteger,
+        stride: NSUInteger,
+        bytes: *const std::ffi::c_void,
+    ) {
         unsafe {
             msg_send![self, replaceRegion:region
                               mipmapLevel:mipmap_level
@@ -345,7 +283,15 @@ impl TextureRef {
         }
     }
 
-    pub fn replace_region_in_slice(&self, region: MTLRegion, mipmap_level: NSUInteger, image_stride: NSUInteger, stride: NSUInteger, slice: NSUInteger, bytes: *const libc::c_void) {
+    pub fn replace_region_in_slice(
+        &self,
+        region: MTLRegion,
+        mipmap_level: NSUInteger,
+        image_stride: NSUInteger,
+        stride: NSUInteger,
+        slice: NSUInteger,
+        bytes: *const std::ffi::c_void,
+    ) {
         unsafe {
             msg_send![self, replaceRegion:region
                               mipmapLevel:mipmap_level
@@ -357,12 +303,16 @@ impl TextureRef {
     }
 
     pub fn new_texture_view(&self, pixel_format: MTLPixelFormat) -> Texture {
-        unsafe {
-            msg_send![self, newTextureViewWithPixelFormat:pixel_format]
-        }
+        unsafe { msg_send![self, newTextureViewWithPixelFormat: pixel_format] }
     }
 
-    pub fn new_texture_view_from_slice(&self, pixel_format: MTLPixelFormat, texture_type: MTLTextureType, mipmap_levels: NSRange, slices: NSRange) -> Texture {
+    pub fn new_texture_view_from_slice(
+        &self,
+        pixel_format: MTLPixelFormat,
+        texture_type: MTLTextureType,
+        mipmap_levels: NSRange,
+        slices: NSRange,
+    ) -> Texture {
         unsafe {
             msg_send![self, newTextureViewWithPixelFormat:pixel_format
                                                 textureType:texture_type

@@ -7,18 +7,16 @@
 
 use block::{Block, ConcreteBlock};
 use cocoa::base::id;
-use cocoa::foundation::{NSUInteger};
+use cocoa::foundation::NSUInteger;
 use foreign_types::ForeignType;
-use libc;
-use objc::runtime::{Object, BOOL, YES, NO};
-use objc_foundation::{NSString, INSString};
+use objc::runtime::{Object, BOOL, NO, YES};
+use objc_foundation::{INSString, NSString};
 
 use super::*;
 
 use std::ffi::CStr;
 use std::path::Path;
 use std::ptr;
-
 
 #[allow(non_camel_case_types)]
 #[repr(u64)]
@@ -41,7 +39,7 @@ pub enum MTLFeatureSet {
     iOS_GPUFamily3_v4 = 14,
     iOS_GPUFamily4_v2 = 15,
     iOS_GPUFamily5_v1 = 16,
-    
+
     tvOS_GPUFamily1_v1 = 30000,
     tvOS_GPUFamily1_v2 = 30001,
     tvOS_GPUFamily1_v3 = 30002,
@@ -71,7 +69,9 @@ bitflags! {
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 enum OS {
-    iOS, tvOS, macOS
+    iOS,
+    tvOS,
+    macOS,
 }
 
 const KB: u32 = 1024;
@@ -100,7 +100,8 @@ impl MTLFeatureSet {
             iOS_GPUFamily1_v2 | iOS_GPUFamily2_v2 | iOS_GPUFamily3_v1 => 9,
             iOS_GPUFamily1_v3 | iOS_GPUFamily2_v3 | iOS_GPUFamily3_v2 => 10,
             iOS_GPUFamily1_v4 | iOS_GPUFamily2_v4 | iOS_GPUFamily3_v3 | iOS_GPUFamily4_v1 => 11,
-            iOS_GPUFamily1_v5 | iOS_GPUFamily2_v5 | iOS_GPUFamily3_v4 | iOS_GPUFamily4_v2 | iOS_GPUFamily5_v1 => 12,
+            iOS_GPUFamily1_v5 | iOS_GPUFamily2_v5 | iOS_GPUFamily3_v4 | iOS_GPUFamily4_v2
+            | iOS_GPUFamily5_v1 => 12,
             tvOS_GPUFamily1_v1 => 9,
             tvOS_GPUFamily1_v2 => 10,
             tvOS_GPUFamily1_v3 | tvOS_GPUFamily2_v1 => 11,
@@ -115,33 +116,16 @@ impl MTLFeatureSet {
     fn gpu_family(&self) -> u32 {
         use MTLFeatureSet::*;
         match self {
-            iOS_GPUFamily1_v1
-            | iOS_GPUFamily1_v2
-            | iOS_GPUFamily1_v3
-            | iOS_GPUFamily1_v4
-            | iOS_GPUFamily1_v5
-            | tvOS_GPUFamily1_v1
-            | tvOS_GPUFamily1_v2
-            | tvOS_GPUFamily1_v3
-            | tvOS_GPUFamily1_v4
-            | macOS_GPUFamily1_v1
-            | macOS_GPUFamily1_v2
-            | macOS_GPUFamily1_v3
-            | macOS_GPUFamily1_v4 => 1,
-            iOS_GPUFamily2_v1
-            | iOS_GPUFamily2_v2
-            | iOS_GPUFamily2_v3
-            | iOS_GPUFamily2_v4
-            | iOS_GPUFamily2_v5
-            | tvOS_GPUFamily2_v1
-            | tvOS_GPUFamily2_v2
-            | macOS_GPUFamily2_v1 => 2,
-            iOS_GPUFamily3_v1
-            | iOS_GPUFamily3_v2
-            | iOS_GPUFamily3_v3
-            | iOS_GPUFamily3_v4 => 3,
-            iOS_GPUFamily4_v1
-            | iOS_GPUFamily4_v2 => 4,
+            iOS_GPUFamily1_v1 | iOS_GPUFamily1_v2 | iOS_GPUFamily1_v3 | iOS_GPUFamily1_v4
+            | iOS_GPUFamily1_v5 | tvOS_GPUFamily1_v1 | tvOS_GPUFamily1_v2 | tvOS_GPUFamily1_v3
+            | tvOS_GPUFamily1_v4 | macOS_GPUFamily1_v1 | macOS_GPUFamily1_v2
+            | macOS_GPUFamily1_v3 | macOS_GPUFamily1_v4 => 1,
+            iOS_GPUFamily2_v1 | iOS_GPUFamily2_v2 | iOS_GPUFamily2_v3 | iOS_GPUFamily2_v4
+            | iOS_GPUFamily2_v5 | tvOS_GPUFamily2_v1 | tvOS_GPUFamily2_v2 | macOS_GPUFamily2_v1 => {
+                2
+            }
+            iOS_GPUFamily3_v1 | iOS_GPUFamily3_v2 | iOS_GPUFamily3_v3 | iOS_GPUFamily3_v4 => 3,
+            iOS_GPUFamily4_v1 | iOS_GPUFamily4_v2 => 4,
             iOS_GPUFamily5_v1 => 5,
         }
     }
@@ -149,34 +133,16 @@ impl MTLFeatureSet {
     fn version(&self) -> u32 {
         use MTLFeatureSet::*;
         match self {
-            iOS_GPUFamily1_v1
-            | iOS_GPUFamily2_v1
-            | iOS_GPUFamily3_v1
-            | iOS_GPUFamily4_v1
-            | iOS_GPUFamily5_v1
-            | macOS_GPUFamily1_v1
-            | macOS_GPUFamily2_v1
-            | tvOS_GPUFamily1_v1
-            | tvOS_GPUFamily2_v1 => 1,
-            iOS_GPUFamily1_v2
-            | iOS_GPUFamily2_v2
-            | iOS_GPUFamily3_v2
-            | iOS_GPUFamily4_v2
-            | macOS_GPUFamily1_v2
-            | tvOS_GPUFamily1_v2
-            | tvOS_GPUFamily2_v2 => 2,
-            iOS_GPUFamily1_v3
-            | iOS_GPUFamily2_v3
-            | iOS_GPUFamily3_v3
-            | macOS_GPUFamily1_v3
+            iOS_GPUFamily1_v1 | iOS_GPUFamily2_v1 | iOS_GPUFamily3_v1 | iOS_GPUFamily4_v1
+            | iOS_GPUFamily5_v1 | macOS_GPUFamily1_v1 | macOS_GPUFamily2_v1
+            | tvOS_GPUFamily1_v1 | tvOS_GPUFamily2_v1 => 1,
+            iOS_GPUFamily1_v2 | iOS_GPUFamily2_v2 | iOS_GPUFamily3_v2 | iOS_GPUFamily4_v2
+            | macOS_GPUFamily1_v2 | tvOS_GPUFamily1_v2 | tvOS_GPUFamily2_v2 => 2,
+            iOS_GPUFamily1_v3 | iOS_GPUFamily2_v3 | iOS_GPUFamily3_v3 | macOS_GPUFamily1_v3
             | tvOS_GPUFamily1_v3 => 3,
-            iOS_GPUFamily1_v4
-            | iOS_GPUFamily2_v4
-            | iOS_GPUFamily3_v4
-            | tvOS_GPUFamily1_v4
+            iOS_GPUFamily1_v4 | iOS_GPUFamily2_v4 | iOS_GPUFamily3_v4 | tvOS_GPUFamily1_v4
             | macOS_GPUFamily1_v4 => 4,
-            iOS_GPUFamily1_v5
-            | iOS_GPUFamily2_v5 => 5,
+            iOS_GPUFamily1_v5 | iOS_GPUFamily2_v5 => 5,
         }
     }
 
@@ -591,11 +557,13 @@ impl MTLFeatureSet {
     pub fn max_total_threadgroup_memory_allocation(&self) -> u32 {
         match (self.os(), self.gpu_family()) {
             (OS::iOS, 5) => 64 * KB,
-            (OS::iOS, 4) => if self.os_version() >= 12 {
-                64 * KB
-            } else {
-                32 * KB
-            },
+            (OS::iOS, 4) => {
+                if self.os_version() >= 12 {
+                    64 * KB
+                } else {
+                    32 * KB
+                }
+            }
             (OS::iOS, 3) => 16 * KB,
             (OS::iOS, _) => 16 * KB - 32,
             (OS::tvOS, 1) => 16 * KB - 32,
@@ -696,7 +664,13 @@ impl MTLFeatureSet {
 
     pub fn max_1d_texture_size(&self) -> u32 {
         match (self.os(), self.gpu_family()) {
-            (OS::iOS, 1) | (OS::iOS, 2) => if self.version() <= 2 { 4096 } else { 8192 },
+            (OS::iOS, 1) | (OS::iOS, 2) => {
+                if self.version() <= 2 {
+                    4096
+                } else {
+                    8192
+                }
+            }
             (OS::tvOS, 1) => 8192,
             _ => 16384,
         }
@@ -704,7 +678,13 @@ impl MTLFeatureSet {
 
     pub fn max_2d_texture_size(&self) -> u32 {
         match (self.os(), self.gpu_family()) {
-            (OS::iOS, 1) | (OS::iOS, 2) => if self.version() <= 2 { 4096 } else { 8192 },
+            (OS::iOS, 1) | (OS::iOS, 2) => {
+                if self.version() <= 2 {
+                    4096
+                } else {
+                    8192
+                }
+            }
             (OS::tvOS, 1) => 8192,
             _ => 16384,
         }
@@ -712,7 +692,13 @@ impl MTLFeatureSet {
 
     pub fn max_cube_map_texture_size(&self) -> u32 {
         match (self.os(), self.gpu_family()) {
-            (OS::iOS, 1) | (OS::iOS, 2) => if self.version() <= 2 { 4096 } else { 8192 },
+            (OS::iOS, 1) | (OS::iOS, 2) => {
+                if self.version() <= 2 {
+                    4096
+                } else {
+                    8192
+                }
+            }
             (OS::tvOS, 1) => 8192,
             _ => 16384,
         }
@@ -738,18 +724,22 @@ impl MTLFeatureSet {
     /// the buffer alignment can be discovered via API query
     pub fn new_texture_buffer_alignment(&self) -> Option<u32> {
         match self.os() {
-            OS::iOS => if self.os_version() >= 11 {
-                None
-            } else if self.gpu_family() == 3 {
-                Some(16)
-            } else {
-                Some(64)
-            },
-            OS::tvOS => if self.os_version() >= 11 {
-                None
-            } else {
-                Some(64)
-            },
+            OS::iOS => {
+                if self.os_version() >= 11 {
+                    None
+                } else if self.gpu_family() == 3 {
+                    Some(16)
+                } else {
+                    Some(64)
+                }
+            }
+            OS::tvOS => {
+                if self.os_version() >= 11 {
+                    None
+                } else {
+                    Some(64)
+                }
+            }
             OS::macOS => None,
         }
     }
@@ -1352,7 +1342,7 @@ bitflags! {
 }
 
 #[link(name = "Metal", kind = "framework")]
-extern {
+extern "C" {
     fn MTLCreateSystemDefaultDevice() -> *mut MTLDevice;
     fn MTLCopyAllDevices() -> *mut Object; //TODO: Array
 }
@@ -1364,19 +1354,23 @@ type dispatch_queue_t = id;
 #[allow(non_camel_case_types)]
 type dispatch_block_t = *const Block<(), ()>;
 
-#[cfg_attr(any(target_os = "macos", target_os = "ios"),
-           link(name = "System", kind = "dylib"))]
-#[cfg_attr(not(any(target_os = "macos", target_os = "ios")),
-           link(name = "dispatch", kind = "dylib"))]
+#[cfg_attr(
+    any(target_os = "macos", target_os = "ios"),
+    link(name = "System", kind = "dylib")
+)]
+#[cfg_attr(
+    not(any(target_os = "macos", target_os = "ios")),
+    link(name = "dispatch", kind = "dylib")
+)]
 #[allow(improper_ctypes)]
-extern {
+extern "C" {
     static _dispatch_main_q: dispatch_queue_t;
 
     fn dispatch_data_create(
-        buffer: *const libc::c_void,
-        size: libc::size_t,
+        buffer: *const std::ffi::c_void,
+        size: crate::c_size_t,
         queue: dispatch_queue_t,
-        destructor: dispatch_block_t
+        destructor: dispatch_block_t,
     ) -> dispatch_data_t;
 }
 
@@ -1406,7 +1400,7 @@ impl Device {
             unsafe {
                 let array = MTLCopyAllDevices();
                 let count: NSUInteger = msg_send![array, count];
-                (0 .. count)
+                (0..count)
                     .map(|i| msg_send![array, objectAtIndex: i])
                     .collect()
             }
@@ -1435,15 +1429,11 @@ impl DeviceRef {
     }
 
     pub fn registry_id(&self) -> u64 {
-        unsafe {
-            msg_send![self, registryID]
-        }
+        unsafe { msg_send![self, registryID] }
     }
 
     pub fn max_threads_per_threadgroup(&self) -> MTLSize {
-        unsafe {
-            msg_send![self, maxThreadsPerThreadgroup]
-        }
+        unsafe { msg_send![self, maxThreadsPerThreadgroup] }
     }
 
     pub fn is_low_power(&self) -> bool {
@@ -1451,7 +1441,7 @@ impl DeviceRef {
             match msg_send![self, isLowPower] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
@@ -1461,7 +1451,7 @@ impl DeviceRef {
             match msg_send![self, isHeadless] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
@@ -1471,27 +1461,27 @@ impl DeviceRef {
             match msg_send![self, isRemovable] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn supports_feature_set(&self, feature: MTLFeatureSet) -> bool {
         unsafe {
-            match msg_send![self, supportsFeatureSet:feature] {
+            match msg_send![self, supportsFeatureSet: feature] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn supports_sample_count(&self, count: NSUInteger) -> bool {
         unsafe {
-            match msg_send![self, supportsTextureSampleCount:count] {
+            match msg_send![self, supportsTextureSampleCount: count] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
@@ -1501,32 +1491,33 @@ impl DeviceRef {
             match msg_send![self, isDepth24Stencil8PixelFormatSupported] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn new_command_queue(&self) -> CommandQueue {
-        unsafe {
-            msg_send![self, newCommandQueue]
-        }
+        unsafe { msg_send![self, newCommandQueue] }
     }
 
-    pub fn new_command_queue_with_max_command_buffer_count(&self, count: NSUInteger) -> CommandQueue {
-        unsafe {
-            msg_send![self, newCommandQueueWithMaxCommandBufferCount:count]
-        }
+    pub fn new_command_queue_with_max_command_buffer_count(
+        &self,
+        count: NSUInteger,
+    ) -> CommandQueue {
+        unsafe { msg_send![self, newCommandQueueWithMaxCommandBufferCount: count] }
     }
 
     pub fn new_default_library(&self) -> Library {
-        unsafe {
-            msg_send![self, newDefaultLibrary]
-        }
+        unsafe { msg_send![self, newDefaultLibrary] }
     }
 
-    pub fn new_library_with_source(&self, src: &str, options: &CompileOptionsRef) -> Result<Library, String> {
-        use cocoa::foundation::NSString as cocoa_NSString;
+    pub fn new_library_with_source(
+        &self,
+        src: &str,
+        options: &CompileOptionsRef,
+    ) -> Result<Library, String> {
         use cocoa::base::nil as cocoa_nil;
+        use cocoa::foundation::NSString as cocoa_NSString;
 
         unsafe {
             let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
@@ -1536,7 +1527,7 @@ impl DeviceRef {
                                                                           error:&mut err];
             if !err.is_null() {
                 let desc: *mut Object = msg_send![err, localizedDescription];
-                let compile_error: *const libc::c_char = msg_send![desc, UTF8String];
+                let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 if library.is_null() {
                     msg_send![err, release];
@@ -1552,14 +1543,14 @@ impl DeviceRef {
     }
 
     pub fn new_library_with_file<P: AsRef<Path>>(&self, file: P) -> Result<Library, String> {
-        use cocoa::foundation::NSString as cocoa_NSString;
         use cocoa::base::nil as cocoa_nil;
+        use cocoa::foundation::NSString as cocoa_NSString;
 
         unsafe {
-            let filename = cocoa_NSString::alloc(cocoa_nil)
-                .init_str(file.as_ref().to_string_lossy().as_ref());
+            let filename =
+                cocoa_NSString::alloc(cocoa_nil).init_str(file.as_ref().to_string_lossy().as_ref());
 
-            let library: *mut MTLLibrary = try_objc!{ err =>
+            let library: *mut MTLLibrary = try_objc! { err =>
                 msg_send![self, newLibraryWithFile:filename.as_ref()
                                              error:&mut err]
             };
@@ -1572,10 +1563,10 @@ impl DeviceRef {
         unsafe {
             let destructor_block = ConcreteBlock::new(|| {}).copy();
             let data = dispatch_data_create(
-                library_data.as_ptr() as *const libc::c_void,
-                library_data.len() as libc::size_t,
+                library_data.as_ptr() as *const std::ffi::c_void,
+                library_data.len() as crate::c_size_t,
                 &_dispatch_main_q as *const _ as dispatch_queue_t,
-                &*destructor_block.deref()
+                &*destructor_block.deref(),
             );
 
             let library: *mut MTLLibrary = try_objc! { err =>
@@ -1587,11 +1578,16 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_render_pipeline_state_with_reflection(&self, descriptor: &RenderPipelineDescriptorRef, reflection: &RenderPipelineReflectionRef) -> Result<RenderPipelineState, String> {
+    pub fn new_render_pipeline_state_with_reflection(
+        &self,
+        descriptor: &RenderPipelineDescriptorRef,
+        reflection: &RenderPipelineReflectionRef,
+    ) -> Result<RenderPipelineState, String> {
         unsafe {
-            let reflection_options = MTLPipelineOption::ArgumentInfo | MTLPipelineOption::BufferTypeInfo;
+            let reflection_options =
+                MTLPipelineOption::ArgumentInfo | MTLPipelineOption::BufferTypeInfo;
 
-            let pipeline_state: *mut MTLRenderPipelineState = try_objc!{ err =>
+            let pipeline_state: *mut MTLRenderPipelineState = try_objc! { err =>
                 msg_send![self, newRenderPipelineStateWithDescriptor:descriptor
                                                              options:reflection_options
                                                           reflection:reflection
@@ -1602,9 +1598,12 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_render_pipeline_state(&self, descriptor: &RenderPipelineDescriptorRef) -> Result<RenderPipelineState, String> {
+    pub fn new_render_pipeline_state(
+        &self,
+        descriptor: &RenderPipelineDescriptorRef,
+    ) -> Result<RenderPipelineState, String> {
         unsafe {
-            let pipeline_state: *mut MTLRenderPipelineState = try_objc!{ err =>
+            let pipeline_state: *mut MTLRenderPipelineState = try_objc! { err =>
                 msg_send![self, newRenderPipelineStateWithDescriptor:descriptor
                                                                error:&mut err]
             };
@@ -1613,9 +1612,12 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_compute_pipeline_state_with_function(&self, function: &FunctionRef) -> Result<ComputePipelineState, String> {
+    pub fn new_compute_pipeline_state_with_function(
+        &self,
+        function: &FunctionRef,
+    ) -> Result<ComputePipelineState, String> {
         unsafe {
-            let pipeline_state: *mut MTLComputePipelineState = try_objc!{ err =>
+            let pipeline_state: *mut MTLComputePipelineState = try_objc! { err =>
                 msg_send![self, newComputePipelineStateWithFunction:function
                                                               error:&mut err]
             };
@@ -1625,8 +1627,11 @@ impl DeviceRef {
     }
 
     #[cfg(feature = "private")]
-    pub unsafe fn new_compute_pipeline_state(&self, descriptor: &ComputePipelineDescriptorRef) -> Result<ComputePipelineState, String> {
-        let pipeline_state: *mut MTLComputePipelineState = try_objc!{ err =>
+    pub unsafe fn new_compute_pipeline_state(
+        &self,
+        descriptor: &ComputePipelineDescriptorRef,
+    ) -> Result<ComputePipelineState, String> {
+        let pipeline_state: *mut MTLComputePipelineState = try_objc! { err =>
             msg_send![self, newComputePipelineStateWithDescriptor:descriptor
                                                             error:&mut err]
         };
@@ -1641,7 +1646,12 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_buffer_with_data(&self, bytes: *const libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> Buffer {
+    pub fn new_buffer_with_data(
+        &self,
+        bytes: *const std::ffi::c_void,
+        length: NSUInteger,
+        options: MTLResourceOptions,
+    ) -> Buffer {
         unsafe {
             msg_send![self, newBufferWithBytes:bytes
                                         length:length
@@ -1650,26 +1660,24 @@ impl DeviceRef {
     }
 
     pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Texture {
-        unsafe {
-            msg_send![self, newTextureWithDescriptor:descriptor]
-        }
+        unsafe { msg_send![self, newTextureWithDescriptor: descriptor] }
     }
 
     pub fn new_sampler(&self, descriptor: &SamplerDescriptorRef) -> SamplerState {
-        unsafe {
-            msg_send![self, newSamplerStateWithDescriptor:descriptor]
-        }
+        unsafe { msg_send![self, newSamplerStateWithDescriptor: descriptor] }
     }
 
-    pub fn new_depth_stencil_state(&self, descriptor: &DepthStencilDescriptorRef) -> DepthStencilState {
-        unsafe {
-            msg_send![self, newDepthStencilStateWithDescriptor:descriptor]
-        }
+    pub fn new_depth_stencil_state(
+        &self,
+        descriptor: &DepthStencilDescriptorRef,
+    ) -> DepthStencilState {
+        unsafe { msg_send![self, newDepthStencilStateWithDescriptor: descriptor] }
     }
 
     pub fn argument_buffers_support(&self) -> Option<MTLArgumentBuffersTier> {
         unsafe {
-            let has_arg_buffers: BOOL = msg_send![self, respondsToSelector: sel!(argumentBuffersSupport)];
+            let has_arg_buffers: BOOL =
+                msg_send![self, respondsToSelector: sel!(argumentBuffersSupport)];
             if has_arg_buffers == YES {
                 Some(msg_send![self, argumentBuffersSupport])
             } else {
@@ -1678,45 +1686,47 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_argument_encoder(&self, arguments: &ArrayRef<ArgumentDescriptor>) -> ArgumentEncoder {
-        unsafe {
-            msg_send![self, newArgumentEncoderWithArguments:arguments]
-        }
+    pub fn new_argument_encoder(
+        &self,
+        arguments: &ArrayRef<ArgumentDescriptor>,
+    ) -> ArgumentEncoder {
+        unsafe { msg_send![self, newArgumentEncoderWithArguments: arguments] }
     }
 
     pub fn new_heap(&self, descriptor: &HeapDescriptorRef) -> Heap {
-        unsafe {
-            msg_send![self, newHeapWithDescriptor: descriptor]
-        }
+        unsafe { msg_send![self, newHeapWithDescriptor: descriptor] }
     }
 
-    pub fn heap_buffer_size_and_align(&self, length: NSUInteger, options: MTLResourceOptions) -> MTLSizeAndAlign {
-        unsafe {
-            msg_send![self, heapBufferSizeAndAlignWithLength: length options: options]
-        }
+    pub fn heap_buffer_size_and_align(
+        &self,
+        length: NSUInteger,
+        options: MTLResourceOptions,
+    ) -> MTLSizeAndAlign {
+        unsafe { msg_send![self, heapBufferSizeAndAlignWithLength: length options: options] }
     }
 
-    pub fn heap_texture_size_and_align(&self, descriptor: &TextureDescriptorRef) -> MTLSizeAndAlign {
-        unsafe {
-            msg_send![self, heapTextureSizeAndAlignWithDescriptor: descriptor]
-        }
+    pub fn heap_texture_size_and_align(
+        &self,
+        descriptor: &TextureDescriptorRef,
+    ) -> MTLSizeAndAlign {
+        unsafe { msg_send![self, heapTextureSizeAndAlignWithDescriptor: descriptor] }
     }
 
-    pub fn minimum_linear_texture_alignment_for_pixel_format(&self, format: MTLPixelFormat) -> NSUInteger {
-        unsafe {
-            msg_send![self, minimumLinearTextureAlignmentForPixelFormat: format]
-        }
+    pub fn minimum_linear_texture_alignment_for_pixel_format(
+        &self,
+        format: MTLPixelFormat,
+    ) -> NSUInteger {
+        unsafe { msg_send![self, minimumLinearTextureAlignmentForPixelFormat: format] }
     }
 
-    pub fn minimum_texture_buffer_alignment_for_pixel_format(&self, format: MTLPixelFormat) -> NSUInteger {
-        unsafe {
-            msg_send![self, minimumTextureBufferAlignmentForPixelFormat: format]
-        }
+    pub fn minimum_texture_buffer_alignment_for_pixel_format(
+        &self,
+        format: MTLPixelFormat,
+    ) -> NSUInteger {
+        unsafe { msg_send![self, minimumTextureBufferAlignmentForPixelFormat: format] }
     }
 
     pub fn max_argument_buffer_sampler_count(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, maxArgumentBufferSamplerCount]
-        }
+        unsafe { msg_send![self, maxArgumentBufferSamplerCount] }
     }
 }

@@ -19,39 +19,27 @@ foreign_obj_type! {
 
 impl HeapRef {
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
-        unsafe {
-            msg_send![self, cpuCacheMode]
-        }
+        unsafe { msg_send![self, cpuCacheMode] }
     }
 
     pub fn storage_mode(&self) -> MTLStorageMode {
-        unsafe {
-            msg_send![self, storageMode]
-        }
+        unsafe { msg_send![self, storageMode] }
     }
 
     pub fn set_purgeable_state(&self, state: MTLPurgeableState) -> MTLPurgeableState {
-        unsafe {
-            msg_send![self, setPurgeableState:state]
-        }
+        unsafe { msg_send![self, setPurgeableState: state] }
     }
 
     pub fn size(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, size]
-        }
+        unsafe { msg_send![self, size] }
     }
 
     pub fn used_size(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, usedSize]
-        }
+        unsafe { msg_send![self, usedSize] }
     }
 
     pub fn max_available_size(&self, alignment: NSUInteger) -> NSUInteger {
-        unsafe {
-            msg_send![self, maxAvailableSizeWithAlignment: alignment]
-        }
+        unsafe { msg_send![self, maxAvailableSizeWithAlignment: alignment] }
     }
 
     pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> Option<Buffer> {
@@ -68,7 +56,7 @@ impl HeapRef {
 
     pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Option<Texture> {
         unsafe {
-            let ptr: *mut MTLTexture = msg_send![self, newTextureWithDescriptor:descriptor];
+            let ptr: *mut MTLTexture = msg_send![self, newTextureWithDescriptor: descriptor];
             if !ptr.is_null() {
                 Some(Texture::from_ptr(ptr))
             } else {
@@ -97,33 +85,23 @@ impl HeapDescriptor {
 
 impl HeapDescriptorRef {
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
-        unsafe {
-            msg_send![self, cpuCacheMode]
-        }
+        unsafe { msg_send![self, cpuCacheMode] }
     }
 
     pub fn set_cpu_cache_mode(&self, mode: MTLCPUCacheMode) {
-        unsafe {
-            msg_send![self, setCpuCacheMode:mode]
-        }
+        unsafe { msg_send![self, setCpuCacheMode: mode] }
     }
 
     pub fn storage_mode(&self) -> MTLStorageMode {
-        unsafe {
-            msg_send![self, storageMode]
-        }
+        unsafe { msg_send![self, storageMode] }
     }
 
     pub fn set_storage_mode(&self, mode: MTLStorageMode) {
-        unsafe {
-            msg_send![self, setStorageMode:mode]
-        }
+        unsafe { msg_send![self, setStorageMode: mode] }
     }
 
     pub fn size(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, size]
-        }
+        unsafe { msg_send![self, size] }
     }
 
     pub fn set_size(&self, size: NSUInteger) {

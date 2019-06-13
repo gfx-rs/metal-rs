@@ -8,7 +8,7 @@
 use super::*;
 
 use cocoa::foundation::NSUInteger;
-use objc::runtime::{YES, NO};
+use objc::runtime::{NO, YES};
 use objc_foundation::{INSString, NSString};
 
 #[repr(u64)]
@@ -106,7 +106,7 @@ pub enum MTLStepFunction {
     ThreadPositionInGridXIndexed = 6,
     ThreadPositionInGridY = 7,
     ThreadPositionInGridYIndexed = 8,
-} 
+}
 
 pub enum MTLComputePipelineDescriptor {}
 
@@ -136,20 +136,16 @@ impl ComputePipelineDescriptorRef {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self, setLabel: nslabel]
         }
     }
 
     pub fn compute_function(&self) -> Option<&FunctionRef> {
-        unsafe {
-            msg_send![self, computeFunction]
-        }
+        unsafe { msg_send![self, computeFunction] }
     }
 
     pub fn set_compute_function(&self, function: Option<&FunctionRef>) {
-        unsafe {
-            msg_send![self, setComputeFunction:function]
-        }
+        unsafe { msg_send![self, setComputeFunction: function] }
     }
 
     pub fn thread_group_size_is_multiple_of_thread_execution_width(&self) -> bool {
@@ -162,34 +158,32 @@ impl ComputePipelineDescriptorRef {
         }
     }
 
-    pub fn set_thread_group_size_is_multiple_of_thread_execution_width(&self, size_is_multiple_of_width: bool) {
+    pub fn set_thread_group_size_is_multiple_of_thread_execution_width(
+        &self,
+        size_is_multiple_of_width: bool,
+    ) {
         unsafe {
-            msg_send![self, setThreadGroupSizeIsMultipleOfThreadExecutionWidth:size_is_multiple_of_width]
+            msg_send![
+                self,
+                setThreadGroupSizeIsMultipleOfThreadExecutionWidth: size_is_multiple_of_width
+            ]
         }
     }
 
     pub fn stage_input_descriptor(&self) -> Option<&StageInputOutputDescriptorRef> {
-        unsafe {
-            msg_send![self, stageInputDescriptor]
-        }
+        unsafe { msg_send![self, stageInputDescriptor] }
     }
 
     pub fn set_stage_input_descriptor(&self, descriptor: Option<&StageInputOutputDescriptorRef>) {
-        unsafe {
-            msg_send![self, setStageInputDescriptor:descriptor]
-        }
+        unsafe { msg_send![self, setStageInputDescriptor: descriptor] }
     }
 
     pub fn buffers(&self) -> Option<&PipelineBufferDescriptorArrayRef> {
-        unsafe {
-            msg_send![self, buffers]
-        }
+        unsafe { msg_send![self, buffers] }
     }
 
     pub fn reset(&self) {
-        unsafe {
-            msg_send![self, reset]
-        }
+        unsafe { msg_send![self, reset] }
     }
 }
 
@@ -212,26 +206,20 @@ impl ComputePipelineStateRef {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self, setLabel: nslabel]
         }
     }
 
     pub fn max_total_threads_per_group(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, maxTotalThreadsPerThreadgroup]
-        }
+        unsafe { msg_send![self, maxTotalThreadsPerThreadgroup] }
     }
 
     pub fn thread_execution_width(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, threadExecutionWidth]
-        }
+        unsafe { msg_send![self, threadExecutionWidth] }
     }
 
     pub fn static_threadgroup_memory_length(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, staticThreadgroupMemoryLength]
-        }
+        unsafe { msg_send![self, staticThreadgroupMemoryLength] }
     }
 }
 
@@ -245,15 +233,11 @@ foreign_obj_type! {
 
 impl PipelineBufferDescriptorArrayRef {
     pub fn object_at(&self, index: usize) -> Option<&PipelineBufferDescriptorRef> {
-        unsafe {
-            msg_send![self, objectAtIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
     pub fn set_object_at(&self, index: usize, buffer_desc: Option<&PipelineBufferDescriptorRef>) {
-        unsafe {
-            msg_send![self, setObject:buffer_desc atIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
     }
 }
 
@@ -267,15 +251,11 @@ foreign_obj_type! {
 
 impl PipelineBufferDescriptorRef {
     pub fn mutability(&self) -> MTLMutability {
-        unsafe {
-            msg_send![self, mutability]
-        }
+        unsafe { msg_send![self, mutability] }
     }
 
     pub fn set_mutability(&self, new_mutability: MTLMutability) {
-        unsafe {
-            msg_send![self, setMutability:new_mutability]
-        }
+        unsafe { msg_send![self, setMutability: new_mutability] }
     }
 }
 
@@ -298,46 +278,32 @@ impl StageInputOutputDescriptor {
 
 impl StageInputOutputDescriptorRef {
     pub fn attributes(&self) -> Option<&AttributeDescriptorArrayRef> {
-        unsafe {
-            msg_send![self, attributes]
-        }
+        unsafe { msg_send![self, attributes] }
     }
 
     pub fn index_buffer_index(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, indexBufferIndex]
-        }
+        unsafe { msg_send![self, indexBufferIndex] }
     }
 
     pub fn set_index_buffer_index(&self, idx_buffer_idx: NSUInteger) {
-        unsafe {
-            msg_send![self, setIndexBufferIndex:idx_buffer_idx]
-        }
+        unsafe { msg_send![self, setIndexBufferIndex: idx_buffer_idx] }
     }
 
     pub fn index_type(&self) -> MTLIndexType {
-        unsafe {
-            msg_send![self, indexType]
-        }
+        unsafe { msg_send![self, indexType] }
     }
 
     pub fn set_index_type(&self, index_ty: MTLIndexType) {
-        unsafe {
-            msg_send![self, setIndexType:index_ty]
-        }
+        unsafe { msg_send![self, setIndexType: index_ty] }
     }
 
     pub fn layouts(&self) -> Option<&BufferLayoutDescriptorArrayRef> {
-        unsafe {
-            msg_send![self, layouts]
-        }
+        unsafe { msg_send![self, layouts] }
     }
 
     pub fn reset(&self) {
-        unsafe {
-            msg_send![self, reset]
-        }
-    } 
+        unsafe { msg_send![self, reset] }
+    }
 }
 
 pub enum MTLAttributeDescriptorArray {}
@@ -350,15 +316,11 @@ foreign_obj_type! {
 
 impl AttributeDescriptorArrayRef {
     pub fn object_at(&self, index: usize) -> Option<&AttributeDescriptorRef> {
-        unsafe {
-            msg_send![self, objectAtIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
     pub fn set_object_at(&self, index: usize, buffer_desc: Option<&AttributeDescriptorRef>) {
-        unsafe {
-            msg_send![self, setObject:buffer_desc atIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
     }
 }
 
@@ -372,39 +334,27 @@ foreign_obj_type! {
 
 impl AttributeDescriptorRef {
     pub fn buffer_index(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, bufferIndex]
-        }
+        unsafe { msg_send![self, bufferIndex] }
     }
 
     pub fn set_buffer_index(&self, buffer_index: NSUInteger) {
-        unsafe {
-            msg_send![self, setBufferIndex:buffer_index]
-        }
+        unsafe { msg_send![self, setBufferIndex: buffer_index] }
     }
 
     pub fn format(&self) -> MTLAttributeFormat {
-        unsafe {
-            msg_send![self, format]
-        }
+        unsafe { msg_send![self, format] }
     }
 
     pub fn set_format(&self, format: MTLAttributeFormat) {
-        unsafe {
-            msg_send![self, setFormat:format]
-        }
+        unsafe { msg_send![self, setFormat: format] }
     }
 
     pub fn offset(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, offset]
-        }
+        unsafe { msg_send![self, offset] }
     }
 
     pub fn set_offset(&self, offset: NSUInteger) {
-        unsafe {
-            msg_send![self, setOffset:offset]
-        }
+        unsafe { msg_send![self, setOffset: offset] }
     }
 }
 
@@ -418,15 +368,11 @@ foreign_obj_type! {
 
 impl BufferLayoutDescriptorArrayRef {
     pub fn object_at(&self, index: usize) -> Option<&BufferLayoutDescriptorRef> {
-        unsafe {
-            msg_send![self, objectAtIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
     pub fn set_object_at(&self, index: usize, buffer_desc: Option<&BufferLayoutDescriptorRef>) {
-        unsafe {
-            msg_send![self, setObject:buffer_desc atIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
     }
 }
 
@@ -440,38 +386,26 @@ foreign_obj_type! {
 
 impl BufferLayoutDescriptorRef {
     pub fn step_function(&self) -> MTLStepFunction {
-        unsafe {
-            msg_send![self, stepFunction]
-        }
+        unsafe { msg_send![self, stepFunction] }
     }
 
     pub fn set_step_function(&self, step_function: MTLStepFunction) {
-        unsafe {
-            msg_send![self, setStepFunction:step_function]
-        }
+        unsafe { msg_send![self, setStepFunction: step_function] }
     }
 
     pub fn step_rate(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, stepRate]
-        }
+        unsafe { msg_send![self, stepRate] }
     }
 
     pub fn set_step_rate(&self, step_rate: NSUInteger) {
-        unsafe {
-            msg_send![self, setStepRate:step_rate]
-        }
+        unsafe { msg_send![self, setStepRate: step_rate] }
     }
 
     pub fn stride(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, stride]
-        }
+        unsafe { msg_send![self, stride] }
     }
 
     pub fn set_stride(&self, stride: NSUInteger) {
-        unsafe {
-            msg_send![self, setStride:stride]
-        }
+        unsafe { msg_send![self, setStride: stride] }
     }
 }
