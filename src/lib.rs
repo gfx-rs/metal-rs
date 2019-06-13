@@ -8,17 +8,12 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
-extern crate cocoa;
-extern crate core_graphics;
 #[macro_use]
 extern crate bitflags;
 #[macro_use]
 extern crate log;
 #[macro_use]
 extern crate objc;
-extern crate objc_foundation;
-extern crate objc_id;
-extern crate block;
 #[macro_use]
 extern crate foreign_types;
 
