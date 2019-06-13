@@ -10,8 +10,6 @@ use super::*;
 use cocoa::foundation::{NSUInteger, NSRange};
 use objc::runtime::{YES, NO};
 
-use libc;
-
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -316,7 +314,7 @@ impl TextureRef {
         }
     }
 
-    pub fn get_bytes(&self, bytes: *mut libc::c_void, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger) {
+    pub fn get_bytes(&self, bytes: *mut std::ffi::c_void, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger) {
         unsafe {
             msg_send![self, getBytes:bytes
                          bytesPerRow:stride
@@ -325,7 +323,7 @@ impl TextureRef {
         }
     }
 
-    pub fn get_bytes_in_slice(&self, bytes: *mut libc::c_void, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger, image_stride: NSUInteger, slice: NSUInteger) {
+    pub fn get_bytes_in_slice(&self, bytes: *mut std::ffi::c_void, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger, image_stride: NSUInteger, slice: NSUInteger) {
         unsafe {
             msg_send![self, getBytes:bytes
                          bytesPerRow:stride
@@ -336,7 +334,7 @@ impl TextureRef {
         }
     }
 
-    pub fn replace_region(&self, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger, bytes: *const libc::c_void) {
+    pub fn replace_region(&self, region: MTLRegion, mipmap_level: NSUInteger, stride: NSUInteger, bytes: *const std::ffi::c_void) {
         unsafe {
             msg_send![self, replaceRegion:region
                               mipmapLevel:mipmap_level
@@ -345,7 +343,7 @@ impl TextureRef {
         }
     }
 
-    pub fn replace_region_in_slice(&self, region: MTLRegion, mipmap_level: NSUInteger, image_stride: NSUInteger, stride: NSUInteger, slice: NSUInteger, bytes: *const libc::c_void) {
+    pub fn replace_region_in_slice(&self, region: MTLRegion, mipmap_level: NSUInteger, image_stride: NSUInteger, stride: NSUInteger, slice: NSUInteger, bytes: *const std::ffi::c_void) {
         unsafe {
             msg_send![self, replaceRegion:region
                               mipmapLevel:mipmap_level

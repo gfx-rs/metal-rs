@@ -7,9 +7,6 @@
 
 use cocoa::foundation::NSUInteger;
 
-#[cfg(feature = "private")]
-use libc;
-
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -264,7 +261,7 @@ impl VertexDescriptorRef {
     }
 
     #[cfg(feature = "private")]
-    pub unsafe fn serialize_descriptor(&self) -> *mut libc::c_void {
+    pub unsafe fn serialize_descriptor(&self) -> *mut std::ffi::c_void {
         msg_send![self, newSerializedDescriptor]
     }
 

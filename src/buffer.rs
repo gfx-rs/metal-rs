@@ -26,7 +26,7 @@ impl BufferRef {
         }
     }
 
-    pub fn contents(&self) -> *mut libc::c_void {
+    pub fn contents(&self) -> *mut std::ffi::c_void {
         unsafe {
             msg_send![self, contents]
         }

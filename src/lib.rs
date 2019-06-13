@@ -12,7 +12,6 @@ extern crate cocoa;
 extern crate core_graphics;
 #[macro_use]
 extern crate bitflags;
-extern crate libc;
 #[macro_use]
 extern crate log;
 #[macro_use]
@@ -98,7 +97,7 @@ macro_rules! try_objc {
             let value = $body;
             if !$err_name.is_null() {
                 let desc: *mut Object = msg_send![$err_name, localizedDescription];
-                let compile_error: *const ::libc::c_char = msg_send![desc, UTF8String];
+                let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 msg_send![$err_name, release];
                 return Err(message);
@@ -384,3 +383,6 @@ unsafe fn obj_drop<T>(p: *mut T) {
 unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
     msg_send![(p as *mut Object), retain]
 }
+
+#[allow(non_camel_case_types)]
+type c_size_t = usize;

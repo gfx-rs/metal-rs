@@ -9,7 +9,6 @@ use block::{Block, ConcreteBlock};
 use cocoa::base::id;
 use cocoa::foundation::{NSUInteger};
 use foreign_types::ForeignType;
-use libc;
 use objc::runtime::{Object, BOOL, YES, NO};
 use objc_foundation::{NSString, INSString};
 
@@ -1373,8 +1372,8 @@ extern {
     static _dispatch_main_q: dispatch_queue_t;
 
     fn dispatch_data_create(
-        buffer: *const libc::c_void,
-        size: libc::size_t,
+        buffer: *const std::ffi::c_void,
+        size: crate::c_size_t,
         queue: dispatch_queue_t,
         destructor: dispatch_block_t
     ) -> dispatch_data_t;
@@ -1536,7 +1535,7 @@ impl DeviceRef {
                                                                           error:&mut err];
             if !err.is_null() {
                 let desc: *mut Object = msg_send![err, localizedDescription];
-                let compile_error: *const libc::c_char = msg_send![desc, UTF8String];
+                let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 if library.is_null() {
                     msg_send![err, release];
@@ -1572,8 +1571,8 @@ impl DeviceRef {
         unsafe {
             let destructor_block = ConcreteBlock::new(|| {}).copy();
             let data = dispatch_data_create(
-                library_data.as_ptr() as *const libc::c_void,
-                library_data.len() as libc::size_t,
+                library_data.as_ptr() as *const std::ffi::c_void,
+                library_data.len() as crate::c_size_t,
                 &_dispatch_main_q as *const _ as dispatch_queue_t,
                 &*destructor_block.deref()
             );
@@ -1641,7 +1640,7 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_buffer_with_data(&self, bytes: *const libc::c_void, length: NSUInteger, options: MTLResourceOptions) -> Buffer {
+    pub fn new_buffer_with_data(&self, bytes: *const std::ffi::c_void, length: NSUInteger, options: MTLResourceOptions) -> Buffer {
         unsafe {
             msg_send![self, newBufferWithBytes:bytes
                                         length:length

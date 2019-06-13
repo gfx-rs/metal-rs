@@ -10,7 +10,6 @@ use super::*;
 use cocoa::foundation::{NSRange, NSUInteger, NSInteger};
 use objc_foundation::{NSString, INSString};
 
-use libc;
 use std::ops::Range;
 
 
@@ -262,7 +261,7 @@ impl RenderCommandEncoderRef {
 
     // Specifying Resources for a Vertex Shader Function
 
-    pub fn set_vertex_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const libc::c_void) {
+    pub fn set_vertex_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const std::ffi::c_void) {
         unsafe {
             msg_send![self,
                 setVertexBytes:bytes
@@ -353,7 +352,7 @@ impl RenderCommandEncoderRef {
 
     // Specifying Resources for a Fragment Shader Function
 
-    pub fn set_fragment_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const libc::c_void) {
+    pub fn set_fragment_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const std::ffi::c_void) {
         unsafe {
             msg_send![self,
                 setFragmentBytes:bytes
@@ -814,7 +813,7 @@ impl ComputeCommandEncoderRef {
         }
     }
 
-    pub fn set_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const libc::c_void) {
+    pub fn set_bytes(&self, index: NSUInteger, length: NSUInteger, bytes: *const std::ffi::c_void) {
         unsafe {
             msg_send![self,
                 setBytes: bytes
@@ -965,7 +964,7 @@ impl ArgumentEncoderRef {
         }
     }
 
-    pub fn constant_data(&self, at_index: NSUInteger) -> *mut libc::c_void {
+    pub fn constant_data(&self, at_index: NSUInteger) -> *mut std::ffi::c_void {
         unsafe {
             msg_send![self, constantDataAtIndex:at_index]
         }
