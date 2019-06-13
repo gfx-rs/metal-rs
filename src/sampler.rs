@@ -7,7 +7,7 @@
 
 use cocoa::foundation::NSUInteger;
 
-use depthstencil::MTLCompareFunction;
+use crate::depthstencil::MTLCompareFunction;
 
 #[repr(u64)]
 #[derive(Copy, Clone)]

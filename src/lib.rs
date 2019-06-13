@@ -59,8 +59,8 @@ macro_rules! foreign_obj_type {
     } => {
         foreign_type! {
             type CType = $raw_ident;
-            fn drop = ::obj_drop;
-            fn clone = ::obj_clone;
+            fn drop = crate::obj_drop;
+            fn clone = crate::obj_clone;
             pub struct $owned_ident;
             pub struct $ref_ident;
         }
