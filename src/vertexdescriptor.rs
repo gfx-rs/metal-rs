@@ -83,7 +83,7 @@ foreign_obj_type! {
 }
 
 impl VertexBufferLayoutDescriptor {
-    pub fn new () -> Self {
+    pub fn new() -> Self {
         unsafe {
             let class = class!(MTLVertexBufferLayoutDescriptor);
             msg_send![class, new]
@@ -93,39 +93,27 @@ impl VertexBufferLayoutDescriptor {
 
 impl VertexBufferLayoutDescriptorRef {
     pub fn stride(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, stride]
-        }
+        unsafe { msg_send![self, stride] }
     }
 
     pub fn set_stride(&self, stride: NSUInteger) {
-        unsafe {
-            msg_send![self, setStride:stride]
-        }
+        unsafe { msg_send![self, setStride: stride] }
     }
 
     pub fn step_function(&self) -> MTLVertexStepFunction {
-        unsafe {
-            msg_send![self, stepFunction]
-        }
+        unsafe { msg_send![self, stepFunction] }
     }
 
     pub fn set_step_function(&self, func: MTLVertexStepFunction) {
-        unsafe {
-            msg_send![self, setStepFunction:func]
-        }
+        unsafe { msg_send![self, setStepFunction: func] }
     }
 
     pub fn step_rate(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, stepRate]
-        }
+        unsafe { msg_send![self, stepRate] }
     }
 
     pub fn set_step_rate(&self, step_rate: NSUInteger) {
-        unsafe {
-            msg_send![self, setStepRate:step_rate]
-        }
+        unsafe { msg_send![self, setStepRate: step_rate] }
     }
 }
 
@@ -139,9 +127,7 @@ foreign_obj_type! {
 
 impl VertexBufferLayoutDescriptorArrayRef {
     pub fn object_at(&self, index: usize) -> Option<&VertexBufferLayoutDescriptorRef> {
-        unsafe {
-            msg_send![self, objectAtIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
     pub fn set_object_at(&self, index: usize, layout: Option<&VertexBufferLayoutDescriptorRef>) {
@@ -171,39 +157,27 @@ impl VertexAttributeDescriptor {
 
 impl VertexAttributeDescriptorRef {
     pub fn format(&self) -> MTLVertexFormat {
-        unsafe {
-            msg_send![self, format]
-        }
+        unsafe { msg_send![self, format] }
     }
 
     pub fn set_format(&self, format: MTLVertexFormat) {
-        unsafe {
-            msg_send![self, setFormat:format]
-        }
+        unsafe { msg_send![self, setFormat: format] }
     }
 
     pub fn offset(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, offset]
-        }
+        unsafe { msg_send![self, offset] }
     }
 
     pub fn set_offset(&self, offset: NSUInteger) {
-        unsafe {
-            msg_send![self, setOffset:offset]
-        }
+        unsafe { msg_send![self, setOffset: offset] }
     }
 
     pub fn buffer_index(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, bufferIndex]
-        }
+        unsafe { msg_send![self, bufferIndex] }
     }
 
     pub fn set_buffer_index(&self, index: NSUInteger) {
-        unsafe {
-            msg_send![self, setBufferIndex:index]
-        }
+        unsafe { msg_send![self, setBufferIndex: index] }
     }
 }
 
@@ -217,9 +191,7 @@ foreign_obj_type! {
 
 impl VertexAttributeDescriptorArrayRef {
     pub fn object_at(&self, index: usize) -> Option<&VertexAttributeDescriptorRef> {
-        unsafe {
-            msg_send![self, objectAtIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
     pub fn set_object_at(&self, index: usize, attribute: Option<&VertexAttributeDescriptorRef>) {
@@ -249,15 +221,11 @@ impl VertexDescriptor {
 
 impl VertexDescriptorRef {
     pub fn layouts(&self) -> &VertexBufferLayoutDescriptorArrayRef {
-        unsafe {
-            msg_send![self, layouts]
-        }
+        unsafe { msg_send![self, layouts] }
     }
 
     pub fn attributes(&self) -> &VertexAttributeDescriptorArrayRef {
-        unsafe {
-            msg_send![self, attributes]
-        }
+        unsafe { msg_send![self, attributes] }
     }
 
     #[cfg(feature = "private")]
@@ -266,8 +234,6 @@ impl VertexDescriptorRef {
     }
 
     pub fn reset(&self) {
-        unsafe {
-            msg_send![self, reset]
-        }
+        unsafe { msg_send![self, reset] }
     }
 }

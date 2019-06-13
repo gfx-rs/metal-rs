@@ -8,7 +8,7 @@
 use super::*;
 
 use cocoa::foundation::NSUInteger;
-use objc::runtime::{YES, NO};
+use objc::runtime::{NO, YES};
 use objc_foundation::{INSString, NSString};
 
 #[repr(u64)]
@@ -76,15 +76,11 @@ foreign_obj_type! {
 
 impl RenderPipelineColorAttachmentDescriptorRef {
     pub fn pixel_format(&self) -> MTLPixelFormat {
-        unsafe {
-            msg_send![self, pixelFormat]
-        }
+        unsafe { msg_send![self, pixelFormat] }
     }
 
     pub fn set_pixel_format(&self, pixel_format: MTLPixelFormat) {
-        unsafe {
-            msg_send![self, setPixelFormat:pixel_format]
-        }
+        unsafe { msg_send![self, setPixelFormat: pixel_format] }
     }
 
     pub fn is_blending_enabled(&self) -> bool {
@@ -92,99 +88,69 @@ impl RenderPipelineColorAttachmentDescriptorRef {
             match msg_send![self, isBlendingEnabled] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn set_blending_enabled(&self, enabled: bool) {
-        unsafe {
-            msg_send![self, setBlendingEnabled:enabled]
-        }
+        unsafe { msg_send![self, setBlendingEnabled: enabled] }
     }
 
     pub fn source_rgb_blend_factor(&self) -> MTLBlendFactor {
-        unsafe {
-            msg_send![self, sourceRGBBlendFactor]
-        }
+        unsafe { msg_send![self, sourceRGBBlendFactor] }
     }
 
     pub fn set_source_rgb_blend_factor(&self, blend_factor: MTLBlendFactor) {
-        unsafe {
-            msg_send![self, setSourceRGBBlendFactor:blend_factor]
-        }
+        unsafe { msg_send![self, setSourceRGBBlendFactor: blend_factor] }
     }
 
     pub fn destination_rgb_blend_factor(&self) -> MTLBlendFactor {
-        unsafe {
-            msg_send![self, destinationRGBBlendFactor]
-        }
+        unsafe { msg_send![self, destinationRGBBlendFactor] }
     }
 
     pub fn set_destination_rgb_blend_factor(&self, blend_factor: MTLBlendFactor) {
-        unsafe {
-            msg_send![self, setDestinationRGBBlendFactor:blend_factor]
-        }
+        unsafe { msg_send![self, setDestinationRGBBlendFactor: blend_factor] }
     }
 
     pub fn rgb_blend_operation(&self) -> MTLBlendOperation {
-        unsafe {
-            msg_send![self, rgbBlendOperation]
-        }
+        unsafe { msg_send![self, rgbBlendOperation] }
     }
 
     pub fn set_rgb_blend_operation(&self, blend_operation: MTLBlendOperation) {
-        unsafe {
-            msg_send![self, setRgbBlendOperation:blend_operation]
-        }
+        unsafe { msg_send![self, setRgbBlendOperation: blend_operation] }
     }
 
     pub fn source_alpha_blend_factor(&self) -> MTLBlendFactor {
-        unsafe {
-            msg_send![self, sourceAlphaBlendFactor]
-        }
+        unsafe { msg_send![self, sourceAlphaBlendFactor] }
     }
 
     pub fn set_source_alpha_blend_factor(&self, blend_factor: MTLBlendFactor) {
-        unsafe {
-            msg_send![self, setSourceAlphaBlendFactor:blend_factor]
-        }
+        unsafe { msg_send![self, setSourceAlphaBlendFactor: blend_factor] }
     }
 
     pub fn destination_alpha_blend_factor(&self) -> MTLBlendFactor {
-        unsafe {
-            msg_send![self, destinationAlphaBlendFactor]
-        }
+        unsafe { msg_send![self, destinationAlphaBlendFactor] }
     }
 
     pub fn set_destination_alpha_blend_factor(&self, blend_factor: MTLBlendFactor) {
-        unsafe {
-            msg_send![self, setDestinationAlphaBlendFactor:blend_factor]
-        }
+        unsafe { msg_send![self, setDestinationAlphaBlendFactor: blend_factor] }
     }
 
     pub fn alpha_blend_operation(&self) -> MTLBlendOperation {
-        unsafe {
-            msg_send![self, alphaBlendOperation]
-        }
+        unsafe { msg_send![self, alphaBlendOperation] }
     }
 
     pub fn set_alpha_blend_operation(&self, blend_operation: MTLBlendOperation) {
-        unsafe {
-            msg_send![self, setAlphaBlendOperation:blend_operation]
-        }
+        unsafe { msg_send![self, setAlphaBlendOperation: blend_operation] }
     }
 
     pub fn write_mask(&self) -> MTLColorWriteMask {
-        unsafe {
-            msg_send![self, writeMask]
-        }
+        unsafe { msg_send![self, writeMask] }
     }
 
     pub fn set_write_mask(&self, mask: MTLColorWriteMask) {
-        unsafe {
-            msg_send![self, setWriteMask:mask]
-        }
+        unsafe { msg_send![self, setWriteMask: mask] }
     }
 }
 
@@ -198,10 +164,14 @@ foreign_obj_type! {
 
 impl RenderPipelineReflection {
     #[cfg(feature = "private")]
-    pub unsafe fn new(vertex_data: *mut std::ffi::c_void,
-            fragment_data: *mut std::ffi::c_void, vertex_desc: *mut std::ffi::c_void,
-            device: &DeviceRef, options: u64, flags: u64) -> Self
-    {
+    pub unsafe fn new(
+        vertex_data: *mut std::ffi::c_void,
+        fragment_data: *mut std::ffi::c_void,
+        vertex_desc: *mut std::ffi::c_void,
+        device: &DeviceRef,
+        options: u64,
+        flags: u64,
+    ) -> Self {
         let class = class!(MTLRenderPipelineReflection);
         let this: RenderPipelineReflection = msg_send![class, alloc];
         let this_alias: *mut Object = msg_send![this.as_ref(), initWithVertexData:vertex_data
@@ -219,15 +189,11 @@ impl RenderPipelineReflection {
 
 impl RenderPipelineReflectionRef {
     pub fn fragment_arguments(&self) -> &Array<Argument> {
-        unsafe {
-            msg_send![self, fragmentArguments]
-        }
+        unsafe { msg_send![self, fragmentArguments] }
     }
 
     pub fn vertex_arguments(&self) -> &Array<Argument> {
-        unsafe {
-            msg_send![self, vertexArguments]
-        }
+        unsafe { msg_send![self, vertexArguments] }
     }
 }
 
@@ -259,56 +225,40 @@ impl RenderPipelineDescriptorRef {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self, setLabel: nslabel]
         }
     }
 
     pub fn vertex_function(&self) -> Option<&FunctionRef> {
-        unsafe {
-            msg_send![self, vertexFunction]
-        }
+        unsafe { msg_send![self, vertexFunction] }
     }
 
     pub fn set_vertex_function(&self, function: Option<&FunctionRef>) {
-        unsafe {
-            msg_send![self, setVertexFunction:function]
-        }
+        unsafe { msg_send![self, setVertexFunction: function] }
     }
 
     pub fn fragment_function(&self) -> Option<&FunctionRef> {
-        unsafe {
-            msg_send![self, fragmentFunction]
-        }
+        unsafe { msg_send![self, fragmentFunction] }
     }
 
     pub fn set_fragment_function(&self, function: Option<&FunctionRef>) {
-        unsafe {
-            msg_send![self, setFragmentFunction:function]
-        }
+        unsafe { msg_send![self, setFragmentFunction: function] }
     }
 
     pub fn vertex_descriptor(&self) -> Option<&VertexDescriptorRef> {
-        unsafe {
-            msg_send![self, vertexDescriptor]
-        }
+        unsafe { msg_send![self, vertexDescriptor] }
     }
 
     pub fn set_vertex_descriptor(&self, descriptor: Option<&VertexDescriptorRef>) {
-        unsafe {
-            msg_send![self, setVertexDescriptor:descriptor]
-        }
+        unsafe { msg_send![self, setVertexDescriptor: descriptor] }
     }
 
     pub fn sample_count(&self) -> NSUInteger {
-        unsafe {
-            msg_send![self, sampleCount]
-        }
+        unsafe { msg_send![self, sampleCount] }
     }
 
     pub fn set_sample_count(&self, count: NSUInteger) {
-        unsafe {
-            msg_send![self, setSampleCount:count]
-        }
+        unsafe { msg_send![self, setSampleCount: count] }
     }
 
     pub fn is_alpha_to_coverage_enabled(&self) -> bool {
@@ -316,15 +266,13 @@ impl RenderPipelineDescriptorRef {
             match msg_send![self, isAlphaToCoverageEnabled] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn set_alpha_to_coverage_enabled(&self, enabled: bool) {
-        unsafe {
-            msg_send![self, setAlphaToCoverageEnabled:enabled]
-        }
+        unsafe { msg_send![self, setAlphaToCoverageEnabled: enabled] }
     }
 
     pub fn is_alpha_to_one_enabled(&self) -> bool {
@@ -332,15 +280,13 @@ impl RenderPipelineDescriptorRef {
             match msg_send![self, isAlphaToOneEnabled] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn set_alpha_to_one_enabled(&self, enabled: bool) {
-        unsafe {
-            msg_send![self, setAlphaToOneEnabled:enabled]
-        }
+        unsafe { msg_send![self, setAlphaToOneEnabled: enabled] }
     }
 
     pub fn is_rasterization_enabled(&self) -> bool {
@@ -348,57 +294,41 @@ impl RenderPipelineDescriptorRef {
             match msg_send![self, isRasterizationEnabled] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn set_rasterization_enabled(&self, enabled: bool) {
-        unsafe {
-            msg_send![self, setRasterizationEnabled:enabled]
-        }
+        unsafe { msg_send![self, setRasterizationEnabled: enabled] }
     }
 
     pub fn color_attachments(&self) -> &RenderPipelineColorAttachmentDescriptorArrayRef {
-        unsafe {
-            msg_send![self, colorAttachments]
-        }
+        unsafe { msg_send![self, colorAttachments] }
     }
 
     pub fn depth_attachment_pixel_format(&self) -> MTLPixelFormat {
-        unsafe {
-            msg_send![self, depthAttachmentPixelFormat]
-        }
+        unsafe { msg_send![self, depthAttachmentPixelFormat] }
     }
 
     pub fn set_depth_attachment_pixel_format(&self, pixel_format: MTLPixelFormat) {
-        unsafe {
-            msg_send![self, setDepthAttachmentPixelFormat:pixel_format]
-        }
+        unsafe { msg_send![self, setDepthAttachmentPixelFormat: pixel_format] }
     }
 
     pub fn stencil_attachment_pixel_format(&self) -> MTLPixelFormat {
-        unsafe {
-            msg_send![self, stencilAttachmentPixelFormat]
-        }
+        unsafe { msg_send![self, stencilAttachmentPixelFormat] }
     }
 
     pub fn set_stencil_attachment_pixel_format(&self, pixel_format: MTLPixelFormat) {
-        unsafe {
-            msg_send![self, setStencilAttachmentPixelFormat:pixel_format]
-        }
+        unsafe { msg_send![self, setStencilAttachmentPixelFormat: pixel_format] }
     }
 
     pub fn input_primitive_topology(&self) -> MTLPrimitiveTopologyClass {
-        unsafe {
-            msg_send![self, inputPrimitiveTopology]
-        }
+        unsafe { msg_send![self, inputPrimitiveTopology] }
     }
 
     pub fn set_input_primitive_topology(&self, topology: MTLPrimitiveTopologyClass) {
-        unsafe {
-            msg_send![self, setInputPrimitiveTopology:topology]
-        }
+        unsafe { msg_send![self, setInputPrimitiveTopology: topology] }
     }
 
     #[cfg(feature = "private")]
@@ -426,9 +356,7 @@ impl RenderPipelineDescriptorRef {
     }
 
     pub fn set_support_indirect_command_buffers(&self, support: bool) {
-        unsafe {
-            msg_send![self, setSupportIndirectCommandBuffers: support]
-        }
+        unsafe { msg_send![self, setSupportIndirectCommandBuffers: support] }
     }
 }
 
@@ -451,7 +379,7 @@ impl RenderPipelineStateRef {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self, setLabel: nslabel]
         }
     }
 }
@@ -466,12 +394,14 @@ foreign_obj_type! {
 
 impl RenderPipelineColorAttachmentDescriptorArrayRef {
     pub fn object_at(&self, index: usize) -> Option<&RenderPipelineColorAttachmentDescriptorRef> {
-        unsafe {
-            msg_send![self, objectAtIndexedSubscript:index]
-        }
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
-    pub fn set_object_at(&self, index: usize, attachment: Option<&RenderPipelineColorAttachmentDescriptorRef>) {
+    pub fn set_object_at(
+        &self,
+        index: usize,
+        attachment: Option<&RenderPipelineColorAttachmentDescriptorRef>,
+    ) {
         unsafe {
             msg_send![self, setObject:attachment
                    atIndexedSubscript:index]

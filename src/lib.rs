@@ -17,15 +17,15 @@ extern crate objc;
 #[macro_use]
 extern crate foreign_types;
 
-use std::mem;
-use std::marker::PhantomData;
-use std::ops::Deref;
 use std::borrow::{Borrow, ToOwned};
+use std::marker::PhantomData;
+use std::mem;
+use std::ops::Deref;
 
-use objc::runtime::{Object, YES, NO};
 use core_graphics::base::CGFloat;
 use core_graphics::geometry::CGSize;
 use foreign_types::ForeignType;
+use objc::runtime::{Object, NO, YES};
 
 macro_rules! foreign_obj_type {
     {type CType = $raw_ident:ident;
@@ -106,14 +106,17 @@ pub struct NSArray<T> {
     _phantom: PhantomData<T>,
 }
 
-pub struct Array<T>(*mut NSArray<T>) where
+pub struct Array<T>(*mut NSArray<T>)
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static;
-pub struct ArrayRef<T>(foreign_types::Opaque, PhantomData<T>) where
+pub struct ArrayRef<T>(foreign_types::Opaque, PhantomData<T>)
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static;
 
-impl<T> Drop for Array<T> where
+impl<T> Drop for Array<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
 {
@@ -124,37 +127,41 @@ impl<T> Drop for Array<T> where
     }
 }
 
-impl<T> Clone for Array<T> where
+impl<T> Clone for Array<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
 {
     fn clone(&self) -> Self {
-        unsafe {
-            Array(msg_send![self.0, retain])
-        }
+        unsafe { Array(msg_send![self.0, retain]) }
     }
 }
 
-unsafe impl<T> objc::Message for NSArray<T> where
+unsafe impl<T> objc::Message for NSArray<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
-{}
-unsafe impl<T> objc::Message for ArrayRef<T> where
+{
+}
+unsafe impl<T> objc::Message for ArrayRef<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
-{}
+{
+}
 
-impl<T> Array<T> where
+impl<T> Array<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
- {
+{
     pub fn from_slice(s: &[&T::Ref]) -> Self {
         unsafe {
             let class = class!(NSArray);
             msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
         }
     }
-    
+
     pub fn from_owned_slice(s: &[T]) -> Self {
         unsafe {
             let class = class!(NSArray);
@@ -163,7 +170,8 @@ impl<T> Array<T> where
     }
 }
 
-impl<T> foreign_types::ForeignType for Array<T> where
+impl<T> foreign_types::ForeignType for Array<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
 {
@@ -179,14 +187,16 @@ impl<T> foreign_types::ForeignType for Array<T> where
     }
 }
 
-impl<T> foreign_types::ForeignTypeRef for ArrayRef<T> where
+impl<T> foreign_types::ForeignTypeRef for ArrayRef<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
 {
     type CType = NSArray<T>;
 }
 
-impl<T> Deref for Array<T> where
+impl<T> Deref for Array<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
 {
@@ -197,7 +207,8 @@ impl<T> Deref for Array<T> where
     }
 }
 
-impl<T> Borrow<ArrayRef<T>> for Array<T> where
+impl<T> Borrow<ArrayRef<T>> for Array<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
 {
@@ -206,7 +217,8 @@ impl<T> Borrow<ArrayRef<T>> for Array<T> where
     }
 }
 
-impl<T> ToOwned for ArrayRef<T> where
+impl<T> ToOwned for ArrayRef<T>
+where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
 {
@@ -228,9 +240,7 @@ foreign_obj_type! {
 
 impl CoreAnimationDrawableRef {
     pub fn texture(&self) -> &TextureRef {
-        unsafe {
-            msg_send![self, texture]
-        }
+        unsafe { msg_send![self, texture] }
     }
 }
 
@@ -253,33 +263,23 @@ impl CoreAnimationLayer {
 
 impl CoreAnimationLayerRef {
     pub fn set_device(&self, device: &DeviceRef) {
-        unsafe {
-            msg_send![self, setDevice:device]
-        }
+        unsafe { msg_send![self, setDevice: device] }
     }
 
     pub fn pixel_format(&self) -> MTLPixelFormat {
-        unsafe {
-            msg_send![self, pixelFormat]
-        }
+        unsafe { msg_send![self, pixelFormat] }
     }
 
     pub fn set_pixel_format(&self, pixel_format: MTLPixelFormat) {
-        unsafe {
-            msg_send![self, setPixelFormat:pixel_format]
-        }
+        unsafe { msg_send![self, setPixelFormat: pixel_format] }
     }
 
     pub fn drawable_size(&self) -> CGSize {
-        unsafe {
-            msg_send![self, drawableSize]
-        }
+        unsafe { msg_send![self, drawableSize] }
     }
 
     pub fn set_drawable_size(&self, size: CGSize) {
-        unsafe {
-            msg_send![self, setDrawableSize:size]
-        }
+        unsafe { msg_send![self, setDrawableSize: size] }
     }
 
     pub fn presents_with_transaction(&self) -> bool {
@@ -287,27 +287,23 @@ impl CoreAnimationLayerRef {
             match msg_send![self, presentsWithTransaction] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn set_presents_with_transaction(&self, transaction: bool) {
         unsafe {
-            msg_send![self, setPresentsWithTransaction:transaction];
+            msg_send![self, setPresentsWithTransaction: transaction];
         }
     }
 
     pub fn set_edge_antialiasing_mask(&self, mask: u64) {
-        unsafe {
-            msg_send![self, setEdgeAntialiasingMask:mask]
-        }
+        unsafe { msg_send![self, setEdgeAntialiasingMask: mask] }
     }
 
     pub fn set_masks_to_bounds(&self, masks: bool) {
-        unsafe {
-            msg_send![self, setMasksToBounds:masks]
-        }
+        unsafe { msg_send![self, setMasksToBounds: masks] }
     }
 
     pub fn remove_all_animations(&self) {
@@ -317,57 +313,55 @@ impl CoreAnimationLayerRef {
     }
 
     pub fn next_drawable(&self) -> Option<&CoreAnimationDrawableRef> {
-        unsafe {
-            msg_send![self, nextDrawable]
-        }
+        unsafe { msg_send![self, nextDrawable] }
     }
 
     pub fn set_contents_scale(&self, scale: CGFloat) {
         unsafe {
-            msg_send![self, setContentsScale:scale];
+            msg_send![self, setContentsScale: scale];
         }
     }
 }
 
-mod constants;
-mod types;
-mod device;
-mod texture;
-mod sampler;
-mod resource;
-mod drawable;
-mod buffer;
-mod renderpass;
-mod commandqueue;
-mod commandbuffer;
-mod encoder;
-mod pipeline;
-mod library;
 mod argument;
-mod vertexdescriptor;
-mod depthstencil;
-mod heap;
+mod buffer;
 mod capturemanager;
+mod commandbuffer;
+mod commandqueue;
+mod constants;
+mod depthstencil;
+mod device;
+mod drawable;
+mod encoder;
+mod heap;
+mod library;
+mod pipeline;
+mod renderpass;
+mod resource;
+mod sampler;
+mod texture;
+mod types;
+mod vertexdescriptor;
 
-pub use constants::*;
-pub use types::*;
-pub use device::*;
-pub use texture::*;
-pub use sampler::*;
-pub use resource::*;
-pub use drawable::*;
-pub use buffer::*;
-pub use renderpass::*;
-pub use commandqueue::*;
-pub use commandbuffer::*;
-pub use encoder::*;
-pub use pipeline::*;
-pub use library::*;
 pub use argument::*;
-pub use vertexdescriptor::*;
-pub use depthstencil::*;
-pub use heap::*;
+pub use buffer::*;
 pub use capturemanager::*;
+pub use commandbuffer::*;
+pub use commandqueue::*;
+pub use constants::*;
+pub use depthstencil::*;
+pub use device::*;
+pub use drawable::*;
+pub use encoder::*;
+pub use heap::*;
+pub use library::*;
+pub use pipeline::*;
+pub use renderpass::*;
+pub use resource::*;
+pub use sampler::*;
+pub use texture::*;
+pub use types::*;
+pub use vertexdescriptor::*;
 
 #[inline]
 unsafe fn obj_drop<T>(p: *mut T) {

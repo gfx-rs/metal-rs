@@ -7,10 +7,10 @@
 
 use super::*;
 
-use objc::runtime::{Object, YES, NO};
-use objc_foundation::{NSString, INSString, NSArray};
-use cocoa::foundation::{NSUInteger};
+use cocoa::foundation::NSUInteger;
 use foreign_types::ForeignType;
+use objc::runtime::{Object, NO, YES};
+use objc_foundation::{INSString, NSArray, NSString};
 use std::ffi::CStr;
 
 pub enum MTLVertexAttribute {}
@@ -30,15 +30,11 @@ impl VertexAttributeRef {
     }
 
     pub fn attribute_index(&self) -> u64 {
-        unsafe {
-            msg_send![self, attributeIndex]
-        }
+        unsafe { msg_send![self, attributeIndex] }
     }
 
     pub fn attribute_type(&self) -> MTLDataType {
-        unsafe {
-            msg_send![self, attributeType]
-        }
+        unsafe { msg_send![self, attributeType] }
     }
 
     pub fn is_active(&self) -> bool {
@@ -46,11 +42,10 @@ impl VertexAttributeRef {
             match msg_send![self, isActive] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
-
 }
 
 #[repr(u64)]
@@ -78,28 +73,22 @@ impl FunctionRef {
     }
 
     pub fn function_type(&self) -> MTLFunctionType {
-        unsafe {
-            msg_send![self, functionType]
-        }
+        unsafe { msg_send![self, functionType] }
     }
 
     pub fn vertex_attributes(&self) -> &Array<VertexAttribute> {
-        unsafe {
-            msg_send![self, vertexAttributes]
-        }
+        unsafe { msg_send![self, vertexAttributes] }
     }
 
     pub fn new_argument_encoder(&self, buffer_index: NSUInteger) -> ArgumentEncoder {
         unsafe {
-            let ptr = msg_send![self, newArgumentEncoderWithBufferIndex:buffer_index];
+            let ptr = msg_send![self, newArgumentEncoderWithBufferIndex: buffer_index];
             ArgumentEncoder::from_ptr(ptr)
         }
     }
 
     pub fn function_constants_dictionary(&self) -> *mut Object {
-        unsafe {
-            msg_send![self, functionConstantsDictionary]
-        }
+        unsafe { msg_send![self, functionConstantsDictionary] }
     }
 }
 
@@ -132,7 +121,12 @@ impl FunctionConstantValues {
 }
 
 impl FunctionConstantValuesRef {
-    pub unsafe fn set_constant_value_at_index(&self, index: NSUInteger, ty: MTLDataType, value: *const std::os::raw::c_void) {
+    pub unsafe fn set_constant_value_at_index(
+        &self,
+        index: NSUInteger,
+        ty: MTLDataType,
+        value: *const std::os::raw::c_void,
+    ) {
         msg_send![self, setConstantValue:value type:ty atIndex:index]
     }
 }
@@ -160,7 +154,7 @@ impl CompileOptionsRef {
     }
 
     pub unsafe fn set_preprocessor_defines(&self, defines: *mut Object) {
-        msg_send![self, setPreprocessorMacros:defines]
+        msg_send![self, setPreprocessorMacros: defines]
     }
 
     pub fn is_fast_math_enabled(&self) -> bool {
@@ -168,37 +162,31 @@ impl CompileOptionsRef {
             match msg_send![self, fastMathEnabled] {
                 YES => true,
                 NO => false,
-                _ => unreachable!()
+                _ => unreachable!(),
             }
         }
     }
 
     pub fn set_fast_math_enabled(&self, enabled: bool) {
-        unsafe {
-            msg_send![self, setFastMathEnabled:enabled]
-        }
+        unsafe { msg_send![self, setFastMathEnabled: enabled] }
     }
 
     pub fn language_version(&self) -> MTLLanguageVersion {
-        unsafe {
-            msg_send![self, languageVersion]
-        }
+        unsafe { msg_send![self, languageVersion] }
     }
 
     pub fn set_language_version(&self, version: MTLLanguageVersion) {
-        unsafe {
-            msg_send![self, setLanguageVersion:version]
-        }
+        unsafe { msg_send![self, setLanguageVersion: version] }
     }
 }
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 pub enum MTLLibraryError {
-    Unsupported      = 1,
-    Internal         = 2,
-    CompileFailure   = 3,
-    CompileWarning   = 4,
+    Unsupported = 1,
+    Internal = 2,
+    CompileFailure = 3,
+    CompileWarning = 4,
 }
 
 pub enum MTLLibrary {}
@@ -208,7 +196,6 @@ foreign_obj_type! {
     pub struct Library;
     pub struct LibraryRef;
 }
-
 
 impl LibraryRef {
     pub fn label(&self) -> &str {
@@ -221,24 +208,28 @@ impl LibraryRef {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self, setLabel: nslabel]
         }
     }
 
-    pub fn get_function(&self, name: &str, constants: Option<FunctionConstantValues>) -> Result<Function, String> {
+    pub fn get_function(
+        &self,
+        name: &str,
+        constants: Option<FunctionConstantValues>,
+    ) -> Result<Function, String> {
         unsafe {
-            use cocoa::foundation::NSString as cocoa_NSString;
             use cocoa::base::nil as cocoa_nil;
+            use cocoa::foundation::NSString as cocoa_NSString;
 
             let nsname = cocoa_NSString::alloc(cocoa_nil).init_str(name);
 
             let function: *mut MTLFunction = match constants {
-                Some(c) => try_objc!{ err => msg_send![self,
+                Some(c) => try_objc! { err => msg_send![self,
                     newFunctionWithName: nsname.as_ref()
                     constantValues: c.as_ref()
                     error: &mut err
                 ]},
-                None => msg_send![self, newFunctionWithName: nsname.as_ref()]
+                None => msg_send![self, newFunctionWithName: nsname.as_ref()],
             };
 
             if !function.is_null() {
@@ -250,8 +241,6 @@ impl LibraryRef {
     }
 
     pub fn function_names(&self) -> &NSArray<NSString> {
-        unsafe {
-            msg_send![self, functionNames]
-        }
+        unsafe { msg_send![self, functionNames] }
     }
 }

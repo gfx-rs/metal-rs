@@ -13,11 +13,8 @@ foreign_obj_type! {
     pub struct DrawableRef;
 }
 
-
 impl DrawableRef {
     pub fn present(&self) {
-        unsafe {
-            msg_send![self, present]
-        }
+        unsafe { msg_send![self, present] }
     }
 }

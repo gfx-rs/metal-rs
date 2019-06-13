@@ -7,7 +7,7 @@
 
 use super::*;
 
-use objc_foundation::{NSString, INSString};
+use objc_foundation::{INSString, NSString};
 
 pub enum MTLCommandQueue {}
 
@@ -28,25 +28,19 @@ impl CommandQueueRef {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel:nslabel]
+            msg_send![self, setLabel: nslabel]
         }
     }
 
     pub fn new_command_buffer(&self) -> &CommandBufferRef {
-        unsafe {
-            msg_send![self, commandBuffer]
-        }
+        unsafe { msg_send![self, commandBuffer] }
     }
 
     pub fn new_command_buffer_with_unretained_references(&self) -> &CommandBufferRef {
-        unsafe {
-            msg_send![self, commandBufferWithUnretainedReferences]
-        }
+        unsafe { msg_send![self, commandBufferWithUnretainedReferences] }
     }
 
     pub fn device(&self) -> &DeviceRef {
-        unsafe {
-            msg_send![self, device]
-        }
+        unsafe { msg_send![self, device] }
     }
 }
