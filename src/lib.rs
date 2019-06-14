@@ -155,14 +155,14 @@ where
     T: ForeignType + 'static,
     T::Ref: objc::Message + 'static,
 {
-    pub fn from_slice(s: &[&T::Ref]) -> Self {
+    pub fn from_slice<'a>(s: &[&T::Ref]) -> &'a ArrayRef<T> {
         unsafe {
             let class = class!(NSArray);
             msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
         }
     }
 
-    pub fn from_owned_slice(s: &[T]) -> Self {
+    pub fn from_owned_slice<'a>(s: &[T]) -> &'a ArrayRef<T> {
         unsafe {
             let class = class!(NSArray);
             msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
