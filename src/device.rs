@@ -1401,9 +1401,11 @@ impl Device {
             unsafe {
                 let array = MTLCopyAllDevices();
                 let count: NSUInteger = msg_send![array, count];
-                (0..count)
+                let ret = (0..count)
                     .map(|i| msg_send![array, objectAtIndex: i])
-                    .collect()
+                    .collect();
+                msg_send![array, release];
+                ret
             }
         }
     }
