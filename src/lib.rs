@@ -27,6 +27,33 @@ use core_graphics::geometry::CGSize;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
 
+fn nsstring_as_str(nsstr: &objc::runtime::Object) -> &str {
+    let bytes = unsafe {
+        let bytes: *const std::os::raw::c_char = msg_send![nsstr, UTF8String];
+        bytes as *const u8
+    };
+    let len = unsafe { msg_send![nsstr, length] };
+    unsafe {
+        let bytes = std::slice::from_raw_parts(bytes, len);
+        std::str::from_utf8(bytes).unwrap()
+    }
+}
+
+fn nsstring_from_str(string: &str) -> *mut objc::runtime::Object {
+    const UTF8_ENCODING: usize = 4;
+
+    let cls = class!(NSString);
+    let bytes = string.as_ptr() as *const std::os::raw::c_void;
+    unsafe {
+        let obj: *mut objc::runtime::Object = msg_send![cls, alloc];
+        let obj: *mut objc::runtime::Object = msg_send![obj, initWithBytes:bytes
+                                                    length:string.len()
+                                                    encoding:UTF8_ENCODING];
+        msg_send![obj, autorelease];
+        obj
+    }
+}
+
 macro_rules! foreign_obj_type {
     {type CType = $raw_ident:ident;
     pub struct $owned_ident:ident;
@@ -67,10 +94,8 @@ macro_rules! foreign_obj_type {
         impl ::std::fmt::Debug for $ref_ident {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 unsafe {
-                    use ::objc_foundation::INSString;
-                    // TODO: might leak, not 100% sure...
-                    let string: &::objc_foundation::NSString = msg_send![self, debugDescription];
-                    write!(f, "{}", string.as_str())
+                    let string: *mut ::objc::runtime::Object = msg_send![self, debugDescription];
+                    write!(f, "{}", crate::nsstring_as_str(&*string))
                 }
             }
         }

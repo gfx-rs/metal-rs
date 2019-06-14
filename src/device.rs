@@ -10,7 +10,6 @@ use cocoa::base::id;
 use cocoa::foundation::NSUInteger;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, BOOL, NO, YES};
-use objc_foundation::{INSString, NSString};
 
 use super::*;
 
@@ -1414,21 +1413,21 @@ impl Device {
 impl DeviceRef {
     pub fn name(&self) -> &str {
         unsafe {
-            let name: &NSString = msg_send![self, name];
-            name.as_str()
+            let name = msg_send![self, name];
+            crate::nsstring_as_str(name)
         }
     }
 
     #[cfg(feature = "private")]
     pub unsafe fn vendor(&self) -> &str {
-        let name: &NSString = msg_send![self, vendorName];
-        name.as_str()
+        let name = msg_send![self, vendorName];
+        crate::nsstring_as_str(name)
     }
 
     #[cfg(feature = "private")]
     pub unsafe fn family_name(&self) -> &str {
-        let name: &NSString = msg_send![self, familyName];
-        name.as_str()
+        let name = msg_send![self, familyName];
+        crate::nsstring_as_str(name)
     }
 
     pub fn registry_id(&self) -> u64 {

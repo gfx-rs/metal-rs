@@ -7,8 +7,6 @@
 
 use super::*;
 
-use objc_foundation::{INSString, NSString};
-
 pub enum MTLCaptureScope {}
 
 foreign_obj_type! {
@@ -32,8 +30,8 @@ impl CaptureScopeRef {
 
     pub fn label(&self) -> &str {
         unsafe {
-            let label: &NSString = msg_send![self, label];
-            label.as_str()
+            let label = msg_send![self, label];
+            crate::nsstring_as_str(label)
         }
     }
 }
