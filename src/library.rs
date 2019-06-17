@@ -10,7 +10,6 @@ use super::*;
 use cocoa::foundation::NSUInteger;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
-use objc_foundation::{INSString, NSArray, NSString};
 use std::ffi::CStr;
 
 pub enum MTLVertexAttribute {}
@@ -24,8 +23,8 @@ foreign_obj_type! {
 impl VertexAttributeRef {
     pub fn name(&self) -> &str {
         unsafe {
-            let name: &NSString = msg_send![self, name];
-            name.as_str()
+            let name = msg_send![self, name];
+            crate::nsstring_as_str(name)
         }
     }
 
@@ -67,8 +66,8 @@ foreign_obj_type! {
 impl FunctionRef {
     pub fn name(&self) -> &str {
         unsafe {
-            let name: &NSString = msg_send![self, name];
-            name.as_str()
+            let name = msg_send![self, name];
+            crate::nsstring_as_str(name)
         }
     }
 
@@ -200,15 +199,15 @@ foreign_obj_type! {
 impl LibraryRef {
     pub fn label(&self) -> &str {
         unsafe {
-            let label: &NSString = msg_send![self, label];
-            label.as_str()
+            let label = msg_send![self, label];
+            crate::nsstring_as_str(label)
         }
     }
 
     pub fn set_label(&self, label: &str) {
         unsafe {
-            let nslabel = NSString::from_str(label);
-            msg_send![self, setLabel: nslabel]
+            let nslabel = crate::nsstring_from_str(label);
+            msg_send![self, setLabel: nslabel];
         }
     }
 
@@ -218,10 +217,7 @@ impl LibraryRef {
         constants: Option<FunctionConstantValues>,
     ) -> Result<Function, String> {
         unsafe {
-            use cocoa::base::nil as cocoa_nil;
-            use cocoa::foundation::NSString as cocoa_NSString;
-
-            let nsname = cocoa_NSString::alloc(cocoa_nil).init_str(name);
+            let nsname = crate::nsstring_from_str(name);
 
             let function: *mut MTLFunction = match constants {
                 Some(c) => try_objc! { err => msg_send![self,
@@ -240,7 +236,7 @@ impl LibraryRef {
         }
     }
 
-    pub fn function_names(&self) -> &NSArray<NSString> {
+    pub fn function_names(&self) -> *const objc::runtime::Object {
         unsafe { msg_send![self, functionNames] }
     }
 }

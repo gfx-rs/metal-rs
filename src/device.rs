@@ -10,7 +10,6 @@ use cocoa::base::id;
 use cocoa::foundation::NSUInteger;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, BOOL, NO, YES};
-use objc_foundation::{INSString, NSString};
 
 use super::*;
 
@@ -1372,6 +1371,7 @@ extern "C" {
         queue: dispatch_queue_t,
         destructor: dispatch_block_t,
     ) -> dispatch_data_t;
+    fn dispatch_release(object: dispatch_data_t); // actually dispatch_object_t
 }
 
 /*type MTLNewLibraryCompletionHandler = extern fn(library: id, error: id);
@@ -1400,9 +1400,11 @@ impl Device {
             unsafe {
                 let array = MTLCopyAllDevices();
                 let count: NSUInteger = msg_send![array, count];
-                (0..count)
+                let ret = (0..count)
                     .map(|i| msg_send![array, objectAtIndex: i])
-                    .collect()
+                    .collect();
+                msg_send![array, release];
+                ret
             }
         }
     }
@@ -1411,21 +1413,21 @@ impl Device {
 impl DeviceRef {
     pub fn name(&self) -> &str {
         unsafe {
-            let name: &NSString = msg_send![self, name];
-            name.as_str()
+            let name = msg_send![self, name];
+            crate::nsstring_as_str(name)
         }
     }
 
     #[cfg(feature = "private")]
     pub unsafe fn vendor(&self) -> &str {
-        let name: &NSString = msg_send![self, vendorName];
-        name.as_str()
+        let name = msg_send![self, vendorName];
+        crate::nsstring_as_str(name)
     }
 
     #[cfg(feature = "private")]
     pub unsafe fn family_name(&self) -> &str {
-        let name: &NSString = msg_send![self, familyName];
-        name.as_str()
+        let name = msg_send![self, familyName];
+        crate::nsstring_as_str(name)
     }
 
     pub fn registry_id(&self) -> u64 {
@@ -1525,6 +1527,7 @@ impl DeviceRef {
             let library: *mut MTLLibrary = msg_send![self, newLibraryWithSource:source
                                                                         options:options
                                                                           error:&mut err];
+            msg_send![source, release];
             if !err.is_null() {
                 let desc: *mut Object = msg_send![err, localizedDescription];
                 let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
@@ -1573,7 +1576,7 @@ impl DeviceRef {
                  msg_send![self, newLibraryWithData:data
                                               error:&mut err]
             };
-
+            dispatch_release(data);
             Ok(Library::from_ptr(library))
         }
     }

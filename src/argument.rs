@@ -9,7 +9,6 @@ use crate::{Array, MTLTextureType};
 
 use cocoa::foundation::NSUInteger;
 use objc::runtime::{NO, YES};
-use objc_foundation::{INSString, NSString};
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -140,8 +139,8 @@ foreign_obj_type! {
 impl StructMemberRef {
     pub fn name(&self) -> &str {
         unsafe {
-            let name: &NSString = msg_send![self, name];
-            name.as_str()
+            let name = msg_send![self, name];
+            crate::nsstring_as_str(name)
         }
     }
 
@@ -176,7 +175,7 @@ impl StructTypeRef {
     }
 
     pub fn member_from_name(&self, name: &str) -> Option<&StructMemberRef> {
-        let nsname = NSString::from_str(name);
+        let nsname = crate::nsstring_from_str(name);
 
         unsafe { msg_send![self, memberByName: nsname] }
     }
@@ -223,8 +222,8 @@ foreign_obj_type! {
 impl ArgumentRef {
     pub fn name(&self) -> &str {
         unsafe {
-            let name: &NSString = msg_send![self, name];
-            name.as_str()
+            let name = msg_send![self, name];
+            crate::nsstring_as_str(name)
         }
     }
 
