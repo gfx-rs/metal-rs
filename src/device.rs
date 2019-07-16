@@ -1343,6 +1343,7 @@ bitflags! {
 #[link(name = "Metal", kind = "framework")]
 extern "C" {
     fn MTLCreateSystemDefaultDevice() -> *mut MTLDevice;
+    #[cfg(not(target_os = "ios"))]
     fn MTLCopyAllDevices() -> *mut Object; //TODO: Array
 }
 
@@ -1393,19 +1394,21 @@ impl Device {
         unsafe { Device(MTLCreateSystemDefaultDevice()) }
     }
 
+    #[cfg(target_os = "ios")]
     pub fn all() -> Vec<Device> {
-        if cfg!(target_os = "ios") {
-            vec![Device::system_default()]
-        } else {
-            unsafe {
-                let array = MTLCopyAllDevices();
-                let count: NSUInteger = msg_send![array, count];
-                let ret = (0..count)
-                    .map(|i| msg_send![array, objectAtIndex: i])
-                    .collect();
-                msg_send![array, release];
-                ret
-            }
+        vec![Device::system_default()]
+    }
+    
+    #[cfg(not(target_os = "ios"))]
+    pub fn all() -> Vec<Device> {
+        unsafe {
+            let array = MTLCopyAllDevices();
+            let count: NSUInteger = msg_send![array, count];
+            let ret = (0..count)
+                .map(|i| msg_send![array, objectAtIndex: i])
+                .collect();
+            msg_send![array, release];
+            ret
         }
     }
 }
