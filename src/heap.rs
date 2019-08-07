@@ -105,8 +105,6 @@ impl HeapDescriptorRef {
     }
 
     pub fn set_size(&self, size: NSUInteger) {
-        unsafe {
-            msg_send![self, setSize: size];
-        }
+        unsafe { msg_send![self, setSize: size] }
     }
 }
