@@ -21,20 +21,22 @@ use std::borrow::{Borrow, ToOwned};
 use std::marker::PhantomData;
 use std::mem;
 use std::ops::Deref;
+use std::os::raw::c_void;
 
 use core_graphics::base::CGFloat;
 use core_graphics::geometry::CGSize;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
+use cocoa::foundation::NSUInteger;
 
 fn nsstring_as_str(nsstr: &objc::runtime::Object) -> &str {
     let bytes = unsafe {
         let bytes: *const std::os::raw::c_char = msg_send![nsstr, UTF8String];
         bytes as *const u8
     };
-    let len = unsafe { msg_send![nsstr, length] };
+    let len: NSUInteger = unsafe { msg_send![nsstr, length] };
     unsafe {
-        let bytes = std::slice::from_raw_parts(bytes, len);
+        let bytes = std::slice::from_raw_parts(bytes, len as usize);
         std::str::from_utf8(bytes).unwrap()
     }
 }
@@ -43,13 +45,13 @@ fn nsstring_from_str(string: &str) -> *mut objc::runtime::Object {
     const UTF8_ENCODING: usize = 4;
 
     let cls = class!(NSString);
-    let bytes = string.as_ptr() as *const std::os::raw::c_void;
+    let bytes = string.as_ptr() as *const c_void;
     unsafe {
         let obj: *mut objc::runtime::Object = msg_send![cls, alloc];
         let obj: *mut objc::runtime::Object = msg_send![obj, initWithBytes:bytes
                                                     length:string.len()
                                                     encoding:UTF8_ENCODING];
-        msg_send![obj, autorelease];
+        let _: *mut c_void = msg_send![obj, autorelease];
         obj
     }
 }
@@ -119,7 +121,7 @@ macro_rules! try_objc {
                 let desc: *mut Object = msg_send![$err_name, localizedDescription];
                 let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
-                msg_send![$err_name, release];
+                let () = msg_send![$err_name, release];
                 return Err(message);
             }
             value
@@ -147,7 +149,7 @@ where
 {
     fn drop(&mut self) {
         unsafe {
-            msg_send![self.0, release];
+            let () = msg_send![self.0, release];
         }
     }
 }
@@ -318,9 +320,7 @@ impl CoreAnimationLayerRef {
     }
 
     pub fn set_presents_with_transaction(&self, transaction: bool) {
-        unsafe {
-            msg_send![self, setPresentsWithTransaction: transaction];
-        }
+        unsafe { msg_send![self, setPresentsWithTransaction: transaction] }
     }
 
     pub fn set_edge_antialiasing_mask(&self, mask: u64) {
@@ -332,9 +332,7 @@ impl CoreAnimationLayerRef {
     }
 
     pub fn remove_all_animations(&self) {
-        unsafe {
-            msg_send![self, removeAllAnimations];
-        }
+        unsafe { msg_send![self, removeAllAnimations] }
     }
 
     pub fn next_drawable(&self) -> Option<&CoreAnimationDrawableRef> {
@@ -342,9 +340,7 @@ impl CoreAnimationLayerRef {
     }
 
     pub fn set_contents_scale(&self, scale: CGFloat) {
-        unsafe {
-            msg_send![self, setContentsScale: scale];
-        }
+        unsafe { msg_send![self, setContentsScale: scale] }
     }
 }
 
@@ -390,7 +386,7 @@ pub use vertexdescriptor::*;
 
 #[inline]
 unsafe fn obj_drop<T>(p: *mut T) {
-    msg_send![(p as *mut Object), release];
+    msg_send![(p as *mut Object), release]
 }
 
 #[inline]
