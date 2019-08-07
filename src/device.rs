@@ -1407,7 +1407,7 @@ impl Device {
             let ret = (0..count)
                 .map(|i| msg_send![array, objectAtIndex: i])
                 .collect();
-            msg_send![array, release];
+            let () = msg_send![array, release];
             ret
         }
     }
@@ -1530,13 +1530,13 @@ impl DeviceRef {
             let library: *mut MTLLibrary = msg_send![self, newLibraryWithSource:source
                                                                         options:options
                                                                           error:&mut err];
-            msg_send![source, release];
+            let () = msg_send![source, release];
             if !err.is_null() {
                 let desc: *mut Object = msg_send![err, localizedDescription];
                 let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 if library.is_null() {
-                    msg_send![err, release];
+                    let () = msg_send![err, release];
                     return Err(message);
                 } else {
                     warn!("Shader warnings: {}", message);

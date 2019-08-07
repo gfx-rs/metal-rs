@@ -70,9 +70,7 @@ impl RenderPassAttachmentDescriptorRef {
     }
 
     pub fn set_texture(&self, texture: Option<&TextureRef>) {
-        unsafe {
-            msg_send![self, setTexture: texture];
-        }
+        unsafe { msg_send![self, setTexture: texture] }
     }
 
     pub fn level(&self) -> NSUInteger {

@@ -132,13 +132,13 @@ impl CommandEncoderRef {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = crate::nsstring_from_str(label);
-            msg_send![self, setLabel: nslabel];
+            let () = msg_send![self, setLabel: nslabel];
         }
     }
 
     pub fn end_encoding(&self) {
         unsafe {
-            msg_send![self, endEncoding];
+            msg_send![self, endEncoding]
         }
     }
 }

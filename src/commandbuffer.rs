@@ -63,7 +63,7 @@ impl CommandBufferRef {
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = crate::nsstring_from_str(label);
-            msg_send![self, setLabel: nslabel];
+            let () = msg_send![self, setLabel: nslabel];
         }
     }
 
