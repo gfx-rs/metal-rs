@@ -1390,15 +1390,20 @@ foreign_obj_type! {
 }
 
 impl Device {
-    pub fn system_default() -> Self {
-        unsafe { Device(MTLCreateSystemDefaultDevice()) }
+    pub fn system_default() -> Option<Self> {
+        // `MTLCreateSystemDefaultDevice` may return null if Metal is not supported
+        unsafe { MTLCreateSystemDefaultDevice().as_mut().map(|x| Self(x)) }
     }
 
     #[cfg(target_os = "ios")]
     pub fn all() -> Vec<Device> {
-        vec![Device::system_default()]
+        if let Some(system_default) = Device::system_default() {
+            vec![system_default]
+        } else {
+            vec![]
+        }
     }
-    
+
     #[cfg(not(target_os = "ios"))]
     pub fn all() -> Vec<Device> {
         unsafe {
