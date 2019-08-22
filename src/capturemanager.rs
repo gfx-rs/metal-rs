@@ -54,14 +54,14 @@ impl CaptureManager {
 }
 
 impl CaptureManagerRef {
-    pub fn new_capture_scope_with_device(&self, device: &DeviceRef) -> &CaptureScopeRef {
+    pub fn new_capture_scope_with_device(&self, device: &DeviceRef) -> CaptureScope {
         unsafe { msg_send![self, newCaptureScopeWithDevice: device] }
     }
 
     pub fn new_capture_scope_with_command_queue(
         &self,
         command_queue: &CommandQueueRef,
-    ) -> &CaptureScopeRef {
+    ) -> CaptureScope {
         unsafe { msg_send![self, newCaptureScopeWithCommandQueue: command_queue] }
     }
 
