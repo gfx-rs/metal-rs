@@ -1411,6 +1411,10 @@ impl Device {
             let count: NSUInteger = msg_send![array, count];
             let ret = (0..count)
                 .map(|i| msg_send![array, objectAtIndex: i])
+                // The elements of this array are references---we convert them to owned references
+                // (which just means that we increment the reference count here, and it is
+                // decremented in the `Drop` impl for `Device`)
+                .map(|device: *mut Object| msg_send![device, retain])
                 .collect();
             let () = msg_send![array, release];
             ret
