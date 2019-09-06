@@ -228,8 +228,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    //TODO: change argument order
-    pub fn set_visibility_result_mode(&self, offset: NSUInteger, mode: MTLVisibilityResultMode) {
+    pub fn set_visibility_result_mode(&self, mode: MTLVisibilityResultMode, offset: NSUInteger) {
         unsafe {
             msg_send![self, setVisibilityResultMode:mode
                                              offset:offset]

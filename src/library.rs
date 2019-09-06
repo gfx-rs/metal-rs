@@ -100,6 +100,7 @@ pub enum MTLLanguageVersion {
     V1_2 = 0x10002,
     V2_0 = 0x20000,
     V2_1 = 0x20001,
+    V2_2 = 0x20002,
 }
 
 pub enum MTLFunctionConstantValues {}

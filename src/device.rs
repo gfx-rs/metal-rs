@@ -1395,17 +1395,12 @@ impl Device {
         unsafe { MTLCreateSystemDefaultDevice().as_mut().map(|x| Self(x)) }
     }
 
-    #[cfg(target_os = "ios")]
-    pub fn all() -> Vec<Device> {
-        if let Some(system_default) = Device::system_default() {
-            vec![system_default]
-        } else {
-            vec![]
+    pub fn all() -> Vec<Self> {
+        #[cfg(target_os = "ios")]
+        {
+            Self::system_default().into_iter().collect()
         }
-    }
-
-    #[cfg(not(target_os = "ios"))]
-    pub fn all() -> Vec<Device> {
+        #[cfg(not(target_os = "ios"))]
         unsafe {
             let array = MTLCopyAllDevices();
             let count: NSUInteger = msg_send![array, count];
@@ -1641,7 +1636,6 @@ impl DeviceRef {
         }
     }
 
-    #[cfg(feature = "private")]
     pub unsafe fn new_compute_pipeline_state(
         &self,
         descriptor: &ComputePipelineDescriptorRef,

@@ -48,9 +48,12 @@ fn nsstring_from_str(string: &str) -> *mut objc::runtime::Object {
     let bytes = string.as_ptr() as *const c_void;
     unsafe {
         let obj: *mut objc::runtime::Object = msg_send![cls, alloc];
-        let obj: *mut objc::runtime::Object = msg_send![obj, initWithBytes:bytes
-                                                    length:string.len()
-                                                    encoding:UTF8_ENCODING];
+        let obj: *mut objc::runtime::Object = msg_send![
+            obj,
+            initWithBytes:bytes
+            length:string.len()
+            encoding:UTF8_ENCODING
+        ];
         let _: *mut c_void = msg_send![obj, autorelease];
         obj
     }
