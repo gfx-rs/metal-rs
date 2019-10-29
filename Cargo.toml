@@ -1,6 +1,6 @@
 [package]
 name = "metal"
-version = "0.17.0"
+version = "0.17.1"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -28,7 +28,6 @@ foreign-types = "0.3"
 
 [dependencies.objc]
 version = "0.2.4"
-features = ["objc_exception"]
 
 [dev-dependencies]
 winit = "0.19"
