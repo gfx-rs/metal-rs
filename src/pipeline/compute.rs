@@ -222,42 +222,6 @@ impl ComputePipelineStateRef {
     }
 }
 
-pub enum MTLPipelineBufferDescriptorArray {}
-
-foreign_obj_type! {
-    type CType = MTLPipelineBufferDescriptorArray;
-    pub struct PipelineBufferDescriptorArray;
-    pub struct PipelineBufferDescriptorArrayRef;
-}
-
-impl PipelineBufferDescriptorArrayRef {
-    pub fn object_at(&self, index: usize) -> Option<&PipelineBufferDescriptorRef> {
-        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
-    }
-
-    pub fn set_object_at(&self, index: usize, buffer_desc: Option<&PipelineBufferDescriptorRef>) {
-        unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
-    }
-}
-
-pub enum MTLPipelineBufferDescriptor {}
-
-foreign_obj_type! {
-    type CType = MTLPipelineBufferDescriptor;
-    pub struct PipelineBufferDescriptor;
-    pub struct PipelineBufferDescriptorRef;
-}
-
-impl PipelineBufferDescriptorRef {
-    pub fn mutability(&self) -> MTLMutability {
-        unsafe { msg_send![self, mutability] }
-    }
-
-    pub fn set_mutability(&self, new_mutability: MTLMutability) {
-        unsafe { msg_send![self, setMutability: new_mutability] }
-    }
-}
-
 pub enum MTLStageInputOutputDescriptor {}
 
 foreign_obj_type! {
