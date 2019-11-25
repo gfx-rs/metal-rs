@@ -13,22 +13,6 @@ use objc::runtime::{NO, YES};
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-pub enum MTLMutability {
-    Default = 0,
-    Mutable = 1,
-    Immutable = 2,
-}
-
-impl Default for MTLMutability {
-    #[inline]
-    fn default() -> Self {
-        MTLMutability::Default
-    }
-}
-
-#[repr(u64)]
-#[allow(non_camel_case_types)]
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLIndexType {
     UInt16 = 0,
     UInt32 = 1,

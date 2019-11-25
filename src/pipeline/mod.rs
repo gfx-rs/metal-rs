@@ -13,6 +13,22 @@ mod render;
 pub use self::compute::*;
 pub use self::render::*;
 
+#[repr(u64)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum MTLMutability {
+    Default = 0,
+    Mutable = 1,
+    Immutable = 2,
+}
+
+impl Default for MTLMutability {
+    #[inline]
+    fn default() -> Self {
+        MTLMutability::Default
+    }
+}
+
 pub enum MTLPipelineBufferDescriptorArray {}
 
 foreign_obj_type! {
