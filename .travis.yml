@@ -1,6 +1,4 @@
-sudo: false
 language: rust
-cache: cargo
 rust:
   - nightly
   - stable
@@ -10,3 +8,7 @@ os:
 branches:
   except:
     - staging.tmp
+
+script:
+  - cargo check --all-features
+  - cargo test
