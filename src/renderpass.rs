@@ -307,4 +307,28 @@ impl RenderPassDescriptorRef {
     pub fn set_render_target_array_length(&self, length: NSUInteger) {
         unsafe { msg_send![self, setRenderTargetArrayLength: length] }
     }
+
+    pub fn render_target_width(&self) -> NSUInteger {
+        unsafe { msg_send![self, renderTargetWidth] }
+    }
+
+    pub fn set_render_target_width(&self, size: NSUInteger) {
+        unsafe { msg_send![self, setRenderTargetWidth: size] }
+    }
+
+    pub fn render_target_height(&self) -> NSUInteger {
+        unsafe { msg_send![self, renderTargetHeight] }
+    }
+
+    pub fn set_render_target_height(&self, size: NSUInteger) {
+        unsafe { msg_send![self, setRenderTargetHeight: size] }
+    }
+
+    pub fn default_raster_sample_count(&self) -> NSUInteger {
+        unsafe { msg_send![self, defaultRasterSampleCount] }
+    }
+
+    pub fn set_default_raster_sample_count(&self, count: NSUInteger) {
+        unsafe { msg_send![self, setDefaultRasterSampleCount: count] }
+    }
 }
