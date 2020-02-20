@@ -42,7 +42,7 @@ pub enum MTLDispatchType {
     Concurrent = 1,
 }
 
-type _MTLCommandBufferHandler = Block<(MTLCommandBuffer), ()>;
+type _MTLCommandBufferHandler = Block<MTLCommandBuffer, ()>;
 
 pub enum MTLCommandBuffer {}
 
