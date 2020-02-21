@@ -299,7 +299,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn set_vertex_texture(&self, index: u64, texture: Option<&TextureRef>) {
+    pub fn set_vertex_texture(&self, index: NSUInteger, texture: Option<&TextureRef>) {
         unsafe {
             msg_send![self,
                 setVertexTexture:texture
@@ -320,7 +320,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn set_vertex_sampler_state(&self, index: u64, sampler: Option<&SamplerStateRef>) {
+    pub fn set_vertex_sampler_state(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>) {
         unsafe {
             msg_send![self,
                 setVertexSamplerState:sampler

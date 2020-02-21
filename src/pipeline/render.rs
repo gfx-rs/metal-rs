@@ -404,13 +404,13 @@ foreign_obj_type! {
 }
 
 impl RenderPipelineColorAttachmentDescriptorArrayRef {
-    pub fn object_at(&self, index: usize) -> Option<&RenderPipelineColorAttachmentDescriptorRef> {
+    pub fn object_at(&self, index: NSUInteger) -> Option<&RenderPipelineColorAttachmentDescriptorRef> {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
     pub fn set_object_at(
         &self,
-        index: usize,
+        index: NSUInteger,
         attachment: Option<&RenderPipelineColorAttachmentDescriptorRef>,
     ) {
         unsafe {
