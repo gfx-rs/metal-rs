@@ -38,11 +38,11 @@ foreign_obj_type! {
 }
 
 impl PipelineBufferDescriptorArrayRef {
-    pub fn object_at(&self, index: usize) -> Option<&PipelineBufferDescriptorRef> {
+    pub fn object_at(&self, index: NSUInteger) -> Option<&PipelineBufferDescriptorRef> {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
-    pub fn set_object_at(&self, index: usize, buffer_desc: Option<&PipelineBufferDescriptorRef>) {
+    pub fn set_object_at(&self, index: NSUInteger, buffer_desc: Option<&PipelineBufferDescriptorRef>) {
         unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
     }
 }
