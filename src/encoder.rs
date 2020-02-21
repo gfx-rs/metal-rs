@@ -267,6 +267,19 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    pub fn set_vertex_buffer_offset(
+        &self,
+        index: NSUInteger,
+        offset: NSUInteger,
+    ) {
+        unsafe {
+            msg_send![self,
+                setVertexBufferOffset:offset
+                atIndex:index
+            ]
+        }
+    }
+
     pub fn set_vertex_buffers(
         &self,
         start_index: NSUInteger,
