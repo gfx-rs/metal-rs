@@ -403,19 +403,34 @@ foreign_obj_type! {
     pub struct RenderPipelineColorAttachmentDescriptorArrayRef;
 }
 
-impl RenderPipelineColorAttachmentDescriptorArrayRef {
-    pub fn object_at(&self, index: NSUInteger) -> Option<&RenderPipelineColorAttachmentDescriptorRef> {
+// impl RenderPipelineColorAttachmentDescriptorArrayRef {
+//     pub fn object_at(&self, index: NSUInteger) -> Option<&RenderPipelineColorAttachmentDescriptorRef> {
+//         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
+//     }
+
+//     pub fn set_object_at(
+//         &self,
+//         index: NSUInteger,
+//         attachment: Option<&RenderPipelineColorAttachmentDescriptorRef>,
+//     ) {
+//         unsafe {
+//             msg_send![self, setObject:attachment
+//                    atIndexedSubscript:index]
+//         }
+//     }
+// }
+
+
+impl std::ops::Index<NSUInteger> for RenderPipelineColorAttachmentDescriptorArrayRef {
+    type Output = RenderPipelineColorAttachmentDescriptor;
+
+    fn index(&self, index: NSUInteger) -> &Self::Output {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
+}
 
-    pub fn set_object_at(
-        &self,
-        index: NSUInteger,
-        attachment: Option<&RenderPipelineColorAttachmentDescriptorRef>,
-    ) {
-        unsafe {
-            msg_send![self, setObject:attachment
-                   atIndexedSubscript:index]
-        }
+impl std::ops::IndexMut<NSUInteger> for RenderPipelineColorAttachmentDescriptorArrayRef {
+    fn index_mut(&mut self, index: NSUInteger) -> &mut Self::Output {
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 }

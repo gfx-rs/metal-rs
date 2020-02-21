@@ -231,20 +231,39 @@ foreign_obj_type! {
     pub struct RenderPassColorAttachmentDescriptorArrayRef;
 }
 
-impl RenderPassColorAttachmentDescriptorArrayRef {
-    pub fn object_at(&self, index: usize) -> Option<&RenderPassColorAttachmentDescriptorRef> {
+
+// impl RenderPassColorAttachmentDescriptorArrayRef {
+//     // #[deprecated(
+//     //     since = "0.17.3",
+//     //     note = "Use Index trait methods instead"
+//     // )]
+//     pub fn object_at(&self, index: NSUInteger) -> Option<&RenderPassColorAttachmentDescriptorRef> {
+//         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
+//     }
+
+//     pub fn set_object_at(
+//         &self,
+//         index: usize,
+//         attachment: Option<&RenderPassColorAttachmentDescriptorRef>,
+//     ) {
+//         unsafe {
+//             msg_send![self, setObject:attachment
+//                      atIndexedSubscript:index]
+//         }
+//     }
+// }
+
+impl std::ops::Index<NSUInteger> for RenderPassColorAttachmentDescriptorArrayRef {
+    type Output = RenderPassColorAttachmentDescriptorRef;
+
+    fn index(&self, index: NSUInteger) -> &Self::Output {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
+}
 
-    pub fn set_object_at(
-        &self,
-        index: usize,
-        attachment: Option<&RenderPassColorAttachmentDescriptorRef>,
-    ) {
-        unsafe {
-            msg_send![self, setObject:attachment
-                     atIndexedSubscript:index]
-        }
+impl std::ops::IndexMut<NSUInteger> for RenderPassColorAttachmentDescriptorArrayRef {
+    fn index_mut(&mut self, index: NSUInteger) -> &mut Self::Output {
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 }
 

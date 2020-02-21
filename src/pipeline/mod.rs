@@ -37,13 +37,27 @@ foreign_obj_type! {
     pub struct PipelineBufferDescriptorArrayRef;
 }
 
-impl PipelineBufferDescriptorArrayRef {
-    pub fn object_at(&self, index: NSUInteger) -> Option<&PipelineBufferDescriptorRef> {
+// impl PipelineBufferDescriptorArrayRef {
+//     pub fn object_at(&self, index: NSUInteger) -> Option<&PipelineBufferDescriptorRef> {
+//         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
+//     }
+
+//     pub fn set_object_at(&self, index: NSUInteger, buffer_desc: Option<&PipelineBufferDescriptorRef>) {
+//         unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
+//     }
+// }
+
+impl std::ops::Index<NSUInteger> for PipelineBufferDescriptorArrayRef {
+    type Output = PipelineBufferDescriptor;
+
+    fn index(&self, index: NSUInteger) -> &Self::Output {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
+}
 
-    pub fn set_object_at(&self, index: NSUInteger, buffer_desc: Option<&PipelineBufferDescriptorRef>) {
-        unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
+impl std::ops::IndexMut<NSUInteger> for PipelineBufferDescriptorArrayRef {
+    fn index_mut(&mut self, index: NSUInteger) -> &mut Self::Output {
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 }
 
