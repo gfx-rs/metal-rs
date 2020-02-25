@@ -393,6 +393,19 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    pub fn set_fragment_buffer_offset(
+        &self,
+        index: NSUInteger,
+        offset: NSUInteger,
+    ) {
+        unsafe {
+            msg_send![self,
+                setFragmentBufferOffset:offset
+                atIndex:index
+            ]
+        }
+    }
+
     pub fn set_fragment_buffers(
         &self,
         start_index: NSUInteger,
