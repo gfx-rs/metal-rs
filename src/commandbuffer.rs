@@ -42,7 +42,7 @@ pub enum MTLDispatchType {
     Concurrent = 1,
 }
 
-type _MTLCommandBufferHandler = Block<MTLCommandBuffer, ()>;
+pub type MTLCommandBufferHandler = Block<(MTLCommandBuffer,), ()>;
 
 pub enum MTLCommandBuffer {}
 
@@ -89,6 +89,10 @@ impl CommandBufferRef {
 
     pub fn wait_until_scheduled(&self) {
         unsafe { msg_send![self, waitUntilScheduled] }
+    }
+
+    pub fn add_completed_handler(&self, block: &MTLCommandBufferHandler) {
+        unsafe { msg_send![self, addCompletedHandler: block] }
     }
 
     pub fn new_blit_command_encoder(&self) -> &BlitCommandEncoderRef {
