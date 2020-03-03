@@ -34,9 +34,9 @@ fn prepare_pipeline_state<'a>(device: &DeviceRef, library: &LibraryRef) -> Rende
     pipeline_state_descriptor.set_vertex_function(Some(&vert));
     pipeline_state_descriptor.set_fragment_function(Some(&frag));
     pipeline_state_descriptor
-        .color_attachments()
-        .object_at(0)
-        .unwrap()
+        .color_attachments()[0]
+        // .object_at(0)
+        // .unwrap()
         .set_pixel_format(MTLPixelFormat::BGRA8Unorm);
 
     device
@@ -44,10 +44,16 @@ fn prepare_pipeline_state<'a>(device: &DeviceRef, library: &LibraryRef) -> Rende
         .unwrap()
 }
 
+fn ppd(desc: &mut RenderPassDescriptorRef) {
+    // let color_attachment = &desc.color_attachments()[0];
+    desc.color_attachments()[0] = desc.color_attachments()[0].to_owned();
+}
+
 fn prepare_render_pass_descriptor(descriptor: &RenderPassDescriptorRef, texture: &TextureRef) {
     //descriptor.color_attachments().set_object_at(0, MTLRenderPassColorAttachmentDescriptor::alloc());
     //let color_attachment: MTLRenderPassColorAttachmentDescriptor = unsafe { msg_send![descriptor.color_attachments().0, _descriptorAtIndex:0] };//descriptor.color_attachments().object_at(0);
-    let color_attachment = descriptor.color_attachments().object_at(0).unwrap();
+    let color_attachment = &descriptor.color_attachments()[0];
+
 
     color_attachment.set_texture(Some(texture));
     color_attachment.set_load_action(MTLLoadAction::Clear);
@@ -133,9 +139,9 @@ fn main() {
                 encoder.end_encoding();
 
                 render_pass_descriptor
-                    .color_attachments()
-                    .object_at(0)
-                    .unwrap()
+                    .color_attachments()[0]
+                    // .object_at(0)
+                    // .unwrap()
                     .set_load_action(MTLLoadAction::DontCare);
 
                 let encoder = command_buffer.new_render_command_encoder(&render_pass_descriptor);

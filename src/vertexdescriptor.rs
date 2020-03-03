@@ -125,16 +125,17 @@ foreign_obj_type! {
     pub struct VertexBufferLayoutDescriptorArrayRef;
 }
 
-impl VertexBufferLayoutDescriptorArrayRef {
-    pub fn object_at(&self, index: NSUInteger) -> Option<&VertexBufferLayoutDescriptorRef> {
+impl std::ops::Index<NSUInteger> for VertexBufferLayoutDescriptorArrayRef {
+    type Output = VertexBufferLayoutDescriptor;
+
+    fn index(&self, index: NSUInteger) -> &Self::Output {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
+}
 
-    pub fn set_object_at(&self, index: NSUInteger, layout: Option<&VertexBufferLayoutDescriptorRef>) {
-        unsafe {
-            msg_send![self, setObject:layout
-                   atIndexedSubscript:index]
-        }
+impl std::ops::IndexMut<NSUInteger> for VertexBufferLayoutDescriptorArrayRef {
+    fn index_mut(&mut self, index: NSUInteger) -> &mut Self::Output {
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 }
 

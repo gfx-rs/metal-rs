@@ -261,13 +261,28 @@ foreign_obj_type! {
     pub struct AttributeDescriptorArrayRef;
 }
 
-impl AttributeDescriptorArrayRef {
-    pub fn object_at(&self, index: usize) -> Option<&AttributeDescriptorRef> {
+// impl AttributeDescriptorArrayRef {
+//     pub fn object_at(&self, index: NSUInteger) -> Option<&AttributeDescriptorRef> {
+//         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
+//     }
+
+//     pub fn set_object_at(&self, index: NSUInteger, buffer_desc: Option<&AttributeDescriptorRef>) {
+//         unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
+//     }
+// }
+
+
+impl std::ops::Index<NSUInteger> for AttributeDescriptorArrayRef {
+    type Output = AttributeDescriptor;
+
+    fn index(&self, index: NSUInteger) -> &Self::Output {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
+}
 
-    pub fn set_object_at(&self, index: usize, buffer_desc: Option<&AttributeDescriptorRef>) {
-        unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
+impl std::ops::IndexMut<NSUInteger> for AttributeDescriptorArrayRef {
+    fn index_mut(&mut self, index: NSUInteger) -> &mut Self::Output {
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 }
 
@@ -313,13 +328,17 @@ foreign_obj_type! {
     pub struct BufferLayoutDescriptorArrayRef;
 }
 
-impl BufferLayoutDescriptorArrayRef {
-    pub fn object_at(&self, index: usize) -> Option<&BufferLayoutDescriptorRef> {
+impl std::ops::Index<NSUInteger> for BufferLayoutDescriptorArrayRef {
+    type Output = BufferLayoutDescriptor;
+
+    fn index(&self, index: NSUInteger) -> &Self::Output {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
+}
 
-    pub fn set_object_at(&self, index: usize, buffer_desc: Option<&BufferLayoutDescriptorRef>) {
-        unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
+impl std::ops::IndexMut<NSUInteger> for BufferLayoutDescriptorArrayRef {
+    fn index_mut(&mut self, index: NSUInteger) -> &mut Self::Output {
+        unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 }
 
