@@ -21,13 +21,11 @@ use std::borrow::{Borrow, ToOwned};
 use std::marker::PhantomData;
 use std::mem;
 use std::ops::Deref;
-use std::os::raw::c_void;
 
 use core_graphics::base::CGFloat;
 use core_graphics::geometry::CGSize;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
-use cocoa::foundation::NSUInteger;
 
 macro_rules! foreign_obj_type {
     {type CType = $raw_ident:ident;
