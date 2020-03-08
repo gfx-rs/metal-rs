@@ -292,6 +292,10 @@ impl CoreAnimationLayer {
 }
 
 impl CoreAnimationLayerRef {
+    pub fn device(&self) -> &DeviceRef {
+        unsafe { msg_send![self, device] }
+    }
+
     pub fn set_device(&self, device: &DeviceRef) {
         unsafe { msg_send![self, setDevice: device] }
     }
