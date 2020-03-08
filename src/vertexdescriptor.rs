@@ -66,6 +66,7 @@ pub enum MTLVertexFormat {
 }
 
 #[repr(u64)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVertexStepFunction {
     Constant = 0,
     PerVertex = 1,

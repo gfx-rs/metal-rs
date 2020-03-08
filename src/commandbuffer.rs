@@ -11,6 +11,7 @@ use block::Block;
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCommandBufferStatus {
     NotEnqueued = 0,
     Enqueued = 1,
@@ -22,6 +23,7 @@ pub enum MTLCommandBufferStatus {
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCommandBufferError {
     None = 0,
     Internal = 1,
@@ -37,12 +39,13 @@ pub enum MTLCommandBufferError {
 
 #[repr(u32)]
 #[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDispatchType {
     Serial = 0,
     Concurrent = 1,
 }
 
-type MTLCommandBufferHandler = Block<(MTLCommandBuffer,), ()>;
+type CommandBufferHandler<'a> = Block<(&'a CommandBufferRef,), ()>;
 
 pub enum MTLCommandBuffer {}
 
@@ -91,7 +94,7 @@ impl CommandBufferRef {
         unsafe { msg_send![self, waitUntilScheduled] }
     }
 
-    pub fn add_completed_handler(&self, block: &MTLCommandBufferHandler) {
+    pub fn add_completed_handler(&self, block: &CommandBufferHandler) {
         unsafe { msg_send![self, addCompletedHandler: block] }
     }
 
