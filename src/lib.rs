@@ -362,6 +362,7 @@ mod device;
 mod drawable;
 mod encoder;
 mod heap;
+mod indirect_encoder;
 mod library;
 mod pipeline;
 mod renderpass;
@@ -371,25 +372,28 @@ mod texture;
 mod types;
 mod vertexdescriptor;
 
-pub use argument::*;
-pub use buffer::*;
-pub use capturemanager::*;
-pub use commandbuffer::*;
-pub use commandqueue::*;
-pub use constants::*;
-pub use depthstencil::*;
-pub use device::*;
-pub use drawable::*;
-pub use encoder::*;
-pub use heap::*;
-pub use library::*;
-pub use pipeline::*;
-pub use renderpass::*;
-pub use resource::*;
-pub use sampler::*;
-pub use texture::*;
-pub use types::*;
-pub use vertexdescriptor::*;
+pub use {
+    argument::*,
+    buffer::*,
+    capturemanager::*,
+    commandbuffer::*,
+    commandqueue::*,
+    constants::*,
+    depthstencil::*,
+    device::*,
+    drawable::*,
+    encoder::*,
+    heap::*,
+    indirect_encoder::*,
+    library::*,
+    pipeline::*,
+    renderpass::*,
+    resource::*,
+    sampler::*,
+    texture::*,
+    types::*,
+    vertexdescriptor::*,
+};
 
 #[inline]
 unsafe fn obj_drop<T>(p: *mut T) {
