@@ -1018,9 +1018,9 @@ impl ArgumentEncoderRef {
 
     pub fn set_argument_buffer_to_element(
         &self,
+        array_element: NSUInteger,
         buffer: &BufferRef,
         offset: NSUInteger,
-        array_element: NSUInteger,
     ) {
         unsafe {
             msg_send![self,
@@ -1031,7 +1031,12 @@ impl ArgumentEncoderRef {
         }
     }
 
-    pub fn set_buffer(&self, buffer: &BufferRef, offset: NSUInteger, at_index: NSUInteger) {
+    pub fn set_buffer(
+        &self,
+        at_index: NSUInteger,
+        buffer: &BufferRef,
+        offset: NSUInteger,
+    ) {
         unsafe {
             msg_send![self,
                 setBuffer: buffer
@@ -1043,9 +1048,9 @@ impl ArgumentEncoderRef {
 
     pub fn set_buffers(
         &self,
+        start_index: NSUInteger,
         data: &[&BufferRef],
         offsets: &[NSUInteger],
-        start_index: NSUInteger,
     ) {
         assert_eq!(offsets.len(), data.len());
         unsafe {
@@ -1060,7 +1065,7 @@ impl ArgumentEncoderRef {
         }
     }
 
-    pub fn set_texture(&self, texture: &TextureRef, at_index: NSUInteger) {
+    pub fn set_texture(&self, at_index: NSUInteger, texture: &TextureRef) {
         unsafe {
             msg_send![self,
                 setTexture: texture
@@ -1069,7 +1074,7 @@ impl ArgumentEncoderRef {
         }
     }
 
-    pub fn set_textures(&self, data: &[&TextureRef], start_index: NSUInteger) {
+    pub fn set_textures(&self, start_index: NSUInteger, data: &[&TextureRef]) {
         unsafe {
             msg_send![self,
                 setTextures: data.as_ptr()
@@ -1081,7 +1086,7 @@ impl ArgumentEncoderRef {
         }
     }
 
-    pub fn set_sampler_state(&self, sampler_state: &SamplerStateRef, at_index: NSUInteger) {
+    pub fn set_sampler_state(&self, at_index: NSUInteger, sampler_state: &SamplerStateRef) {
         unsafe {
             msg_send![self,
                 setSamplerState: sampler_state
@@ -1090,7 +1095,7 @@ impl ArgumentEncoderRef {
         }
     }
 
-    pub fn set_sampler_states(&self, data: &[&SamplerStateRef], start_index: NSUInteger) {
+    pub fn set_sampler_states(&self, start_index: NSUInteger, data: &[&SamplerStateRef]) {
         unsafe {
             msg_send![self,
                 setSamplerStates: data.as_ptr()
