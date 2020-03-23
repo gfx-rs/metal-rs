@@ -19,8 +19,8 @@ default = []
 private = []
 
 [dependencies]
-cocoa = "0.19"
-core-graphics = "0.17.3"
+cocoa = "0.20"
+core-graphics = "0.19"
 bitflags = "1"
 log = "0.4"
 block = "0.1.5"
@@ -31,7 +31,7 @@ version = "0.2.4"
 features = ["objc_exception"]
 
 [dev-dependencies]
-winit = "0.21"
+winit = "0.22"
 sema = "0.1.4"
 
 

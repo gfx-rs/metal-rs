@@ -232,13 +232,13 @@ foreign_obj_type! {
 }
 
 impl RenderPassColorAttachmentDescriptorArrayRef {
-    pub fn object_at(&self, index: usize) -> Option<&RenderPassColorAttachmentDescriptorRef> {
+    pub fn object_at(&self, index: NSUInteger) -> Option<&RenderPassColorAttachmentDescriptorRef> {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
     pub fn set_object_at(
         &self,
-        index: usize,
+        index: NSUInteger,
         attachment: Option<&RenderPassColorAttachmentDescriptorRef>,
     ) {
         unsafe {
