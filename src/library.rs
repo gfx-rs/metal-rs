@@ -20,6 +20,9 @@ foreign_obj_type! {
     pub struct VertexAttributeRef;
 }
 
+unsafe impl Send for VertexAttribute { }
+unsafe impl Sync for VertexAttribute { }
+
 impl VertexAttributeRef {
     pub fn name(&self) -> &str {
         unsafe {
@@ -62,6 +65,9 @@ foreign_obj_type! {
     pub struct Function;
     pub struct FunctionRef;
 }
+
+unsafe impl Send for Function { }
+unsafe impl Sync for Function { }
 
 impl FunctionRef {
     pub fn name(&self) -> &str {
@@ -111,6 +117,9 @@ foreign_obj_type! {
     pub struct FunctionConstantValuesRef;
 }
 
+unsafe impl Send for FunctionConstantValues { }
+unsafe impl Sync for FunctionConstantValues { }
+
 impl FunctionConstantValues {
     pub fn new() -> Self {
         unsafe {
@@ -138,6 +147,9 @@ foreign_obj_type! {
     pub struct CompileOptions;
     pub struct CompileOptionsRef;
 }
+
+unsafe impl Send for CompileOptions { }
+unsafe impl Sync for CompileOptions { }
 
 impl CompileOptions {
     pub fn new() -> Self {
@@ -197,6 +209,9 @@ foreign_obj_type! {
     pub struct Library;
     pub struct LibraryRef;
 }
+
+unsafe impl Send for Library { }
+unsafe impl Sync for Library { }
 
 impl LibraryRef {
     pub fn label(&self) -> &str {

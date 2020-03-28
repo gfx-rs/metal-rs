@@ -17,6 +17,9 @@ foreign_obj_type! {
     pub struct HeapRef;
 }
 
+unsafe impl Send for Heap { }
+unsafe impl Sync for Heap { }
+
 impl HeapRef {
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
         unsafe { msg_send![self, cpuCacheMode] }
@@ -73,6 +76,9 @@ foreign_obj_type! {
     pub struct HeapDescriptor;
     pub struct HeapDescriptorRef;
 }
+
+unsafe impl Send for HeapDescriptor { }
+unsafe impl Sync for HeapDescriptor { }
 
 impl HeapDescriptor {
     pub fn new() -> Self {

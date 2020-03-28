@@ -51,6 +51,9 @@ foreign_obj_type! {
     pub struct SamplerDescriptorRef;
 }
 
+unsafe impl Send for SamplerDescriptor { }
+unsafe impl Sync for SamplerDescriptor { }
+
 impl SamplerDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -130,3 +133,6 @@ foreign_obj_type! {
     pub struct SamplerState;
     pub struct SamplerStateRef;
 }
+
+unsafe impl Send for SamplerState { }
+unsafe impl Sync for SamplerState { }

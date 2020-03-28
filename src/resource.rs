@@ -76,6 +76,9 @@ foreign_obj_type! {
     pub struct ResourceRef;
 }
 
+unsafe impl Send for Resource { }
+unsafe impl Sync for Resource { }
+
 impl ResourceRef {
     pub fn label(&self) -> &str {
         unsafe {

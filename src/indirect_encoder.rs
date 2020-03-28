@@ -25,6 +25,9 @@ foreign_obj_type! {
     pub struct IndirectCommandBufferDescriptorRef;
 }
 
+unsafe impl Send for IndirectCommandBufferDescriptor { }
+unsafe impl Sync for IndirectCommandBufferDescriptor { }
+
 impl IndirectCommandBufferDescriptorRef {
     pub fn command_types(&self) -> MTLIndirectCommandType {
         unsafe {
@@ -132,6 +135,9 @@ foreign_obj_type! {
     type ParentType = ResourceRef;
 }
 
+unsafe impl Send for IndirectCommandBuffer { }
+unsafe impl Sync for IndirectCommandBuffer { }
+
 impl IndirectCommandBufferRef {
     pub fn size(&self) -> NSUInteger {
         unsafe {
@@ -182,6 +188,9 @@ foreign_obj_type! {
     pub struct IndirectRenderCommand;
     pub struct IndirectRenderCommandRef;
 }
+
+unsafe impl Send for IndirectRenderCommand { }
+unsafe impl Sync for IndirectRenderCommand { }
 
 impl IndirectRenderCommandRef {
     pub fn set_render_pipeline_state(&self, pipeline_state: &RenderPipelineStateRef) {
@@ -340,6 +349,9 @@ foreign_obj_type! {
     pub struct IndirectComputeCommand;
     pub struct IndirectComputeCommandRef;
 }
+
+unsafe impl Send for IndirectComputeCommand { }
+unsafe impl Sync for IndirectComputeCommand { }
 
 impl IndirectComputeCommandRef {
     pub fn set_compute_pipeline_state(

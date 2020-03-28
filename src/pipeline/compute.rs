@@ -99,6 +99,9 @@ foreign_obj_type! {
     pub struct ComputePipelineDescriptorRef;
 }
 
+unsafe impl Send for ComputePipelineDescriptor { }
+unsafe impl Sync for ComputePipelineDescriptor { }
+
 impl ComputePipelineDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -178,6 +181,9 @@ foreign_obj_type! {
     pub struct ComputePipelineStateRef;
 }
 
+unsafe impl Send for ComputePipelineState { }
+unsafe impl Sync for ComputePipelineState { }
+
 impl ComputePipelineStateRef {
     pub fn label(&self) -> &str {
         unsafe {
@@ -213,6 +219,9 @@ foreign_obj_type! {
     pub struct StageInputOutputDescriptor;
     pub struct StageInputOutputDescriptorRef;
 }
+
+unsafe impl Send for StageInputOutputDescriptor { }
+unsafe impl Sync for StageInputOutputDescriptor { }
 
 impl StageInputOutputDescriptor {
     pub fn new<'a>() -> &'a StageInputOutputDescriptorRef {
@@ -261,6 +270,9 @@ foreign_obj_type! {
     pub struct AttributeDescriptorArrayRef;
 }
 
+unsafe impl Send for AttributeDescriptorArray { }
+unsafe impl Sync for AttributeDescriptorArray { }
+
 impl AttributeDescriptorArrayRef {
     pub fn object_at(&self, index: NSUInteger) -> Option<&AttributeDescriptorRef> {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
@@ -278,6 +290,9 @@ foreign_obj_type! {
     pub struct AttributeDescriptor;
     pub struct AttributeDescriptorRef;
 }
+
+unsafe impl Send for AttributeDescriptor { }
+unsafe impl Sync for AttributeDescriptor { }
 
 impl AttributeDescriptorRef {
     pub fn buffer_index(&self) -> NSUInteger {
@@ -313,6 +328,9 @@ foreign_obj_type! {
     pub struct BufferLayoutDescriptorArrayRef;
 }
 
+unsafe impl Send for BufferLayoutDescriptorArray { }
+unsafe impl Sync for BufferLayoutDescriptorArray { }
+
 impl BufferLayoutDescriptorArrayRef {
     pub fn object_at(&self, index: NSUInteger) -> Option<&BufferLayoutDescriptorRef> {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
@@ -330,6 +348,9 @@ foreign_obj_type! {
     pub struct BufferLayoutDescriptor;
     pub struct BufferLayoutDescriptorRef;
 }
+
+unsafe impl Send for BufferLayoutDescriptor { }
+unsafe impl Sync for BufferLayoutDescriptor { }
 
 impl BufferLayoutDescriptorRef {
     pub fn step_function(&self) -> MTLStepFunction {

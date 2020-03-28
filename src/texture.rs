@@ -51,6 +51,9 @@ impl TextureDescriptor {
     }
 }
 
+unsafe impl Send for TextureDescriptor { }
+unsafe impl Sync for TextureDescriptor { }
+
 impl TextureDescriptorRef {
     pub fn texture_type(&self) -> MTLTextureType {
         unsafe { msg_send![self, textureType] }
@@ -157,6 +160,9 @@ foreign_obj_type! {
     pub struct TextureRef;
     type ParentType = ResourceRef;
 }
+
+unsafe impl Send for Texture { }
+unsafe impl Sync for Texture { }
 
 impl TextureRef {
     #[deprecated(since = "0.13.0")]

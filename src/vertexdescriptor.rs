@@ -83,6 +83,9 @@ foreign_obj_type! {
     pub struct VertexBufferLayoutDescriptorRef;
 }
 
+unsafe impl Send for VertexBufferLayoutDescriptor { }
+unsafe impl Sync for VertexBufferLayoutDescriptor { }
+
 impl VertexBufferLayoutDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -126,6 +129,9 @@ foreign_obj_type! {
     pub struct VertexBufferLayoutDescriptorArrayRef;
 }
 
+unsafe impl Send for VertexBufferLayoutDescriptorArray { }
+unsafe impl Sync for VertexBufferLayoutDescriptorArray { }
+
 impl VertexBufferLayoutDescriptorArrayRef {
     pub fn object_at(&self, index: NSUInteger) -> Option<&VertexBufferLayoutDescriptorRef> {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
@@ -146,6 +152,9 @@ foreign_obj_type! {
     pub struct VertexAttributeDescriptor;
     pub struct VertexAttributeDescriptorRef;
 }
+
+unsafe impl Send for VertexAttributeDescriptor { }
+unsafe impl Sync for VertexAttributeDescriptor { }
 
 impl VertexAttributeDescriptor {
     pub fn new() -> Self {
@@ -190,6 +199,9 @@ foreign_obj_type! {
     pub struct VertexAttributeDescriptorArrayRef;
 }
 
+unsafe impl Send for VertexAttributeDescriptorArray { }
+unsafe impl Sync for VertexAttributeDescriptorArray { }
+
 impl VertexAttributeDescriptorArrayRef {
     pub fn object_at(&self, index: NSUInteger) -> Option<&VertexAttributeDescriptorRef> {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
@@ -210,6 +222,9 @@ foreign_obj_type! {
     pub struct VertexDescriptor;
     pub struct VertexDescriptorRef;
 }
+
+unsafe impl Send for VertexDescriptor { }
+unsafe impl Sync for VertexDescriptor { }
 
 impl VertexDescriptor {
     pub fn new<'a>() -> &'a VertexDescriptorRef {

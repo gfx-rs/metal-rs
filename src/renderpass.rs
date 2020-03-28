@@ -64,6 +64,9 @@ foreign_obj_type! {
     pub struct RenderPassAttachmentDescriptorRef;
 }
 
+unsafe impl Send for RenderPassAttachmentDescriptor { }
+unsafe impl Sync for RenderPassAttachmentDescriptor { }
+
 impl RenderPassAttachmentDescriptorRef {
     pub fn texture(&self) -> Option<&TextureRef> {
         unsafe { msg_send![self, texture] }
@@ -155,6 +158,9 @@ foreign_obj_type! {
     type ParentType = RenderPassAttachmentDescriptorRef;
 }
 
+unsafe impl Send for RenderPassColorAttachmentDescriptor { }
+unsafe impl Sync for RenderPassColorAttachmentDescriptor { }
+
 impl RenderPassColorAttachmentDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -183,6 +189,9 @@ foreign_obj_type! {
     type ParentType = RenderPassAttachmentDescriptorRef;
 }
 
+unsafe impl Send for RenderPassDepthAttachmentDescriptor { }
+unsafe impl Sync for RenderPassDepthAttachmentDescriptor { }
+
 impl RenderPassDepthAttachmentDescriptorRef {
     pub fn clear_depth(&self) -> f64 {
         unsafe { msg_send![self, clearDepth] }
@@ -201,6 +210,9 @@ foreign_obj_type! {
     pub struct RenderPassStencilAttachmentDescriptorRef;
     type ParentType = RenderPassAttachmentDescriptorRef;
 }
+
+unsafe impl Send for RenderPassStencilAttachmentDescriptor { }
+unsafe impl Sync for RenderPassStencilAttachmentDescriptor { }
 
 impl RenderPassStencilAttachmentDescriptorRef {
     pub fn clear_stencil(&self) -> u32 {
@@ -231,6 +243,9 @@ foreign_obj_type! {
     pub struct RenderPassColorAttachmentDescriptorArrayRef;
 }
 
+unsafe impl Send for RenderPassColorAttachmentDescriptorArray { }
+unsafe impl Sync for RenderPassColorAttachmentDescriptorArray { }
+
 impl RenderPassColorAttachmentDescriptorArrayRef {
     pub fn object_at(&self, index: NSUInteger) -> Option<&RenderPassColorAttachmentDescriptorRef> {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
@@ -255,6 +270,9 @@ foreign_obj_type! {
     pub struct RenderPassDescriptor;
     pub struct RenderPassDescriptorRef;
 }
+
+unsafe impl Send for RenderPassDescriptor { }
+unsafe impl Sync for RenderPassDescriptor { }
 
 impl RenderPassDescriptor {
     pub fn new<'a>() -> &'a RenderPassDescriptorRef {
