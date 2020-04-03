@@ -224,9 +224,10 @@ impl TextureRef {
         unsafe { msg_send![self, usage] }
     }
 
+    /// [framebufferOnly Apple Docs](https://developer.apple.com/documentation/metal/mtltexture/1515749-framebufferonly?language=objc)
     pub fn framebuffer_only(&self) -> bool {
         unsafe {
-            match msg_send![self, framebufferOnly] {
+            match msg_send![self, isFramebufferOnly] {
                 YES => true,
                 NO => false,
                 _ => unreachable!(),

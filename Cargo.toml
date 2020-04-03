@@ -33,10 +33,13 @@ features = ["objc_exception"]
 [dev-dependencies]
 winit = "0.22"
 sema = "0.1.4"
-
+png = "0.16"
 
 [[example]]
 name = "window"
+
+[[example]]
+name = "headless-render"
 
 [[example]]
 name = "library"

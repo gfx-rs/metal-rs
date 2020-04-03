@@ -23,11 +23,11 @@ use std::mem;
 use std::ops::Deref;
 use std::os::raw::c_void;
 
+use cocoa::foundation::NSUInteger;
 use core_graphics::base::CGFloat;
 use core_graphics::geometry::CGSize;
 use foreign_types::ForeignType;
-use objc::runtime::{Object, NO, YES};
-use cocoa::foundation::NSUInteger;
+use objc::runtime::{Object, BOOL, NO, YES};
 
 fn nsstring_as_str(nsstr: &objc::runtime::Object) -> &str {
     let bytes = unsafe {
@@ -349,6 +349,11 @@ impl CoreAnimationLayerRef {
     pub fn set_contents_scale(&self, scale: CGFloat) {
         unsafe { msg_send![self, setContentsScale: scale] }
     }
+
+    /// [framebufferOnly Apple Docs](https://developer.apple.com/documentation/metal/mtltexture/1515749-framebufferonly?language=objc)
+    pub fn set_framebuffer_only(&self, framebuffer_only: BOOL) {
+        unsafe { msg_send![self, setFramebufferOnly: framebuffer_only] }
+    }
 }
 
 mod argument;
@@ -372,6 +377,7 @@ mod texture;
 mod types;
 mod vertexdescriptor;
 
+#[rustfmt::skip]
 pub use {
     argument::*,
     buffer::*,
