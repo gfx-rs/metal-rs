@@ -36,9 +36,9 @@ pub enum MTLStorageMode {
 }
 
 pub const MTLResourceCPUCacheModeShift: NSUInteger = 0;
-pub const MTLResourceCPUCacheModeMask: NSUInteger = (0xf << MTLResourceCPUCacheModeShift);
+pub const MTLResourceCPUCacheModeMask: NSUInteger = 0xf << MTLResourceCPUCacheModeShift;
 pub const MTLResourceStorageModeShift: NSUInteger = 4;
-pub const MTLResourceStorageModeMask: NSUInteger = (0xf << MTLResourceStorageModeShift);
+pub const MTLResourceStorageModeMask: NSUInteger = 0xf << MTLResourceStorageModeShift;
 
 bitflags! {
     #[allow(non_upper_case_globals)]
