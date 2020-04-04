@@ -55,6 +55,9 @@ foreign_obj_type! {
     pub struct CommandBufferRef;
 }
 
+unsafe impl Send for CommandBuffer { }
+unsafe impl Sync for CommandBuffer { }
+
 impl CommandBufferRef {
     pub fn label(&self) -> &str {
         unsafe {

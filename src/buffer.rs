@@ -18,6 +18,9 @@ foreign_obj_type! {
     type ParentType = ResourceRef;
 }
 
+unsafe impl Send for Buffer { }
+unsafe impl Sync for Buffer { }
+
 impl BufferRef {
     pub fn length(&self) -> u64 {
         unsafe { msg_send![self, length] }
