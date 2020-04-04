@@ -15,6 +15,9 @@ foreign_obj_type! {
     pub struct CommandQueueRef;
 }
 
+unsafe impl Send for CommandQueue { }
+unsafe impl Sync for CommandQueue { }
+
 impl CommandQueueRef {
     pub fn label(&self) -> &str {
         unsafe {

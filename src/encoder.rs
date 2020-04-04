@@ -121,6 +121,9 @@ foreign_obj_type! {
     pub struct CommandEncoderRef;
 }
 
+unsafe impl Send for CommandEncoder { }
+unsafe impl Sync for CommandEncoder { }
+
 impl CommandEncoderRef {
     pub fn label(&self) -> &str {
         unsafe {
@@ -172,6 +175,9 @@ foreign_obj_type! {
     type ParentType = CommandEncoderRef;
 }
 
+unsafe impl Send for ParallelRenderCommandEncoder { }
+unsafe impl Sync for ParallelRenderCommandEncoder { }
+
 impl ParallelRenderCommandEncoderRef {
     pub fn render_command_encoder(&self) -> &RenderCommandEncoderRef {
         unsafe { msg_send![self, renderCommandEncoder] }
@@ -186,6 +192,9 @@ foreign_obj_type! {
     pub struct RenderCommandEncoderRef;
     type ParentType = CommandEncoderRef;
 }
+
+unsafe impl Send for RenderCommandEncoder { }
+unsafe impl Sync for RenderCommandEncoder { }
 
 impl RenderCommandEncoderRef {
     pub fn set_render_pipeline_state(&self, pipeline_state: &RenderPipelineStateRef) {
@@ -685,6 +694,9 @@ foreign_obj_type! {
     type ParentType = CommandEncoderRef;
 }
 
+unsafe impl Send for BlitCommandEncoder { }
+unsafe impl Sync for BlitCommandEncoder { }
+
 impl BlitCommandEncoderRef {
     pub fn synchronize_resource(&self, resource: &ResourceRef) {
         unsafe { msg_send![self, synchronizeResource: resource] }
@@ -852,6 +864,9 @@ foreign_obj_type! {
     type ParentType = CommandEncoderRef;
 }
 
+unsafe impl Send for ComputeCommandEncoder { }
+unsafe impl Sync for ComputeCommandEncoder { }
+
 impl ComputeCommandEncoderRef {
     pub fn set_compute_pipeline_state(&self, state: &ComputePipelineStateRef) {
         unsafe { msg_send![self, setComputePipelineState: state] }
@@ -997,6 +1012,9 @@ foreign_obj_type! {
     pub struct ArgumentEncoder;
     pub struct ArgumentEncoderRef;
 }
+
+unsafe impl Send for ArgumentEncoder { }
+unsafe impl Sync for ArgumentEncoder { }
 
 impl ArgumentEncoderRef {
     pub fn encoded_length(&self) -> NSUInteger {

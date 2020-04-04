@@ -13,6 +13,9 @@ foreign_obj_type! {
     pub struct DrawableRef;
 }
 
+unsafe impl Send for Drawable { }
+unsafe impl Sync for Drawable { }
+
 impl DrawableRef {
     pub fn present(&self) {
         unsafe { msg_send![self, present] }

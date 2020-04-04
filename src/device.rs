@@ -1389,6 +1389,9 @@ foreign_obj_type! {
     pub struct DeviceRef;
 }
 
+unsafe impl Send for Device { }
+unsafe impl Sync for Device { }
+
 impl Device {
     pub fn system_default() -> Option<Self> {
         // `MTLCreateSystemDefaultDevice` may return null if Metal is not supported

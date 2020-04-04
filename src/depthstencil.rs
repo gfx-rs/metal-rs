@@ -41,6 +41,9 @@ foreign_obj_type! {
     pub struct StencilDescriptorRef;
 }
 
+unsafe impl Send for StencilDescriptor { }
+unsafe impl Sync for StencilDescriptor { }
+
 impl StencilDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -108,6 +111,9 @@ foreign_obj_type! {
     pub struct DepthStencilDescriptorRef;
 }
 
+unsafe impl Send for DepthStencilDescriptor { }
+unsafe impl Sync for DepthStencilDescriptor { }
+
 impl DepthStencilDescriptor {
     pub fn new() -> Self {
         unsafe {
@@ -164,3 +170,6 @@ foreign_obj_type! {
     pub struct DepthStencilState;
     pub struct DepthStencilStateRef;
 }
+
+unsafe impl Send for DepthStencilState { }
+unsafe impl Sync for DepthStencilState { }
