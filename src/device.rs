@@ -1485,6 +1485,16 @@ impl DeviceRef {
         }
     }
 
+    pub fn supports_vertex_amplification_count(&self, count: NSUInteger) -> bool {
+        unsafe {
+            match msg_send![self, supportsVertexAmplificationCount: count] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
     pub fn supports_sample_count(&self, count: NSUInteger) -> bool {
         unsafe {
             match msg_send![self, supportsTextureSampleCount: count] {
