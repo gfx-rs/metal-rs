@@ -1646,16 +1646,18 @@ impl DeviceRef {
         }
     }
 
-    pub unsafe fn new_compute_pipeline_state(
+    pub fn new_compute_pipeline_state(
         &self,
         descriptor: &ComputePipelineDescriptorRef,
     ) -> Result<ComputePipelineState, String> {
-        let pipeline_state: *mut MTLComputePipelineState = try_objc! { err =>
-            msg_send![self, newComputePipelineStateWithDescriptor:descriptor
-                                                            error:&mut err]
-        };
+        unsafe {
+            let pipeline_state: *mut MTLComputePipelineState = try_objc! { err =>
+                msg_send![self, newComputePipelineStateWithDescriptor:descriptor
+                                                                error:&mut err]
+            };
 
-        Ok(ComputePipelineState::from_ptr(pipeline_state))
+            Ok(ComputePipelineState::from_ptr(pipeline_state))
+        }
     }
 
     pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> Buffer {
