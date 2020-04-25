@@ -4,6 +4,18 @@
 
 Unsafe Rust bindings for the Metal 3D Graphics API.
 
+## Examples
+
+The [examples](/examples) directory highlights different ways of using the Metal graphics API for rendering
+and computation.
+
+Examples can be run using commands such as:
+
+```
+# Replace `window` with the name of the example that you would like to run
+cargo run --example window
+```
+
 ## License
 
 Licensed under either of
