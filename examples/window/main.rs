@@ -33,11 +33,19 @@ fn prepare_pipeline_state<'a>(device: &DeviceRef, library: &LibraryRef) -> Rende
     let pipeline_state_descriptor = RenderPipelineDescriptor::new();
     pipeline_state_descriptor.set_vertex_function(Some(&vert));
     pipeline_state_descriptor.set_fragment_function(Some(&frag));
-    pipeline_state_descriptor
+    let attachment = pipeline_state_descriptor
         .color_attachments()
         .object_at(0)
-        .unwrap()
-        .set_pixel_format(MTLPixelFormat::BGRA8Unorm);
+        .unwrap();
+    attachment.set_pixel_format(MTLPixelFormat::BGRA8Unorm);
+
+    attachment.set_blending_enabled(true);
+    attachment.set_rgb_blend_operation(metal::MTLBlendOperation::Add);
+    attachment.set_alpha_blend_operation(metal::MTLBlendOperation::Add);
+    attachment.set_source_rgb_blend_factor(metal::MTLBlendFactor::SourceAlpha);
+    attachment.set_source_alpha_blend_factor(metal::MTLBlendFactor::SourceAlpha);
+    attachment.set_destination_rgb_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
+    attachment.set_destination_alpha_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
 
     device
         .new_render_pipeline_state(&pipeline_state_descriptor)
@@ -53,6 +61,7 @@ fn prepare_render_pass_descriptor(descriptor: &RenderPassDescriptorRef, texture:
     color_attachment.set_load_action(MTLLoadAction::Clear);
     color_attachment.set_clear_color(MTLClearColor::new(0.5, 0.2, 0.2, 1.0));
     color_attachment.set_store_action(MTLStoreAction::Store);
+
 }
 
 fn main() {
