@@ -199,6 +199,10 @@ foreign_obj_type! {
 }
 
 impl LibraryRef {
+    pub fn device(&self) -> &DeviceRef {
+        unsafe { msg_send![self, device] }
+    }
+
     pub fn label(&self) -> &str {
         unsafe {
             let label = msg_send![self, label];
