@@ -1,5 +1,5 @@
 # metal-rs
-[![Build Status](https://travis-ci.org/gfx-rs/metal-rs.svg?branch=master)](https://travis-ci.org/gfx-rs/metal-rs)
+[![Actions Status](https://github.com/gfx-rs/metal-rs/workflows/ci/badge.svg)](https://github.com/gfx-rs/metal-rs/actions)
 [![Crates.io](https://img.shields.io/crates/v/metal.svg?label=metal)](https://crates.io/crates/metal)
 
 Unsafe Rust bindings for the Metal 3D Graphics API.
