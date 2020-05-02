@@ -10,4 +10,3 @@ window:
 circle:
 	xcrun -sdk macosx metal -c examples/circle/shaders.metal -o examples/circle/shaders.air
 	xcrun -sdk macosx metallib examples/circle/shaders.air -o examples/circle/shaders.metallib
-
