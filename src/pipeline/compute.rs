@@ -318,7 +318,11 @@ impl BufferLayoutDescriptorArrayRef {
         unsafe { msg_send![self, objectAtIndexedSubscript: index] }
     }
 
-    pub fn set_object_at(&self, index: NSUInteger, buffer_desc: Option<&BufferLayoutDescriptorRef>) {
+    pub fn set_object_at(
+        &self,
+        index: NSUInteger,
+        buffer_desc: Option<&BufferLayoutDescriptorRef>,
+    ) {
         unsafe { msg_send![self, setObject:buffer_desc atIndexedSubscript:index] }
     }
 }

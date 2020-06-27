@@ -17,15 +17,11 @@ foreign_obj_type! {
 
 impl CaptureScopeRef {
     pub fn begin_scope(&self) {
-        unsafe {
-            msg_send![self, beginScope]
-        }
+        unsafe { msg_send![self, beginScope] }
     }
 
     pub fn end_scope(&self) {
-        unsafe {
-            msg_send![self, endScope]
-        }
+        unsafe { msg_send![self, endScope] }
     }
 
     pub fn label(&self) -> &str {
@@ -74,27 +70,19 @@ impl CaptureManagerRef {
     }
 
     pub fn start_capture_with_device(&self, device: &DeviceRef) {
-        unsafe {
-            msg_send![self, startCaptureWithDevice: device]
-        }
+        unsafe { msg_send![self, startCaptureWithDevice: device] }
     }
 
     pub fn start_capture_with_command_queue(&self, command_queue: &CommandQueueRef) {
-        unsafe {
-            msg_send![self, startCaptureWithCommandQueue: command_queue]
-        }
+        unsafe { msg_send![self, startCaptureWithCommandQueue: command_queue] }
     }
 
     pub fn start_capture_with_scope(&self, scope: &CaptureScopeRef) {
-        unsafe {
-            msg_send![self, startCaptureWithScope: scope]
-        }
+        unsafe { msg_send![self, startCaptureWithScope: scope] }
     }
 
     pub fn stop_capture(&self) {
-        unsafe {
-            msg_send![self, stopCapture]
-        }
+        unsafe { msg_send![self, stopCapture] }
     }
 
     pub fn is_capturing(&self) -> bool {

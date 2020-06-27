@@ -49,7 +49,7 @@ impl BufferRef {
     pub fn set_label(&self, name: &str) {
         unsafe {
             let name = crate::nsstring_from_str(name);
-            msg_send![self, setLabel:name]
+            msg_send![self, setLabel: name]
         }
     }
 
