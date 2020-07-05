@@ -358,6 +358,7 @@ impl CoreAnimationLayerRef {
 
 mod argument;
 mod buffer;
+mod capturedescriptor;
 mod capturemanager;
 mod commandbuffer;
 mod commandqueue;
@@ -381,6 +382,7 @@ mod vertexdescriptor;
 pub use {
     argument::*,
     buffer::*,
+    capturedescriptor::*,
     capturemanager::*,
     commandbuffer::*,
     commandqueue::*,
