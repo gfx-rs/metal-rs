@@ -6,6 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 use cocoa::foundation::NSUInteger;
+use super::DeviceRef;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -77,6 +78,10 @@ foreign_obj_type! {
 }
 
 impl ResourceRef {
+    pub fn device(&self) -> &DeviceRef {
+        unsafe { msg_send![self, device] }
+    }
+
     pub fn label(&self) -> &str {
         unsafe {
             let label = msg_send![self, label];
@@ -101,5 +106,9 @@ impl ResourceRef {
 
     pub fn set_purgeable_state(&self, state: MTLPurgeableState) -> MTLPurgeableState {
         unsafe { msg_send![self, setPurgeableState: state] }
+    }
+
+    pub fn allocated_size(&self) -> u64 {
+        unsafe { msg_send![self, allocatedSize] }
     }
 }
