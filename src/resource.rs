@@ -108,7 +108,8 @@ impl ResourceRef {
         unsafe { msg_send![self, setPurgeableState: state] }
     }
 
-    pub fn allocated_size(&self) -> u64 {
+    /// Only available on macOS 10.13+ & iOS 10.11+
+    pub fn allocated_size(&self) -> NSUInteger {
         unsafe { msg_send![self, allocatedSize] }
     }
 }
