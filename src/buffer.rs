@@ -46,13 +46,6 @@ impl BufferRef {
         }
     }
 
-    pub fn set_label(&self, name: &str) {
-        unsafe {
-            let name = crate::nsstring_from_str(name);
-            msg_send![self, setLabel: name]
-        }
-    }
-
     pub fn add_debug_marker(&self, name: &str, range: NSRange) {
         unsafe {
             let name = crate::nsstring_from_str(name);
