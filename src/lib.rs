@@ -24,10 +24,26 @@ use std::ops::Deref;
 use std::os::raw::c_void;
 
 use cocoa::foundation::NSUInteger;
-use core_graphics::base::CGFloat;
-use core_graphics::geometry::CGSize;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, BOOL, NO, YES};
+
+#[cfg(target_pointer_width = "64")]
+pub type CGFloat = f64;
+#[cfg(not(target_pointer_width = "64"))]
+pub type CGFloat = f32;
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct CGSize {
+    pub width: CGFloat,
+    pub height: CGFloat,
+}
+
+impl CGSize {
+    pub fn new(width: f64, height: f64) -> Self {
+        CGSize { width, height }
+    }
+}
 
 fn nsstring_as_str(nsstr: &objc::runtime::Object) -> &str {
     let bytes = unsafe {
