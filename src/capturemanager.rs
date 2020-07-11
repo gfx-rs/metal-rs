@@ -6,6 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 use super::*;
+use std::ffi::CStr;
 
 pub enum MTLCaptureScope {}
 
@@ -69,6 +70,16 @@ impl CaptureManagerRef {
         unsafe { msg_send![self, setDefaultCaptureScope: scope] }
     }
 
+    /// https://developer.apple.com/documentation/metal/mtlcapturemanager/3237259-startcapture
+    pub fn start_capture(&self, descriptor: &CaptureDescriptorRef) -> Result<(), String> {
+        unsafe {
+            try_objc! { err =>
+                msg_send![self, startCaptureWithDescriptor: descriptor
+                                error: &mut err]
+            }
+        }
+    }
+
     pub fn start_capture_with_device(&self, device: &DeviceRef) {
         unsafe { msg_send![self, startCaptureWithDevice: device] }
     }
@@ -87,5 +98,10 @@ impl CaptureManagerRef {
 
     pub fn is_capturing(&self) -> bool {
         unsafe { msg_send![self, isCapturing] }
+    }
+
+    /// https://developer.apple.com/documentation/metal/mtlcapturemanager/3237260-supportsdestination?language=objc
+    pub fn supports_destination(&self, destination: MTLCaptureDestination) -> bool {
+        unsafe { msg_send![self, supportsDestination: destination] }
     }
 }
