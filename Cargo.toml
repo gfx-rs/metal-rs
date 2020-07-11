@@ -10,6 +10,7 @@ readme = "README.md"
 keywords = ["metal", "graphics", "bindings"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
+exclude = ["guide/**/*", "examples/**/*", "tests/**/*", "Cargo.lock", "target/**/*"]
 
 [package.metadata.docs.rs]
 default-target = "x86_64-apple-darwin"
