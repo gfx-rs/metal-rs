@@ -13,9 +13,8 @@ use cocoa::{
     foundation::{NSRange},
 };
 
-use core_graphics::geometry::CGSize;
-use objc::runtime::YES;
 use metal::*;
+use objc::runtime::YES;
 use winit::platform::macos::WindowExtMacOS;
 use std::mem;
 

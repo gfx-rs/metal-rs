@@ -20,7 +20,6 @@ private = []
 
 [dependencies]
 cocoa = "0.22"
-core-graphics = "0.21"
 bitflags = "1"
 log = "0.4"
 block = "0.1.5"
