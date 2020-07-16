@@ -9,7 +9,6 @@ extern crate objc;
 
 use cocoa::{appkit::NSView, base::id as cocoa_id, foundation::NSRange};
 
-
 use metal::*;
 use objc::runtime::YES;
 use std::mem;
