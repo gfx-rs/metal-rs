@@ -22,6 +22,7 @@ pub enum MTLPrimitiveType {
 }
 
 #[repr(u64)]
+#[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLIndexType {
     UInt16 = 0,
