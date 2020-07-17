@@ -1,6 +1,6 @@
 [package]
 name = "metal"
-version = "0.18.0"
+version = "0.18.1"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -19,8 +19,8 @@ default = []
 private = []
 
 [dependencies]
-cocoa = "0.20"
-core-graphics = "0.19"
+cocoa = "0.22"
+core-graphics = "0.21"
 bitflags = "1"
 log = "0.4"
 block = "0.1.5"
