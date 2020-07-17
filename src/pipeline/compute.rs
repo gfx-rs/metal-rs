@@ -13,14 +13,6 @@ use objc::runtime::{NO, YES};
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-pub enum MTLIndexType {
-    UInt16 = 0,
-    UInt32 = 1,
-}
-
-#[repr(u64)]
-#[allow(non_camel_case_types)]
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLAttributeFormat {
     Invalid = 0,
     UChar2 = 1,
