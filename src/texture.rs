@@ -238,9 +238,9 @@ impl TextureRef {
     pub fn get_bytes(
         &self,
         bytes: *mut std::ffi::c_void,
+        stride: NSUInteger,
         region: MTLRegion,
         mipmap_level: NSUInteger,
-        stride: NSUInteger,
     ) {
         unsafe {
             msg_send![self, getBytes:bytes
@@ -253,10 +253,10 @@ impl TextureRef {
     pub fn get_bytes_in_slice(
         &self,
         bytes: *mut std::ffi::c_void,
-        region: MTLRegion,
-        mipmap_level: NSUInteger,
         stride: NSUInteger,
         image_stride: NSUInteger,
+        region: MTLRegion,
+        mipmap_level: NSUInteger,
         slice: NSUInteger,
     ) {
         unsafe {
@@ -273,8 +273,8 @@ impl TextureRef {
         &self,
         region: MTLRegion,
         mipmap_level: NSUInteger,
-        stride: NSUInteger,
         bytes: *const std::ffi::c_void,
+        stride: NSUInteger,
     ) {
         unsafe {
             msg_send![self, replaceRegion:region
@@ -288,10 +288,10 @@ impl TextureRef {
         &self,
         region: MTLRegion,
         mipmap_level: NSUInteger,
-        image_stride: NSUInteger,
-        stride: NSUInteger,
         slice: NSUInteger,
         bytes: *const std::ffi::c_void,
+        stride: NSUInteger,
+        image_stride: NSUInteger,
     ) {
         unsafe {
             msg_send![self, replaceRegion:region
