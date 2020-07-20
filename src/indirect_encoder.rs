@@ -1,6 +1,6 @@
 use super::*;
 
-use cocoa::foundation::{NSRange, NSUInteger};
+use cocoa_foundation::foundation::{NSRange, NSUInteger};
 
 bitflags! {
     #[allow(non_upper_case_globals)]

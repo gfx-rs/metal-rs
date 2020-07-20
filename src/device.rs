@@ -6,8 +6,8 @@
 // copied, modified, or distributed except according to those terms.
 
 use block::{Block, ConcreteBlock};
-use cocoa::base::id;
-use cocoa::foundation::NSUInteger;
+use cocoa_foundation::base::id;
+use cocoa_foundation::foundation::NSUInteger;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, BOOL, NO, YES};
 
@@ -1535,8 +1535,8 @@ impl DeviceRef {
         src: &str,
         options: &CompileOptionsRef,
     ) -> Result<Library, String> {
-        use cocoa::base::nil as cocoa_nil;
-        use cocoa::foundation::NSString as cocoa_NSString;
+        use cocoa_foundation::base::nil as cocoa_nil;
+        use cocoa_foundation::foundation::NSString as cocoa_NSString;
 
         unsafe {
             let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
@@ -1563,8 +1563,8 @@ impl DeviceRef {
     }
 
     pub fn new_library_with_file<P: AsRef<Path>>(&self, file: P) -> Result<Library, String> {
-        use cocoa::base::nil as cocoa_nil;
-        use cocoa::foundation::NSString as cocoa_NSString;
+        use cocoa_foundation::base::nil as cocoa_nil;
+        use cocoa_foundation::foundation::NSString as cocoa_NSString;
 
         unsafe {
             let filename =

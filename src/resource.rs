@@ -6,7 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 use super::DeviceRef;
-use cocoa::foundation::NSUInteger;
+use cocoa_foundation::foundation::NSUInteger;
 
 #[repr(u64)]
 #[allow(non_camel_case_types)]

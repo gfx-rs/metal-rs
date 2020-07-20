@@ -7,7 +7,7 @@
 
 use super::*;
 
-use cocoa::foundation::NSUInteger;
+use cocoa_foundation::foundation::NSUInteger;
 
 #[repr(u64)]
 #[derive(Copy, Clone, Debug)]
