@@ -8,11 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        # Temporarily pinning to a specific nightly until
-        # https://github.com/rust-lang/rust/issues/71612
-        # Afterwards this can be:
-        # channel: [stable, nightly]
-        channel: [stable, nightly-2020-04-26]
+        channel: [stable, nightly]
 
     steps:
     - uses: actions/checkout@v1
