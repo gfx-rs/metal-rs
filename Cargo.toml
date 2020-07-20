@@ -20,7 +20,7 @@ default = []
 private = []
 
 [dependencies]
-cocoa = "0.22"
+cocoa-foundation = "0.1"
 bitflags = "1"
 log = "0.4"
 block = "0.1.5"
@@ -31,6 +31,7 @@ version = "0.2.4"
 features = ["objc_exception"]
 
 [dev-dependencies]
+cocoa = "0.23"
 cty = "0.2.1"
 winit = "0.22"
 sema = "0.1.4"

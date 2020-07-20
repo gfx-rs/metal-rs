@@ -23,7 +23,7 @@ use std::mem;
 use std::ops::Deref;
 use std::os::raw::c_void;
 
-use cocoa::foundation::NSUInteger;
+use cocoa_foundation::foundation::NSUInteger;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, BOOL, NO, YES};
 

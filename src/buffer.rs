@@ -7,7 +7,7 @@
 
 use super::*;
 
-use cocoa::foundation::NSRange;
+use cocoa_foundation::foundation::NSRange;
 
 pub enum MTLBuffer {}
 

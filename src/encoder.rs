@@ -7,7 +7,7 @@
 
 use super::*;
 
-use cocoa::foundation::{NSInteger, NSRange, NSUInteger};
+use cocoa_foundation::foundation::{NSInteger, NSRange, NSUInteger};
 
 use std::ops::Range;
 
