@@ -706,6 +706,10 @@ impl BlitCommandEncoderRef {
         }
     }
 
+    pub fn generate_mipmaps(&self, texture: &TextureRef) {
+        unsafe { msg_send![self, for: texture] }
+    }
+
     pub fn copy_from_buffer(
         &self,
         source_buffer: &BufferRef,
