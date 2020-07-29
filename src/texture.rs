@@ -100,6 +100,16 @@ impl TextureDescriptorRef {
         unsafe { msg_send![self, setMipmapLevelCount: count] }
     }
 
+    pub fn set_mipmap_level_count_for_size(&self, size: MTLSize) {
+        let MTLSize {
+            width,
+            height,
+            depth,
+        } = size;
+        let count = (width.max(height).max(depth) as f64).log2().ceil() as u64;
+        self.set_mipmap_level_count(count);
+    }
+
     pub fn sample_count(&self) -> NSUInteger {
         unsafe { msg_send![self, sampleCount] }
     }
