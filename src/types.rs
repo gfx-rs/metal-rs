@@ -31,6 +31,37 @@ pub struct MTLRegion {
     pub size: MTLSize,
 }
 
+impl MTLRegion {
+    #[inline]
+    pub fn new_d1(x: NSUInteger, width: NSUInteger) -> Self {
+        Self::new_d2(x, 0, width, 1)
+    }
+
+    #[inline]
+    pub fn new_d2(x: NSUInteger, y: NSUInteger, width: NSUInteger, height: NSUInteger) -> Self {
+        Self::new_d3(x, y, 0, width, height, 1)
+    }
+
+    #[inline]
+    pub fn new_d3(
+        x: NSUInteger,
+        y: NSUInteger,
+        z: NSUInteger,
+        width: NSUInteger,
+        height: NSUInteger,
+        depth: NSUInteger,
+    ) -> Self {
+        Self {
+            origin: MTLOrigin { x, y, z },
+            size: MTLSize {
+                width,
+                height,
+                depth,
+            },
+        }
+    }
+}
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct MTLSamplePosition {
