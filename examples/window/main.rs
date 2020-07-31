@@ -168,7 +168,6 @@ fn main() {
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                 WindowEvent::Resized(size) => {
                     layer.set_drawable_size(CGSize::new(size.width as f64, size.height as f64));
-
                 }
                 _ => (),
             },
