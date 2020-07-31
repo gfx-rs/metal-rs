@@ -219,11 +219,21 @@ fn main() {
                 let command_buffer = command_queue.new_command_buffer();
                 let encoder = command_buffer.new_render_command_encoder(&render_pass_descriptor);
 
-                encoder.set_scissor_rect(MTLScissorRect { x: 20, y: 20, width: 100, height: 100});
+                encoder.set_scissor_rect(MTLScissorRect {
+                    x: 20,
+                    y: 20,
+                    width: 100,
+                    height: 100,
+                });
                 encoder.set_render_pipeline_state(&clear_rect_pipeline_state);
                 encoder.set_vertex_buffer(0, Some(&clear_rect_buffer), 0);
                 encoder.draw_primitives_instanced(metal::MTLPrimitiveType::TriangleStrip, 0, 4, 1);
-                encoder.set_scissor_rect(MTLScissorRect { x: 0, y: 0, width: size.width as _, height: size.height as _});
+                encoder.set_scissor_rect(MTLScissorRect {
+                    x: 0,
+                    y: 0,
+                    width: size.width as _,
+                    height: size.height as _,
+                });
 
                 encoder.set_render_pipeline_state(&triangle_pipeline_state);
                 encoder.set_vertex_buffer(0, Some(&vbuf), 0);
