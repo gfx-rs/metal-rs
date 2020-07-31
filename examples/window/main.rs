@@ -85,7 +85,7 @@ fn prepare_render_pass_descriptor(descriptor: &RenderPassDescriptorRef, texture:
 
 fn main() {
     let events_loop = winit::event_loop::EventLoop::new();
-    let size = winit::dpi::LogicalSize::new(800, 600);
+    let mut size = winit::dpi::LogicalSize::new(800, 600);
 
     let window = winit::window::WindowBuilder::new()
         .with_inner_size(size)
@@ -141,10 +141,10 @@ fn main() {
 
     let clear_rect = vec![ClearRect {
         rect: Rect {
-            x: -0.7,
-            y: 0.0,
-            w: 0.2,
-            h: 0.2,
+            x: -1.0,
+            y: -1.0,
+            w: 2.0,
+            h: 2.0,
         },
         color: Color {
             r: 0.5,
@@ -168,6 +168,7 @@ fn main() {
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                 WindowEvent::Resized(size) => {
                     layer.set_drawable_size(CGSize::new(size.width as f64, size.height as f64));
+
                 }
                 _ => (),
             },
@@ -219,10 +220,13 @@ fn main() {
                 let command_buffer = command_queue.new_command_buffer();
                 let encoder = command_buffer.new_render_command_encoder(&render_pass_descriptor);
 
+                encoder.set_scissor_rect(MTLScissorRect { x: 0, y: 0, width: 100, height: 100});
                 encoder.set_render_pipeline_state(&clear_rect_pipeline_state);
+
                 encoder.set_vertex_buffer(0, Some(&clear_rect_buffer), 0);
                 encoder.draw_primitives_instanced(metal::MTLPrimitiveType::TriangleStrip, 0, 4, 1);
 
+                encoder.set_scissor_rect(MTLScissorRect { x: 0, y: 0, width: size.width as _, height: size.height as _});
                 encoder.set_render_pipeline_state(&triangle_pipeline_state);
                 encoder.set_vertex_buffer(0, Some(&vbuf), 0);
                 encoder.draw_primitives(MTLPrimitiveType::Triangle, 0, 3);
