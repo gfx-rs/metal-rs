@@ -62,7 +62,7 @@ impl MTLRegion {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Default)]
 pub struct MTLSamplePosition {
     pub x: f32,
     pub y: f32,
