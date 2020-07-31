@@ -24,7 +24,7 @@ struct Rect {
     pub x: f32,
     pub y: f32,
     pub w: f32,
-    pub h: f32
+    pub h: f32,
 }
 
 #[repr(C)]
@@ -32,13 +32,13 @@ struct Color {
     pub r: f32,
     pub g: f32,
     pub b: f32,
-    pub a: f32
+    pub a: f32,
 }
 
 #[repr(C)]
 struct ClearRect {
     pub rect: Rect,
-    pub color: Color
+    pub color: Color,
 }
 
 fn prepare_pipeline_state<'a>(
@@ -67,7 +67,7 @@ fn prepare_pipeline_state<'a>(
     attachment.set_destination_rgb_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
     attachment.set_destination_alpha_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
 
-     device
+    device
         .new_render_pipeline_state(&pipeline_state_descriptor)
         .unwrap()
 }
@@ -113,8 +113,14 @@ fn main() {
         .join("examples/window/shaders.metallib");
 
     let library = device.new_library_with_file(library_path).unwrap();
-    let triangle_pipeline_state = prepare_pipeline_state(&device, &library, "triangle_vertex", "triangle_fragment");
-    let clear_rect_pipeline_state = prepare_pipeline_state(&device, &library, "clear_rect_vertex", "clear_rect_fragment");
+    let triangle_pipeline_state =
+        prepare_pipeline_state(&device, &library, "triangle_vertex", "triangle_fragment");
+    let clear_rect_pipeline_state = prepare_pipeline_state(
+        &device,
+        &library,
+        "clear_rect_vertex",
+        "clear_rect_fragment",
+    );
 
     let command_queue = device.new_command_queue();
     //let nc: () = msg_send![command_queue.0, setExecutionEnabled:true];
@@ -134,8 +140,18 @@ fn main() {
     let mut r = 0.0f32;
 
     let clear_rect = vec![ClearRect {
-        rect: Rect{ x: -0.7, y: 0.0, w: 0.2, h: 0.2 },
-        color: Color { r: 0.5, g: 0.8, b: 0.5, a: 1.0},
+        rect: Rect {
+            x: -0.7,
+            y: 0.0,
+            w: 0.2,
+            h: 0.2,
+        },
+        color: Color {
+            r: 0.5,
+            g: 0.8,
+            b: 0.5,
+            a: 1.0,
+        },
     }];
 
     let clear_rect_buffer = device.new_buffer_with_data(
@@ -205,12 +221,7 @@ fn main() {
 
                 encoder.set_render_pipeline_state(&clear_rect_pipeline_state);
                 encoder.set_vertex_buffer(0, Some(&clear_rect_buffer), 0);
-                encoder.draw_primitives_instanced(
-                    metal::MTLPrimitiveType::TriangleStrip,
-                    0,
-                    4,
-                    1
-                );
+                encoder.draw_primitives_instanced(metal::MTLPrimitiveType::TriangleStrip, 0, 4, 1);
 
                 encoder.set_render_pipeline_state(&triangle_pipeline_state);
                 encoder.set_vertex_buffer(0, Some(&vbuf), 0);
