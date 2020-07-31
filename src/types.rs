@@ -31,6 +31,36 @@ pub struct MTLRegion {
     pub size: MTLSize,
 }
 
+impl MTLRegion {
+    pub fn new_1d(x: NSUInteger, width: NSUInteger) -> Self {
+        Self::new_2d(x, 0, width, 1)
+    }
+
+    #[inline]
+    pub fn new_2d(x: NSUInteger, y: NSUInteger, width: NSUInteger, height: NSUInteger) -> Self {
+        Self::new_3d(x, y, 0, width, height, 1)
+    }
+
+    #[inline]
+    pub fn new_3d(
+        x: NSUInteger,
+        y: NSUInteger,
+        z: NSUInteger,
+        width: NSUInteger,
+        height: NSUInteger,
+        depth: NSUInteger,
+    ) -> Self {
+        Self {
+            origin: MTLOrigin { x, y, z },
+            size: MTLSize {
+                width,
+                height,
+                depth,
+            },
+        }
+    }
+}
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct MTLSamplePosition {
