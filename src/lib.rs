@@ -370,6 +370,20 @@ impl CoreAnimationLayerRef {
     pub fn set_framebuffer_only(&self, framebuffer_only: BOOL) {
         unsafe { msg_send![self, setFramebufferOnly: framebuffer_only] }
     }
+
+    pub fn is_opaque(&self) -> bool {
+        unsafe {
+            match msg_send![self, isOpaque] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn set_opaque(&self, opaque: bool) {
+        unsafe { msg_send![self, setOpaque: opaque] }
+    }
 }
 
 mod argument;
