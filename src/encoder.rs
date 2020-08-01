@@ -286,6 +286,16 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    #[inline]
+    pub fn set_vertex_value<T>(&self, index: NSUInteger, value: &T) {
+        let ptr = value as *const T;
+        self.set_vertex_bytes(
+            index,
+            std::mem::size_of::<T>() as NSUInteger,
+            ptr as *const _,
+        )
+    }
+
     pub fn set_vertex_buffer(
         &self,
         index: NSUInteger,
@@ -406,6 +416,16 @@ impl RenderCommandEncoderRef {
                 atIndex:index
             ]
         }
+    }
+
+    #[inline]
+    pub fn set_fragment_value<T>(&self, index: NSUInteger, value: &T) {
+        let ptr = value as *const T;
+        self.set_fragment_bytes(
+            index,
+            std::mem::size_of::<T>() as NSUInteger,
+            ptr as *const _,
+        )
     }
 
     pub fn set_fragment_buffer(
