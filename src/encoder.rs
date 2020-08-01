@@ -978,6 +978,16 @@ impl ComputeCommandEncoderRef {
         }
     }
 
+    #[inline]
+    pub fn set_value<T>(&self, index: NSUInteger, value: &T) {
+        let ptr = value as *const T;
+        self.set_bytes(
+            index,
+            std::mem::size_of::<T>() as NSUInteger,
+            ptr as *const _,
+        )
+    }
+
     pub fn dispatch_thread_groups(
         &self,
         thread_groups_count: MTLSize,

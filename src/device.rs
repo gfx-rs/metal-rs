@@ -1680,6 +1680,16 @@ impl DeviceRef {
         }
     }
 
+    #[inline]
+    pub fn new_buffer_with_value<T>(&self, value: &T, options: MTLResourceOptions) -> Buffer {
+        let ptr = value as *const T;
+        self.new_buffer_with_data(
+            ptr as *const _,
+            std::mem::size_of::<T>() as NSUInteger,
+            options,
+        )
+    }
+
     pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Texture {
         unsafe { msg_send![self, newTextureWithDescriptor: descriptor] }
     }
