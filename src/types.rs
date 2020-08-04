@@ -32,6 +32,7 @@ pub struct MTLRegion {
 }
 
 impl MTLRegion {
+    #[inline]
     pub fn new_1d(x: NSUInteger, width: NSUInteger) -> Self {
         Self::new_2d(x, 0, width, 1)
     }
