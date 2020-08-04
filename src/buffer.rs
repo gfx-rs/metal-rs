@@ -52,4 +52,8 @@ impl BufferRef {
             msg_send![self, addDebugMarker:name range:range]
         }
     }
+
+    pub fn remove_all_debug_markers(&self) {
+        unsafe { msg_send![self, removeAllDebugMarkers] }
+    }
 }
