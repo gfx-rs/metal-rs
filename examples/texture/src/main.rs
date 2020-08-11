@@ -11,10 +11,10 @@ use winit::window::Window;
 
 use cocoa::foundation::NSRange;
 use metal::{
-    Buffer, CGSize, CommandQueue, MetalLayer, Device, Library, MTLClearColor,
-    MTLLoadAction, MTLOrigin, MTLPixelFormat, MTLPrimitiveType, MTLRegion, MTLResourceOptions,
-    MTLSize, MTLStoreAction, RenderPassDescriptor, RenderPassDescriptorRef,
-    RenderPipelineDescriptor, RenderPipelineState, Texture, TextureDescriptor, TextureRef,
+    Buffer, CGSize, CommandQueue, Device, Library, MTLClearColor, MTLLoadAction, MTLOrigin,
+    MTLPixelFormat, MTLPrimitiveType, MTLRegion, MTLResourceOptions, MTLSize, MTLStoreAction,
+    MetalLayer, RenderPassDescriptor, RenderPassDescriptorRef, RenderPipelineDescriptor,
+    RenderPipelineState, Texture, TextureDescriptor, TextureRef,
 };
 use shader_bindings::{
     TextureIndex_TextureIndexBaseColor as TextureBaseColorIdx, TexturedVertex,
