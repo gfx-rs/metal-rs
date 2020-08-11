@@ -294,11 +294,11 @@ pub enum CAMetalLayer {}
 
 foreign_obj_type! {
     type CType = CAMetalLayer;
-    pub struct CoreAnimationLayer;
-    pub struct CoreAnimationLayerRef;
+    pub struct MetalLayer;
+    pub struct MetalLayerRef;
 }
 
-impl CoreAnimationLayer {
+impl MetalLayer {
     pub fn new() -> Self {
         unsafe {
             let class = class!(CAMetalLayer);
@@ -307,7 +307,7 @@ impl CoreAnimationLayer {
     }
 }
 
-impl CoreAnimationLayerRef {
+impl MetalLayerRef {
     pub fn device(&self) -> &DeviceRef {
         unsafe { msg_send![self, device] }
     }
