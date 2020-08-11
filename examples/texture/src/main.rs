@@ -13,8 +13,8 @@ use cocoa::foundation::NSRange;
 use metal::{
     Buffer, CGSize, CommandQueue, Device, Library, MTLClearColor, MTLLoadAction, MTLOrigin,
     MTLPixelFormat, MTLPrimitiveType, MTLRegion, MTLResourceOptions, MTLSize, MTLStoreAction,
-    MetalLayer, MetalLayerRef, RenderPassDescriptor, RenderPassDescriptorRef, RenderPipelineDescriptor,
-    RenderPipelineState, Texture, TextureDescriptor, TextureRef,
+    MetalLayer, MetalLayerRef, RenderPassDescriptor, RenderPassDescriptorRef,
+    RenderPipelineDescriptor, RenderPipelineState, Texture, TextureDescriptor, TextureRef,
 };
 use shader_bindings::{
     TextureIndex_TextureIndexBaseColor as TextureBaseColorIdx, TexturedVertex,

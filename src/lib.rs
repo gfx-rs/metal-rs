@@ -279,12 +279,12 @@ pub enum CAMetalDrawable {}
 
 foreign_obj_type! {
     type CType = CAMetalDrawable;
-    pub struct CoreAnimationDrawable;
-    pub struct CoreAnimationDrawableRef;
+    pub struct MetalDrawable;
+    pub struct MetalDrawableRef;
     type ParentType = DrawableRef;
 }
 
-impl CoreAnimationDrawableRef {
+impl MetalDrawableRef {
     pub fn texture(&self) -> &TextureRef {
         unsafe { msg_send![self, texture] }
     }
@@ -358,7 +358,7 @@ impl MetalLayerRef {
         unsafe { msg_send![self, removeAllAnimations] }
     }
 
-    pub fn next_drawable(&self) -> Option<&CoreAnimationDrawableRef> {
+    pub fn next_drawable(&self) -> Option<&MetalDrawableRef> {
         unsafe { msg_send![self, nextDrawable] }
     }
 
