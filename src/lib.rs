@@ -279,12 +279,12 @@ pub enum CAMetalDrawable {}
 
 foreign_obj_type! {
     type CType = CAMetalDrawable;
-    pub struct CoreAnimationDrawable;
-    pub struct CoreAnimationDrawableRef;
+    pub struct MetalDrawable;
+    pub struct MetalDrawableRef;
     type ParentType = DrawableRef;
 }
 
-impl CoreAnimationDrawableRef {
+impl MetalDrawableRef {
     pub fn texture(&self) -> &TextureRef {
         unsafe { msg_send![self, texture] }
     }
@@ -294,11 +294,11 @@ pub enum CAMetalLayer {}
 
 foreign_obj_type! {
     type CType = CAMetalLayer;
-    pub struct CoreAnimationLayer;
-    pub struct CoreAnimationLayerRef;
+    pub struct MetalLayer;
+    pub struct MetalLayerRef;
 }
 
-impl CoreAnimationLayer {
+impl MetalLayer {
     pub fn new() -> Self {
         unsafe {
             let class = class!(CAMetalLayer);
@@ -307,7 +307,7 @@ impl CoreAnimationLayer {
     }
 }
 
-impl CoreAnimationLayerRef {
+impl MetalLayerRef {
     pub fn device(&self) -> &DeviceRef {
         unsafe { msg_send![self, device] }
     }
@@ -358,7 +358,7 @@ impl CoreAnimationLayerRef {
         unsafe { msg_send![self, removeAllAnimations] }
     }
 
-    pub fn next_drawable(&self) -> Option<&CoreAnimationDrawableRef> {
+    pub fn next_drawable(&self) -> Option<&MetalDrawableRef> {
         unsafe { msg_send![self, nextDrawable] }
     }
 
@@ -369,6 +369,20 @@ impl CoreAnimationLayerRef {
     /// [framebufferOnly Apple Docs](https://developer.apple.com/documentation/metal/mtltexture/1515749-framebufferonly?language=objc)
     pub fn set_framebuffer_only(&self, framebuffer_only: BOOL) {
         unsafe { msg_send![self, setFramebufferOnly: framebuffer_only] }
+    }
+
+    pub fn is_opaque(&self) -> bool {
+        unsafe {
+            match msg_send![self, isOpaque] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn set_opaque(&self, opaque: bool) {
+        unsafe { msg_send![self, setOpaque: opaque] }
     }
 }
 
