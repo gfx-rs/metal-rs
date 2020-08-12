@@ -367,6 +367,16 @@ impl MetalLayerRef {
     }
 
     /// [framebufferOnly Apple Docs](https://developer.apple.com/documentation/metal/mtltexture/1515749-framebufferonly?language=objc)
+    pub fn framebuffer_only(&self) -> bool {
+        unsafe {
+            match msg_send![self, framebufferOnly] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
     pub fn set_framebuffer_only(&self, framebuffer_only: BOOL) {
         unsafe { msg_send![self, setFramebufferOnly: framebuffer_only] }
     }
