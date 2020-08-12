@@ -377,7 +377,7 @@ impl MetalLayerRef {
         }
     }
 
-    pub fn set_framebuffer_only(&self, framebuffer_only: BOOL) {
+    pub fn set_framebuffer_only(&self, framebuffer_only: bool) {
         unsafe { msg_send![self, setFramebufferOnly: framebuffer_only] }
     }
 
