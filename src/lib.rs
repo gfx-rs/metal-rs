@@ -25,7 +25,7 @@ use std::os::raw::c_void;
 
 use cocoa_foundation::foundation::NSUInteger;
 use foreign_types::ForeignType;
-use objc::runtime::{Object, BOOL, NO, YES};
+use objc::runtime::{Object, NO, YES};
 
 #[cfg(target_pointer_width = "64")]
 pub type CGFloat = f64;
@@ -367,7 +367,17 @@ impl MetalLayerRef {
     }
 
     /// [framebufferOnly Apple Docs](https://developer.apple.com/documentation/metal/mtltexture/1515749-framebufferonly?language=objc)
-    pub fn set_framebuffer_only(&self, framebuffer_only: BOOL) {
+    pub fn framebuffer_only(&self) -> bool {
+        unsafe {
+            match msg_send![self, framebufferOnly] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn set_framebuffer_only(&self, framebuffer_only: bool) {
         unsafe { msg_send![self, setFramebufferOnly: framebuffer_only] }
     }
 
