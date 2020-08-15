@@ -398,13 +398,6 @@ impl RenderPipelineStateRef {
             crate::nsstring_as_str(label)
         }
     }
-
-    pub fn set_label(&self, label: &str) {
-        unsafe {
-            let nslabel = crate::nsstring_from_str(label);
-            let () = msg_send![self, setLabel: nslabel];
-        }
-    }
 }
 
 pub enum MTLRenderPipelineColorAttachmentDescriptorArray {}
