@@ -1,5 +1,7 @@
 # Debugging in Xcode
 
+If you only want to enable Metal validation without using Xcode, use the `METAL_DEVICE_WRAPPER_TYPE=1` environment variable when lauching your program. For example, to run the `window` example with Metal validation, use the command `METAL_DEVICE_WRAPPER_TYPE=1 cargo run --example window`.
+
 Let's walk through an example of debugging the [`texture` example](/examples/texture).
 
 ---
