@@ -95,6 +95,20 @@ impl SharedEventListener {
     }
 }
 
+pub enum MTLFence {}
+
+foreign_obj_type! {
+    type CType = MTLFence;
+    pub struct Fence;
+    pub struct FenceRef;
+}
+
+#[repr(u32)]
+pub enum MTLRenderStages {
+    MTLRenderStageVertex = 0,
+    MTLRenderStageFragment = 1,
+}
+
 const BLOCK_HAS_COPY_DISPOSE: i32 = 0x02000000;
 const BLOCK_HAS_SIGNATURE: i32 = 0x40000000;
 

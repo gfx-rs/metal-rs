@@ -1731,6 +1731,10 @@ impl DeviceRef {
         unsafe { msg_send![self, newSharedEvent] }
     }
 
+    pub fn new_fence(&self) -> Fence {
+        unsafe { msg_send![self, newFence] }
+    }
+
     pub fn heap_buffer_size_and_align(
         &self,
         length: NSUInteger,
