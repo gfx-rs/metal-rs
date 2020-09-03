@@ -1350,7 +1350,7 @@ extern "C" {
 #[allow(non_camel_case_types)]
 type dispatch_data_t = id;
 #[allow(non_camel_case_types)]
-type dispatch_queue_t = id;
+pub type dispatch_queue_t = id;
 #[allow(non_camel_case_types)]
 type dispatch_block_t = *const Block<(), ()>;
 
@@ -1372,7 +1372,12 @@ extern "C" {
         queue: dispatch_queue_t,
         destructor: dispatch_block_t,
     ) -> dispatch_data_t;
-    fn dispatch_release(object: dispatch_data_t); // actually dispatch_object_t
+    pub fn dispatch_release(object: dispatch_data_t); // actually dispatch_object_t
+
+    pub fn dispatch_queue_create(
+        label: *const std::os::raw::c_char,
+        attr: *const std::ffi::c_void,
+    ) -> dispatch_queue_t;
 }
 
 /*type MTLNewLibraryCompletionHandler = extern fn(library: id, error: id);
@@ -1716,6 +1721,14 @@ impl DeviceRef {
 
     pub fn new_heap(&self, descriptor: &HeapDescriptorRef) -> Heap {
         unsafe { msg_send![self, newHeapWithDescriptor: descriptor] }
+    }
+
+    pub fn new_event(&self) -> Event {
+        unsafe { msg_send![self, newEvent] }
+    }
+
+    pub fn new_shared_event(&self) -> SharedEvent {
+        unsafe { msg_send![self, newSharedEvent] }
     }
 
     pub fn heap_buffer_size_and_align(

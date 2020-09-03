@@ -74,6 +74,9 @@ path = "examples/compute/compute-argument-buffer.rs"
 [[example]]
 name = "bind"
 
+[[example]]
+name = "events"
+
 [workspace]
 members = [
   "examples/texture",
