@@ -9,6 +9,9 @@ use super::*;
 use block::{Block, RcBlock};
 use std::mem;
 
+#[cfg(feature = "dispatch_queue")]
+use dispatch;
+
 type MTLSharedEventNotificationBlock<'a> = RcBlock<(&'a SharedEventRef, u64), ()>;
 
 pub enum MTLEvent {}
@@ -43,6 +46,8 @@ impl SharedEventRef {
         unsafe { msg_send![self, setSignaledValue: new_value] }
     }
 
+    /// Schedules a notification handler to be called after the shareable event’s signal value
+    /// equals or exceeds a given value.
     pub fn notify(
         &self,
         listener: &SharedEventListenerRef,
@@ -51,7 +56,7 @@ impl SharedEventRef {
     ) {
         unsafe {
             // If the block doesn't have a signature, this segfaults.
-            // Taken from https://github.com/servo/pathfinder/blob/master/metal/src/lib.rs#L2322
+            // Taken from https://github.com/servo/pathfinder/blob/e858c8dc1d8ff02a5b603e21e09a64d6b3e11327/metal/src/lib.rs#L2327
             let block = mem::transmute::<
                 MTLSharedEventNotificationBlock,
                 *mut BlockBase<(&SharedEventRef, u64), ()>,
@@ -64,14 +69,14 @@ impl SharedEventRef {
 
         extern "C" fn dtor(_: *mut BlockBase<(&SharedEventRef, u64), ()>) {}
 
-        static mut SIGNATURE: &[u8] = b"v16@?0Q8\0";
-        static mut SIGNATURE_PTR: *const i8 = unsafe { &SIGNATURE[0] as *const u8 as *const i8 };
+        const SIGNATURE: &[u8] = b"v16@?0Q8\0";
+        const SIGNATURE_PTR: *const i8 = &SIGNATURE[0] as *const u8 as *const i8;
         static mut BLOCK_EXTRA: BlockExtra<(&SharedEventRef, u64), ()> = BlockExtra {
             unknown0: 0 as *mut i32,
             unknown1: 0 as *mut i32,
             unknown2: 0 as *mut i32,
             dtor,
-            signature: unsafe { &SIGNATURE_PTR },
+            signature: &SIGNATURE_PTR,
         };
     }
 }
@@ -85,13 +90,21 @@ foreign_obj_type! {
 }
 
 impl SharedEventListener {
-    pub unsafe fn from_dispatch_queue(queue: dispatch_queue_t) -> Self {
+    pub unsafe fn from_queue_handle(queue: dispatch_queue_t) -> Self {
         let listener: SharedEventListener = msg_send![class!(MTLSharedEventListener), alloc];
         let ptr: *mut Object = msg_send![listener.as_ref(), initWithDispatchQueue: queue];
         if ptr.is_null() {
             panic!("[MTLSharedEventListener alloc] initWithDispatchQueue failed");
         }
         listener
+    }
+
+    #[cfg(feature = "dispatch-queue")]
+    pub fn from_queue(queue: &dispatch::Queue) -> Self {
+        unsafe {
+            let raw_queue = std::mem::transmute::<&dispatch::Queue, *const dispatch_queue_t>(queue);
+            Self::from_queue_handle(*raw_queue)
+        }
     }
 }
 
@@ -105,8 +118,8 @@ foreign_obj_type! {
 
 #[repr(u32)]
 pub enum MTLRenderStages {
-    MTLRenderStageVertex = 0,
-    MTLRenderStageFragment = 1,
+    Vertex = 0,
+    Fragment = 1,
 }
 
 const BLOCK_HAS_COPY_DISPOSE: i32 = 0x02000000;

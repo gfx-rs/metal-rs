@@ -1372,12 +1372,7 @@ extern "C" {
         queue: dispatch_queue_t,
         destructor: dispatch_block_t,
     ) -> dispatch_data_t;
-    pub fn dispatch_release(object: dispatch_data_t); // actually dispatch_object_t
-
-    pub fn dispatch_queue_create(
-        label: *const std::os::raw::c_char,
-        attr: *const std::ffi::c_void,
-    ) -> dispatch_queue_t;
+    fn dispatch_release(object: dispatch_data_t); // actually dispatch_object_t
 }
 
 /*type MTLNewLibraryCompletionHandler = extern fn(library: id, error: id);
