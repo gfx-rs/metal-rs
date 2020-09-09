@@ -680,6 +680,24 @@ impl RenderCommandEncoderRef {
     pub fn use_heap(&self, heap: &HeapRef) {
         unsafe { msg_send![self, useHeap: heap] }
     }
+
+    pub fn update_fence(&self, fence: FenceRef, after_stages: MTLRenderStages) {
+        unsafe {
+            msg_send![self,
+                updateFence: fence
+                afterStages: after_stages
+            ]
+        }
+    }
+
+    pub fn wait_for_fence(&self, fence: FenceRef, before_stages: MTLRenderStages) {
+        unsafe {
+            msg_send![self,
+                waitForFence: fence
+                beforeStages: before_stages
+            ]
+        }
+    }
 }
 
 pub enum MTLBlitCommandEncoder {}
@@ -851,6 +869,14 @@ impl BlitCommandEncoderRef {
             ]
         }
     }
+
+    pub fn update_fence(&self, fence: &FenceRef) {
+        unsafe { msg_send![self, updateFence: fence] }
+    }
+
+    pub fn wait_for_fence(&self, fence: &FenceRef) {
+        unsafe { msg_send![self, waitForFence: fence] }
+    }
 }
 
 pub enum MTLComputeCommandEncoder {}
@@ -997,6 +1023,14 @@ impl ComputeCommandEncoderRef {
 
     pub fn use_heap(&self, heap: &HeapRef) {
         unsafe { msg_send![self, useHeap: heap] }
+    }
+
+    pub fn update_fence(&self, fence: &FenceRef) {
+        unsafe { msg_send![self, updateFence: fence] }
+    }
+
+    pub fn wait_for_fence(&self, fence: &FenceRef) {
+        unsafe { msg_send![self, waitForFence: fence] }
     }
 }
 

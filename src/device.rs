@@ -1350,7 +1350,7 @@ extern "C" {
 #[allow(non_camel_case_types)]
 type dispatch_data_t = id;
 #[allow(non_camel_case_types)]
-type dispatch_queue_t = id;
+pub type dispatch_queue_t = id;
 #[allow(non_camel_case_types)]
 type dispatch_block_t = *const Block<(), ()>;
 
@@ -1716,6 +1716,18 @@ impl DeviceRef {
 
     pub fn new_heap(&self, descriptor: &HeapDescriptorRef) -> Heap {
         unsafe { msg_send![self, newHeapWithDescriptor: descriptor] }
+    }
+
+    pub fn new_event(&self) -> Event {
+        unsafe { msg_send![self, newEvent] }
+    }
+
+    pub fn new_shared_event(&self) -> SharedEvent {
+        unsafe { msg_send![self, newSharedEvent] }
+    }
+
+    pub fn new_fence(&self) -> Fence {
+        unsafe { msg_send![self, newFence] }
     }
 
     pub fn heap_buffer_size_and_align(

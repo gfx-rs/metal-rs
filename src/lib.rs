@@ -414,6 +414,7 @@ mod pipeline;
 mod renderpass;
 mod resource;
 mod sampler;
+mod sync;
 mod texture;
 mod types;
 mod vertexdescriptor;
@@ -441,6 +442,7 @@ pub use {
     texture::*,
     types::*,
     vertexdescriptor::*,
+    sync::*,
 };
 
 #[inline]
