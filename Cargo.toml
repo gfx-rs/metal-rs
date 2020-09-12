@@ -19,6 +19,7 @@ default-target = "x86_64-apple-darwin"
 default = []
 private = []
 dispatch-queue = ["dispatch"]
+mps = []
 
 [dependencies]
 cocoa-foundation = "0.1"
@@ -64,6 +65,10 @@ path = "examples/circle/main.rs"
 [[example]]
 name = "compute"
 path = "examples/compute/main.rs"
+
+[[example]]
+name = "mps"
+required-features = ["mps"]
 
 [[example]]
 name = "embedded-lib"

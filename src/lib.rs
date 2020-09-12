@@ -410,6 +410,8 @@ mod encoder;
 mod heap;
 mod indirect_encoder;
 mod library;
+#[cfg(feature = "mps")]
+mod mps;
 mod pipeline;
 mod renderpass;
 mod resource;
@@ -444,6 +446,9 @@ pub use {
     vertexdescriptor::*,
     sync::*,
 };
+
+#[cfg(feature = "mps")]
+pub use mps::*;
 
 #[inline]
 unsafe fn obj_drop<T>(p: *mut T) {
