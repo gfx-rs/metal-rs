@@ -316,6 +316,10 @@ impl MetalLayerRef {
         unsafe { msg_send![self, setDevice: device] }
     }
 
+    pub fn preferred_device(&self) -> &DeviceRef {
+        unsafe { msg_send![self, preferredDevice] }
+    }
+
     pub fn pixel_format(&self) -> MTLPixelFormat {
         unsafe { msg_send![self, pixelFormat] }
     }
@@ -344,6 +348,20 @@ impl MetalLayerRef {
 
     pub fn set_presents_with_transaction(&self, transaction: bool) {
         unsafe { msg_send![self, setPresentsWithTransaction: transaction] }
+    }
+
+    pub fn display_sync_enabled(&self) -> bool {
+        unsafe {
+            match msg_send![self, displaySyncEnabled] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn set_display_sync_enabled(&self, sync_enabled: bool) {
+        unsafe { msg_send![self, setDisplaySyncEnabled: sync_enabled] }
     }
 
     pub fn set_edge_antialiasing_mask(&self, mask: u64) {
