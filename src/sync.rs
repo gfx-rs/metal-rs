@@ -90,13 +90,15 @@ foreign_obj_type! {
 }
 
 impl SharedEventListener {
-    pub unsafe fn from_queue_handle(queue: dispatch_queue_t) -> Self {
-        let listener: SharedEventListener = msg_send![class!(MTLSharedEventListener), alloc];
-        let ptr: *mut Object = msg_send![listener.as_ref(), initWithDispatchQueue: queue];
-        if ptr.is_null() {
-            panic!("[MTLSharedEventListener alloc] initWithDispatchQueue failed");
+    pub fn from_queue_handle(queue: dispatch_queue_t) -> Self {
+        unsafe {
+            let listener: SharedEventListener = msg_send![class!(MTLSharedEventListener), alloc];
+            let ptr: *mut Object = msg_send![listener.as_ref(), initWithDispatchQueue: queue];
+            if ptr.is_null() {
+                panic!("[MTLSharedEventListener alloc] initWithDispatchQueue failed");
+            }
+            listener
         }
-        listener
     }
 
     #[cfg(feature = "dispatch-queue")]

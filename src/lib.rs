@@ -224,8 +224,8 @@ where
     type CType = NSArray<T>;
     type Ref = ArrayRef<T>;
 
-    unsafe fn from_ptr(p: *mut NSArray<T>) -> Self {
-        Array(p)
+    fn from_ptr(p: *mut NSArray<T>) -> Self {
+        unsafe { Array(p) }
     }
 
     fn as_ptr(&self) -> *mut NSArray<T> {
@@ -469,13 +469,13 @@ pub use {
 pub use mps::*;
 
 #[inline]
-unsafe fn obj_drop<T>(p: *mut T) {
-    msg_send![(p as *mut Object), release]
+fn obj_drop<T>(p: *mut T) {
+    unsafe { msg_send![(p as *mut Object), release] }
 }
 
 #[inline]
-unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
-    msg_send![(p as *mut Object), retain]
+fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
+    unsafe { msg_send![(p as *mut Object), retain] }
 }
 
 #[allow(non_camel_case_types)]

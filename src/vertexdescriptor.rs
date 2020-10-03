@@ -238,8 +238,8 @@ impl VertexDescriptorRef {
     }
 
     #[cfg(feature = "private")]
-    pub unsafe fn serialize_descriptor(&self) -> *mut std::ffi::c_void {
-        msg_send![self, newSerializedDescriptor]
+    pub fn serialize_descriptor(&self) -> *mut std::ffi::c_void {
+        unsafe { msg_send![self, newSerializedDescriptor] }
     }
 
     pub fn reset(&self) {
