@@ -56,7 +56,7 @@ pub enum MTLFeatureSet {
 
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
-enum MTLDeviceLocation {
+pub enum MTLDeviceLocation {
     MTLDeviceLocationBuiltIn = 0,
     MTLDeviceLocationSlot = 1,
     MTLDeviceLocationExternal = 2,
