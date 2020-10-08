@@ -54,6 +54,15 @@ pub enum MTLFeatureSet {
     macOS_GPUFamily2_v1 = 10005,
 }
 
+#[repr(u64)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+enum MTLDeviceLocation {
+    MTLDeviceLocationBuiltIn = 0,
+    MTLDeviceLocationSlot = 1,
+    MTLDeviceLocationExternal = 2,
+    MTLDeviceLocationUnspecified = u64::MAX,
+}
+
 bitflags! {
     pub struct PixelFormatCapabilities: u32 {
         const Filter = 1 << 0;
@@ -1473,6 +1482,14 @@ impl DeviceRef {
                 _ => unreachable!(),
             }
         }
+    }
+
+    pub fn location(&self) -> MTLDeviceLocation {
+        unsafe { msg_send![self, location] }
+    } 
+
+    pub fn location_number(&self) -> NSUInteger {
+        unsafe { msg_send![self, locationNumber] }
     }
 
     pub fn supports_feature_set(&self, feature: MTLFeatureSet) -> bool {
