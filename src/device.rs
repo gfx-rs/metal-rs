@@ -1492,6 +1492,24 @@ impl DeviceRef {
         unsafe { msg_send![self, locationNumber] }
     }
 
+    pub fn has_unified_memory(&self) -> bool {
+        unsafe {
+            match msg_send![self, hasUnifiedMemory] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn recommended_max_working_set_size(&self) -> u64 {
+        unsafe { msg_send![self, recommendedMaxWorkingSetSize] }
+    }
+
+    pub fn max_transfer_rate(&self) -> u64 {
+        unsafe { msg_send![self, maxTransferRate] }
+    }
+
     pub fn supports_feature_set(&self, feature: MTLFeatureSet) -> bool {
         unsafe {
             match msg_send![self, supportsFeatureSet: feature] {
