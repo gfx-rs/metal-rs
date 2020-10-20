@@ -7,7 +7,7 @@
 
 use super::*;
 
-use cocoa_foundation::foundation::{NSRange, NSUInteger};
+use cocoa_foundation::foundation::NSUInteger;
 use objc::runtime::{NO, YES};
 
 #[repr(u64)]
@@ -321,8 +321,8 @@ impl TextureRef {
         &self,
         pixel_format: MTLPixelFormat,
         texture_type: MTLTextureType,
-        mipmap_levels: NSRange,
-        slices: NSRange,
+        mipmap_levels: crate::NSRange,
+        slices: crate::NSRange,
     ) -> Texture {
         unsafe {
             msg_send![self, newTextureViewWithPixelFormat:pixel_format

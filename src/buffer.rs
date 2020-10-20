@@ -7,8 +7,6 @@
 
 use super::*;
 
-use cocoa_foundation::foundation::NSRange;
-
 pub enum MTLBuffer {}
 
 foreign_obj_type! {
@@ -27,7 +25,7 @@ impl BufferRef {
         unsafe { msg_send![self, contents] }
     }
 
-    pub fn did_modify_range(&self, range: NSRange) {
+    pub fn did_modify_range(&self, range: crate::NSRange) {
         unsafe { msg_send![self, didModifyRange: range] }
     }
 
@@ -46,7 +44,7 @@ impl BufferRef {
         }
     }
 
-    pub fn add_debug_marker(&self, name: &str, range: NSRange) {
+    pub fn add_debug_marker(&self, name: &str, range: crate::NSRange) {
         unsafe {
             let name = crate::nsstring_from_str(name);
             msg_send![self, addDebugMarker:name range:range]
