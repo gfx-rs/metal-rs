@@ -45,6 +45,23 @@ impl CGSize {
     }
 }
 
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct NSRange {
+    pub location: NSUInteger,
+    pub length: NSUInteger,
+}
+
+impl NSRange {
+    #[inline]
+    pub fn new(location: NSUInteger, length: NSUInteger) -> NSRange {
+        NSRange {
+            location,
+            length,
+        }
+    }
+}
+
 fn nsstring_as_str(nsstr: &objc::runtime::Object) -> &str {
     let bytes = unsafe {
         let bytes: *const std::os::raw::c_char = msg_send![nsstr, UTF8String];

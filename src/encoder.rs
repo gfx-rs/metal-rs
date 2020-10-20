@@ -7,7 +7,7 @@
 
 use super::*;
 
-use cocoa_foundation::foundation::{NSInteger, NSRange, NSUInteger};
+use cocoa_foundation::foundation::{NSInteger, NSUInteger};
 
 use std::ops::Range;
 
@@ -714,7 +714,7 @@ impl BlitCommandEncoderRef {
         unsafe { msg_send![self, synchronizeResource: resource] }
     }
 
-    pub fn fill_buffer(&self, destination_buffer: &BufferRef, range: NSRange, value: u8) {
+    pub fn fill_buffer(&self, destination_buffer: &BufferRef, range: crate::NSRange, value: u8) {
         unsafe {
             msg_send![self,
                 fillBuffer: destination_buffer
