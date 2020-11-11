@@ -241,8 +241,8 @@ where
     type CType = NSArray<T>;
     type Ref = ArrayRef<T>;
 
-    unsafe fn from_ptr(p: *mut NSArray<T>) -> Self {
-        Array(p)
+    fn from_ptr(p: *mut NSArray<T>) -> Self {
+        unsafe { Array(p) }
     }
 
     fn as_ptr(&self) -> *mut NSArray<T> {
@@ -333,6 +333,10 @@ impl MetalLayerRef {
         unsafe { msg_send![self, setDevice: device] }
     }
 
+    pub fn preferred_device(&self) -> &DeviceRef {
+        unsafe { msg_send![self, preferredDevice] }
+    }
+
     pub fn pixel_format(&self) -> MTLPixelFormat {
         unsafe { msg_send![self, pixelFormat] }
     }
@@ -361,6 +365,20 @@ impl MetalLayerRef {
 
     pub fn set_presents_with_transaction(&self, transaction: bool) {
         unsafe { msg_send![self, setPresentsWithTransaction: transaction] }
+    }
+
+    pub fn display_sync_enabled(&self) -> bool {
+        unsafe {
+            match msg_send![self, displaySyncEnabled] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn set_display_sync_enabled(&self, sync_enabled: bool) {
+        unsafe { msg_send![self, setDisplaySyncEnabled: sync_enabled] }
     }
 
     pub fn set_edge_antialiasing_mask(&self, mask: u64) {
@@ -468,13 +486,13 @@ pub use {
 pub use mps::*;
 
 #[inline]
-unsafe fn obj_drop<T>(p: *mut T) {
-    msg_send![(p as *mut Object), release]
+fn obj_drop<T>(p: *mut T) {
+    unsafe { msg_send![(p as *mut Object), release] }
 }
 
 #[inline]
-unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
-    msg_send![(p as *mut Object), retain]
+fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
+    unsafe { msg_send![(p as *mut Object), retain] }
 }
 
 #[allow(non_camel_case_types)]

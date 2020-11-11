@@ -121,13 +121,13 @@ impl FunctionConstantValues {
 }
 
 impl FunctionConstantValuesRef {
-    pub unsafe fn set_constant_value_at_index(
+    pub fn set_constant_value_at_index(
         &self,
         index: NSUInteger,
         ty: MTLDataType,
         value: *const std::os::raw::c_void,
     ) {
-        msg_send![self, setConstantValue:value type:ty atIndex:index]
+        unsafe { msg_send![self, setConstantValue:value type:ty atIndex:index] }
     }
 }
 
@@ -149,12 +149,12 @@ impl CompileOptions {
 }
 
 impl CompileOptionsRef {
-    pub unsafe fn preprocessor_defines(&self) -> *mut Object {
-        msg_send![self, preprocessorMacros]
+    pub fn preprocessor_defines(&self) -> *mut Object {
+        unsafe { msg_send![self, preprocessorMacros] }
     }
 
-    pub unsafe fn set_preprocessor_defines(&self, defines: *mut Object) {
-        msg_send![self, setPreprocessorMacros: defines]
+    pub fn set_preprocessor_defines(&self, defines: *mut Object) {
+        unsafe { msg_send![self, setPreprocessorMacros: defines] }
     }
 
     pub fn is_fast_math_enabled(&self) -> bool {

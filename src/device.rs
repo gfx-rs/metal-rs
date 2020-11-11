@@ -1435,15 +1435,19 @@ impl DeviceRef {
     }
 
     #[cfg(feature = "private")]
-    pub unsafe fn vendor(&self) -> &str {
-        let name = msg_send![self, vendorName];
-        crate::nsstring_as_str(name)
+    pub fn vendor(&self) -> &str {
+        unsafe {
+            let name = msg_send![self, vendorName];
+            crate::nsstring_as_str(name)
+        }
     }
 
     #[cfg(feature = "private")]
-    pub unsafe fn family_name(&self) -> &str {
-        let name = msg_send![self, familyName];
-        crate::nsstring_as_str(name)
+    pub fn family_name(&self) -> &str {
+        unsafe {
+            let name = msg_send![self, familyName];
+            crate::nsstring_as_str(name)
+        }
     }
 
     pub fn registry_id(&self) -> u64 {

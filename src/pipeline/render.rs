@@ -163,7 +163,7 @@ foreign_obj_type! {
 
 impl RenderPipelineReflection {
     #[cfg(feature = "private")]
-    pub unsafe fn new(
+    pub fn new(
         vertex_data: *mut std::ffi::c_void,
         fragment_data: *mut std::ffi::c_void,
         vertex_desc: *mut std::ffi::c_void,
@@ -171,18 +171,20 @@ impl RenderPipelineReflection {
         options: u64,
         flags: u64,
     ) -> Self {
-        let class = class!(MTLRenderPipelineReflection);
-        let this: RenderPipelineReflection = msg_send![class, alloc];
-        let this_alias: *mut Object = msg_send![this.as_ref(), initWithVertexData:vertex_data
+        unsafe {
+            let class = class!(MTLRenderPipelineReflection);
+            let this: RenderPipelineReflection = msg_send![class, alloc];
+            let this_alias: *mut Object = msg_send![this.as_ref(), initWithVertexData:vertex_data
                                                                 fragmentData:fragment_data
                                                 serializedVertexDescriptor:vertex_desc
                                                                     device:device
                                                                     options:options
                                                                         flags:flags];
-        if this_alias.is_null() {
-            panic!("[MTLRenderPipelineReflection init] failed");
+            if this_alias.is_null() {
+                panic!("[MTLRenderPipelineReflection init] failed");
+            }
+            this
         }
-        this
     }
 }
 
@@ -339,17 +341,19 @@ impl RenderPipelineDescriptorRef {
     }
 
     #[cfg(feature = "private")]
-    pub unsafe fn serialize_vertex_data(&self) -> *mut std::ffi::c_void {
-        use std::ptr;
-        let flags = 0;
-        let err: *mut Object = ptr::null_mut();
-        msg_send![self, newSerializedVertexDataWithFlags:flags
+    pub fn serialize_vertex_data(&self) -> *mut std::ffi::c_void {
+        unsafe {
+            use std::ptr;
+            let flags = 0;
+            let err: *mut Object = ptr::null_mut();
+            msg_send![self, newSerializedVertexDataWithFlags:flags
                                                     error:err]
+        }
     }
 
     #[cfg(feature = "private")]
-    pub unsafe fn serialize_fragment_data(&self) -> *mut std::ffi::c_void {
-        msg_send![self, serializeFragmentData]
+    pub fn serialize_fragment_data(&self) -> *mut std::ffi::c_void {
+        unsafe { msg_send![self, serializeFragmentData] }
     }
 
     pub fn support_indirect_command_buffers(&self) -> bool {
