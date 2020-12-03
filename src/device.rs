@@ -1486,7 +1486,7 @@ impl DeviceRef {
 
     pub fn location(&self) -> MTLDeviceLocation {
         unsafe { msg_send![self, location] }
-    } 
+    }
 
     pub fn location_number(&self) -> NSUInteger {
         unsafe { msg_send![self, locationNumber] }
