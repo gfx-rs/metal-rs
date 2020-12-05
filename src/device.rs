@@ -54,13 +54,31 @@ pub enum MTLFeatureSet {
     macOS_GPUFamily2_v1 = 10005,
 }
 
+#[repr(i64)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum MTLGPUFamily {
+    Common1 = 3001,
+    Common2 = 3002,
+    Common3 = 3003,
+    Apple1 = 1001,
+    Apple2 = 1002,
+    Apple3 = 1003,
+    Apple4 = 1004,
+    Apple5 = 1005,
+    Apple6 = 1006,
+    Mac1 = 2001,
+    Mac2 = 2002,
+    MacCatalyst1 = 4001,
+    MacCatalyst2 = 4002,
+}
+
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDeviceLocation {
-    MTLDeviceLocationBuiltIn = 0,
-    MTLDeviceLocationSlot = 1,
-    MTLDeviceLocationExternal = 2,
-    MTLDeviceLocationUnspecified = u64::MAX,
+    BuiltIn = 0,
+    Slot = 1,
+    External = 2,
+    Unspecified = u64::MAX,
 }
 
 bitflags! {
@@ -1334,12 +1352,29 @@ impl MTLFeatureSet {
     }
 }
 
-#[allow(non_camel_case_types)]
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLArgumentBuffersTier {
-    tier1 = 0,
-    tier2 = 1,
+    Tier1 = 0,
+    Tier2 = 1,
+}
+
+#[repr(u64)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum MTLReadWriteTextureTier {
+    TierNone = 0,
+    Tier1 = 1,
+    Tier2 = 2,
+}
+
+#[repr(u64)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum MTLCounterSamplingPoint {
+    AtStageBoundary = 0,
+    AtDrawBoundary = 1,
+    AtDispatchBoundary = 2,
+    AtTileDispatchBoundary = 3,
+    AtBlitBoundary = 4,
 }
 
 bitflags! {
@@ -1450,6 +1485,18 @@ impl DeviceRef {
         unsafe { msg_send![self, registryID] }
     }
 
+    pub fn location(&self) -> MTLDeviceLocation {
+        unsafe { msg_send![self, location] }
+    }
+
+    pub fn location_number(&self) -> NSUInteger {
+        unsafe { msg_send![self, locationNumber] }
+    }
+
+    pub fn max_threadgroup_memory_length(&self) -> NSUInteger {
+        unsafe { msg_send![self, maxThreadgroupMemoryLength] }
+    }
+
     pub fn max_threads_per_threadgroup(&self) -> MTLSize {
         unsafe { msg_send![self, maxThreadsPerThreadgroup] }
     }
@@ -1484,12 +1531,14 @@ impl DeviceRef {
         }
     }
 
-    pub fn location(&self) -> MTLDeviceLocation {
-        unsafe { msg_send![self, location] }
-    }
-
-    pub fn location_number(&self) -> NSUInteger {
-        unsafe { msg_send![self, locationNumber] }
+    pub fn supports_raytracing(&self) -> bool {
+        unsafe {
+            match msg_send![self, supportsRaytracing] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
     }
 
     pub fn has_unified_memory(&self) -> bool {
@@ -1520,6 +1569,16 @@ impl DeviceRef {
         }
     }
 
+    pub fn supports_family(&self, family: MTLGPUFamily) -> bool {
+        unsafe {
+            match msg_send![self, supportsFamily: family] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
     pub fn supports_vertex_amplification_count(&self, count: NSUInteger) -> bool {
         unsafe {
             match msg_send![self, supportsVertexAmplificationCount: count] {
@@ -1530,9 +1589,49 @@ impl DeviceRef {
         }
     }
 
-    pub fn supports_sample_count(&self, count: NSUInteger) -> bool {
+    pub fn supports_texture_sample_count(&self, count: NSUInteger) -> bool {
         unsafe {
             match msg_send![self, supportsTextureSampleCount: count] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn supports_shader_barycentric_coordinates(&self) -> bool {
+        unsafe {
+            match msg_send![self, supportsShaderBarycentricCoordinates] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn supports_function_pointers(&self) -> bool {
+        unsafe {
+            match msg_send![self, supportsFunctionPointers] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn supports_dynamic_libraries(&self) -> bool {
+        unsafe {
+            match msg_send![self, supportsDynamicLibraries] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn supports_counter_sampling(&self, sampling_point: MTLCounterSamplingPoint) -> bool {
+        unsafe {
+            match msg_send![self, supportsCounterSampling: sampling_point] {
                 YES => true,
                 NO => false,
                 _ => unreachable!(),
@@ -1548,6 +1647,10 @@ impl DeviceRef {
                 _ => unreachable!(),
             }
         }
+    }
+
+    pub fn new_fence(&self) -> Fence {
+        unsafe { msg_send![self, newFence] }
     }
 
     pub fn new_command_queue(&self) -> CommandQueue {
@@ -1730,16 +1833,12 @@ impl DeviceRef {
         unsafe { msg_send![self, newDepthStencilStateWithDescriptor: descriptor] }
     }
 
-    pub fn argument_buffers_support(&self) -> Option<MTLArgumentBuffersTier> {
-        unsafe {
-            let has_arg_buffers: BOOL =
-                msg_send![self, respondsToSelector: sel!(argumentBuffersSupport)];
-            if has_arg_buffers == YES {
-                Some(msg_send![self, argumentBuffersSupport])
-            } else {
-                None
-            }
-        }
+    pub fn argument_buffers_support(&self) -> MTLArgumentBuffersTier {
+        unsafe { msg_send![self, argumentBuffersSupport] }
+    }
+
+    pub fn read_write_texture_support(&self) -> MTLReadWriteTextureTier {
+        unsafe { msg_send![self, readWriteTextureSupport] }
     }
 
     pub fn new_argument_encoder(
@@ -1759,10 +1858,6 @@ impl DeviceRef {
 
     pub fn new_shared_event(&self) -> SharedEvent {
         unsafe { msg_send![self, newSharedEvent] }
-    }
-
-    pub fn new_fence(&self) -> Fence {
-        unsafe { msg_send![self, newFence] }
     }
 
     pub fn heap_buffer_size_and_align(
@@ -1796,5 +1891,9 @@ impl DeviceRef {
 
     pub fn max_argument_buffer_sampler_count(&self) -> NSUInteger {
         unsafe { msg_send![self, maxArgumentBufferSamplerCount] }
+    }
+
+    pub fn current_allocated_size(&self) -> NSUInteger {
+        unsafe { msg_send![self, currentAllocatedSize] }
     }
 }
