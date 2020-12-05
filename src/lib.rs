@@ -360,6 +360,28 @@ impl MetalLayerRef {
         unsafe { msg_send![self, setPresentsWithTransaction: transaction] }
     }
 
+    pub fn display_sync_enabled(&self) -> bool {
+        unsafe {
+            match msg_send![self, displaySyncEnabled] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn set_display_sync_enabled(&self, enabled: bool) {
+        unsafe { msg_send![self, setDisplaySyncEnabled: enabled] }
+    }
+
+    pub fn maximum_drawable_count(&self) -> NSUInteger {
+        unsafe { msg_send![self, maximumDrawableCount] }
+    }
+
+    pub fn set_maximum_drawable_count(&self, count: NSUInteger) {
+        unsafe { msg_send![self, setMaximumDrawableCount: count] }
+    }
+
     pub fn set_edge_antialiasing_mask(&self, mask: u64) {
         unsafe { msg_send![self, setEdgeAntialiasingMask: mask] }
     }
@@ -407,20 +429,6 @@ impl MetalLayerRef {
 
     pub fn set_opaque(&self, opaque: bool) {
         unsafe { msg_send![self, setOpaque: opaque] }
-    }
-
-    pub fn display_sync_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, displaySyncEnabled] {
-                YES => true,
-                NO => false,
-                _ => unreachable!(),
-            }
-        }
-    }
-
-    pub fn set_display_sync_enabled(&self, display_sync_enabled: bool) {
-        unsafe { msg_send![self, setDisplaySyncEnabled: display_sync_enabled] }
     }
 }
 

@@ -25,8 +25,8 @@ mps = []
 cocoa-foundation = "0.1"
 bitflags = "1"
 log = "0.4"
-block = "0.1.5"
-foreign-types = "0.3"
+block = "0.1.6"
+foreign-types = "0.3.2"
 dispatch = { version = "0.2.0", optional = true }
 
 [dependencies.objc]
@@ -34,7 +34,7 @@ version = "0.2.4"
 features = ["objc_exception"]
 
 [dev-dependencies]
-cocoa = "0.23"
+cocoa = "0.24.0"
 cty = "0.2.1"
 winit = "0.22"
 sema = "0.1.4"

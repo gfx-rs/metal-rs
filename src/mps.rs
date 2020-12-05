@@ -7,6 +7,21 @@
 
 use super::*;
 
+use objc::runtime::{BOOL, YES};
+
+#[link(name = "MetalPerformanceShaders", kind = "framework")]
+extern "C" {
+    fn MPSSupportsMTLDevice(device: *const std::ffi::c_void) -> BOOL;
+}
+
+pub fn mps_supports_device(device: &DeviceRef) -> bool {
+    let b: BOOL = unsafe {
+        let ptr: *const DeviceRef = device;
+        MPSSupportsMTLDevice(ptr as _)
+    };
+    b == YES
+}
+
 pub enum MPSKernel {}
 
 foreign_obj_type! {
@@ -166,7 +181,7 @@ impl RayIntersectorRef {
         unsafe { msg_send![self, setIntersectionDataType: options] }
     }
 
-    pub fn set_intersecion_stride(&self, stride: NSUInteger) {
+    pub fn set_intersection_stride(&self, stride: NSUInteger) {
         unsafe { msg_send![self, setIntersectionStride: stride] }
     }
 
