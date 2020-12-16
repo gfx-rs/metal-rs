@@ -108,13 +108,6 @@ impl ComputePipelineDescriptorRef {
         }
     }
 
-    pub fn set_label(&self, label: &str) {
-        unsafe {
-            let nslabel = crate::nsstring_from_str(label);
-            let () = msg_send![self, setLabel: nslabel];
-        }
-    }
-
     pub fn compute_function(&self) -> Option<&FunctionRef> {
         unsafe { msg_send![self, computeFunction] }
     }

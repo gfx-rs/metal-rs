@@ -221,13 +221,6 @@ impl RenderPipelineDescriptorRef {
         }
     }
 
-    pub fn set_label(&self, label: &str) {
-        unsafe {
-            let nslabel = crate::nsstring_from_str(label);
-            let () = msg_send![self, setLabel: nslabel];
-        }
-    }
-
     pub fn vertex_function(&self) -> Option<&FunctionRef> {
         unsafe { msg_send![self, vertexFunction] }
     }
