@@ -92,6 +92,8 @@ fn main() {
         .with_title("Metal Window Example".to_string())
         .build(&events_loop)
         .unwrap();
+    
+    let mut physical_size = size.to_physical::<u32>(window.scale_factor());
 
     let device = Device::system_default().expect("no device found");
 
@@ -170,6 +172,9 @@ fn main() {
                     WindowEvent::Resized(size) => {
                         layer.set_drawable_size(CGSize::new(size.width as f64, size.height as f64));
                     }
+                    WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
+                        physical_size = *new_inner_size;
+                    }
                     _ => (),
                 },
                 Event::MainEventsCleared => {
@@ -238,8 +243,8 @@ fn main() {
                     encoder.set_scissor_rect(MTLScissorRect {
                         x: 0,
                         y: 0,
-                        width: size.width as _,
-                        height: size.height as _,
+                        width: physical_size.width as _,
+                        height: physical_size.height as _,
                     });
 
                     encoder.set_render_pipeline_state(&triangle_pipeline_state);
