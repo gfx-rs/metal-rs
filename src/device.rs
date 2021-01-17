@@ -1688,6 +1688,7 @@ impl DeviceRef {
                 let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 if library.is_null() {
+                    let () = msg_send![err, release];
                     return Err(message);
                 } else {
                     warn!("Shader warnings: {}", message);
