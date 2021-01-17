@@ -9,6 +9,7 @@ use block::{Block, ConcreteBlock};
 use cocoa_foundation::base::id;
 use cocoa_foundation::foundation::NSUInteger;
 use foreign_types::ForeignType;
+use objc::rc::autoreleasepool;
 use objc::runtime::{Object, BOOL, NO, YES};
 
 use super::*;
@@ -1676,23 +1677,28 @@ impl DeviceRef {
         use cocoa_foundation::base::nil as cocoa_nil;
         use cocoa_foundation::foundation::NSString as cocoa_NSString;
 
+        let mut library: *mut MTLLibrary = ptr::null_mut();
+        let mut error_message: Option<String> = None;
         unsafe {
-            let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
-            let mut err: *mut Object = ptr::null_mut();
-            let library: *mut MTLLibrary = msg_send![self, newLibraryWithSource:source
-                                                                        options:options
-                                                                          error:&mut err];
-            let () = msg_send![source, release];
-            if !err.is_null() {
-                let desc: *mut Object = msg_send![err, localizedDescription];
-                let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
-                let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
-                if library.is_null() {
-                    let () = msg_send![err, release];
-                    return Err(message);
-                } else {
-                    warn!("Shader warnings: {}", message);
+            autoreleasepool(|| {
+                let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
+                let mut err: *mut Object = ptr::null_mut();
+                library = msg_send![self, newLibraryWithSource:source
+                                             options:options
+                                            error:&mut err];
+                if !err.is_null() {
+                    let desc: *mut Object = msg_send![err, localizedDescription];
+                    let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
+                    let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
+                    if library.is_null() {
+                        error_message = Some(message);
+                    } else {
+                        warn!("Shader warnings: {}", message);
+                    }
                 }
+            });
+            if let Some(message) = error_message {
+                return Err(message);
             }
 
             assert!(!library.is_null());

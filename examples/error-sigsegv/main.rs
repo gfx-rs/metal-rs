@@ -8,4 +8,5 @@ fn main() {
     let library = device.new_library_with_source(shader_source, &CompileOptions::new());
     eprintln!("{}", library.is_ok());
   });
+  eprintln!("the autorelease pool does not crash");
 }
