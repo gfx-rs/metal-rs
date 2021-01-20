@@ -681,7 +681,7 @@ impl RenderCommandEncoderRef {
         unsafe { msg_send![self, useHeap: heap] }
     }
 
-    pub fn update_fence(&self, fence: FenceRef, after_stages: MTLRenderStages) {
+    pub fn update_fence(&self, fence: &FenceRef, after_stages: MTLRenderStages) {
         unsafe {
             msg_send![self,
                 updateFence: fence
@@ -690,7 +690,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn wait_for_fence(&self, fence: FenceRef, before_stages: MTLRenderStages) {
+    pub fn wait_for_fence(&self, fence: &FenceRef, before_stages: MTLRenderStages) {
         unsafe {
             msg_send![self,
                 waitForFence: fence
