@@ -7,6 +7,21 @@
 
 use super::*;
 
+use objc::runtime::{BOOL, YES};
+
+#[link(name = "MetalPerformanceShaders", kind = "framework")]
+extern "C" {
+    fn MPSSupportsMTLDevice(device: *const std::ffi::c_void) -> BOOL;
+}
+
+pub fn mps_supports_device(device: &DeviceRef) -> bool {
+    let b: BOOL = unsafe {
+        let ptr: *const DeviceRef = device;
+        MPSSupportsMTLDevice(ptr as _)
+    };
+    b == YES
+}
+
 pub enum MPSKernel {}
 
 foreign_obj_type! {
@@ -166,7 +181,7 @@ impl RayIntersectorRef {
         unsafe { msg_send![self, setIntersectionDataType: options] }
     }
 
-    pub fn set_intersecion_stride(&self, stride: NSUInteger) {
+    pub fn set_intersection_stride(&self, stride: NSUInteger) {
         unsafe { msg_send![self, setIntersectionStride: stride] }
     }
 
@@ -232,6 +247,36 @@ impl RayIntersectorRef {
     }
 }
 
+/// A group of acceleration structures which may be used together in an instance acceleration structure
+pub enum MPSAccelerationStructureGroup {}
+
+foreign_obj_type! {
+    type CType = MPSAccelerationStructureGroup;
+    pub struct AccelerationStructureGroup;
+    pub struct AccelerationStructureGroupRef;
+}
+
+impl AccelerationStructureGroup {
+    pub fn new_with_device(device: &DeviceRef) -> Option<Self> {
+        unsafe {
+            let group: AccelerationStructureGroup =
+                msg_send![class!(MPSAccelerationStructureGroup), alloc];
+            let ptr: *mut Object = msg_send![group.as_ref(), initWithDevice: device];
+            if ptr.is_null() {
+                None
+            } else {
+                Some(group)
+            }
+        }
+    }
+}
+
+impl AccelerationStructureGroupRef {
+    pub fn device(&self) -> &DeviceRef {
+        unsafe { msg_send![self, device] }
+    }
+}
+
 /// The base class for data structures that are built over geometry and used to accelerate ray tracing.
 pub enum MPSAccelerationStructure {}
 
@@ -252,6 +297,10 @@ impl AccelerationStructureRef {
 
     pub fn set_usage(&self, usage: MPSAccelerationStructureUsage) {
         unsafe { msg_send![self, setUsage: usage] }
+    }
+
+    pub fn group(&self) -> &AccelerationStructureGroupRef {
+        unsafe { msg_send![self, group] }
     }
 
     pub fn encode_refit_to_command_buffer(&self, buffer: &CommandBufferRef) {
@@ -338,6 +387,125 @@ impl TriangleAccelerationStructureRef {
 
     pub fn set_triangle_count(&self, count: NSUInteger) {
         unsafe { msg_send![self, setTriangleCount: count] }
+    }
+}
+
+#[repr(u64)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum MPSTransformType {
+    Float4x4 = 0,
+    Identity = 1,
+}
+
+/// An acceleration structure built over instances of other acceleration structures
+pub enum MPSInstanceAccelerationStructure {}
+
+foreign_obj_type! {
+    type CType = MPSInstanceAccelerationStructure;
+    pub struct InstanceAccelerationStructure;
+    pub struct InstanceAccelerationStructureRef;
+    type ParentType = AccelerationStructureRef;
+}
+
+impl InstanceAccelerationStructure {
+    pub fn init_with_group(group: &AccelerationStructureGroupRef) -> Option<Self> {
+        unsafe {
+            let structure: InstanceAccelerationStructure =
+                msg_send![class!(MPSInstanceAccelerationStructure), alloc];
+            let ptr: *mut Object = msg_send![structure.as_ref(), initWithGroup: group];
+            if ptr.is_null() {
+                None
+            } else {
+                Some(structure)
+            }
+        }
+    }
+}
+
+impl InstanceAccelerationStructureRef {
+    /// Marshal to Rust Vec
+    pub fn acceleration_structures(&self) -> Vec<PolygonAccelerationStructure> {
+        unsafe {
+            let acs: *mut Object = msg_send![self, accelerationStructures];
+            let count: NSUInteger = msg_send![acs, count];
+            let ret = (0..count)
+                .map(|i| {
+                    let ac = msg_send![acs, objectAtIndex: i];
+                    PolygonAccelerationStructure::from_ptr(ac)
+                })
+                .collect();
+            ret
+        }
+    }
+
+    /// Marshal from Rust slice
+    pub fn set_acceleration_structures(&self, acs: &[&PolygonAccelerationStructureRef]) {
+        let ns_array = Array::<PolygonAccelerationStructure>::from_slice(acs);
+        unsafe { msg_send![self, setAccelerationStructures: ns_array] }
+    }
+
+    pub fn instance_buffer(&self) -> &BufferRef {
+        unsafe { msg_send![self, instanceBuffer] }
+    }
+
+    pub fn set_instance_buffer(&self, buffer: &BufferRef) {
+        unsafe { msg_send![self, setInstanceBuffer: buffer] }
+    }
+
+    pub fn instance_buffer_offset(&self) -> NSUInteger {
+        unsafe { msg_send![self, instanceBufferOffset] }
+    }
+
+    pub fn set_instance_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setInstanceBufferOffset: offset] }
+    }
+
+    pub fn transform_buffer(&self) -> &BufferRef {
+        unsafe { msg_send![self, transformBuffer] }
+    }
+
+    pub fn set_transform_buffer(&self, buffer: &BufferRef) {
+        unsafe { msg_send![self, setTransformBuffer: buffer] }
+    }
+
+    pub fn transform_buffer_offset(&self) -> NSUInteger {
+        unsafe { msg_send![self, transformBufferOffset] }
+    }
+
+    pub fn set_transform_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setTransformBufferOffset: offset] }
+    }
+
+    pub fn transform_type(&self) -> MPSTransformType {
+        unsafe { msg_send![self, transformType] }
+    }
+
+    pub fn set_transform_type(&self, transform_type: MPSTransformType) {
+        unsafe { msg_send![self, setTransformType: transform_type] }
+    }
+
+    pub fn mask_buffer(&self) -> &BufferRef {
+        unsafe { msg_send![self, maskBuffer] }
+    }
+
+    pub fn set_mask_buffer(&self, buffer: &BufferRef) {
+        unsafe { msg_send![self, setMaskBuffer: buffer] }
+    }
+
+    pub fn mask_buffer_offset(&self) -> NSUInteger {
+        unsafe { msg_send![self, maskBufferOffset] }
+    }
+
+    pub fn set_mask_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setMaskBufferOffset: offset] }
+    }
+
+    pub fn instance_count(&self) -> NSUInteger {
+        unsafe { msg_send![self, instanceCount] }
+    }
+
+    pub fn set_instance_count(&self, count: NSUInteger) {
+        unsafe { msg_send![self, setInstanceCount: count] }
     }
 }
 

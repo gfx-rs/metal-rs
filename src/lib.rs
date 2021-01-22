@@ -360,6 +360,28 @@ impl MetalLayerRef {
         unsafe { msg_send![self, setPresentsWithTransaction: transaction] }
     }
 
+    pub fn display_sync_enabled(&self) -> bool {
+        unsafe {
+            match msg_send![self, displaySyncEnabled] {
+                YES => true,
+                NO => false,
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    pub fn set_display_sync_enabled(&self, enabled: bool) {
+        unsafe { msg_send![self, setDisplaySyncEnabled: enabled] }
+    }
+
+    pub fn maximum_drawable_count(&self) -> NSUInteger {
+        unsafe { msg_send![self, maximumDrawableCount] }
+    }
+
+    pub fn set_maximum_drawable_count(&self, count: NSUInteger) {
+        unsafe { msg_send![self, setMaximumDrawableCount: count] }
+    }
+
     pub fn set_edge_antialiasing_mask(&self, mask: u64) {
         unsafe { msg_send![self, setEdgeAntialiasingMask: mask] }
     }
@@ -407,20 +429,6 @@ impl MetalLayerRef {
 
     pub fn set_opaque(&self, opaque: bool) {
         unsafe { msg_send![self, setOpaque: opaque] }
-    }
-
-    pub fn display_sync_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, displaySyncEnabled] {
-                YES => true,
-                NO => false,
-                _ => unreachable!(),
-            }
-        }
-    }
-
-    pub fn set_display_sync_enabled(&self, display_sync_enabled: bool) {
-        unsafe { msg_send![self, setDisplaySyncEnabled: display_sync_enabled] }
     }
 }
 
@@ -490,3 +498,31 @@ unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
 
 #[allow(non_camel_case_types)]
 type c_size_t = usize;
+
+// TODO: expand supported interface
+pub enum NSURL {}
+
+foreign_obj_type! {
+    type CType = NSURL;
+    pub struct URL;
+    pub struct URLRef;
+}
+
+impl URL {
+    pub fn new_with_string(string: &str) -> Self {
+        unsafe {
+            let ns_str = crate::nsstring_from_str(string);
+            let class = class!(NSURL);
+            msg_send![class, URLWithString: ns_str]
+        }
+    }
+}
+
+impl URLRef {
+    pub fn absolute_string(&self) -> &str {
+        unsafe {
+            let absolute_string = msg_send![self, absoluteString];
+            crate::nsstring_as_str(absolute_string)
+        }
+    }
+}

@@ -24,6 +24,16 @@ pub struct MTLSize {
     pub depth: NSUInteger,
 }
 
+impl MTLSize {
+    pub fn new(width: NSUInteger, height: NSUInteger, depth: NSUInteger) -> Self {
+        Self {
+            width,
+            height,
+            depth,
+        }
+    }
+}
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
 pub struct MTLRegion {

@@ -681,7 +681,7 @@ impl RenderCommandEncoderRef {
         unsafe { msg_send![self, useHeap: heap] }
     }
 
-    pub fn update_fence(&self, fence: FenceRef, after_stages: MTLRenderStages) {
+    pub fn update_fence(&self, fence: &FenceRef, after_stages: MTLRenderStages) {
         unsafe {
             msg_send![self,
                 updateFence: fence
@@ -690,7 +690,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    pub fn wait_for_fence(&self, fence: FenceRef, before_stages: MTLRenderStages) {
+    pub fn wait_for_fence(&self, fence: &FenceRef, before_stages: MTLRenderStages) {
         unsafe {
             msg_send![self,
                 waitForFence: fence
@@ -987,12 +987,21 @@ impl ComputeCommandEncoderRef {
     pub fn dispatch_thread_groups(
         &self,
         thread_groups_count: MTLSize,
-        threads_per_thread_group: MTLSize,
+        threads_per_threadgroup: MTLSize,
     ) {
         unsafe {
             msg_send![self,
                 dispatchThreadgroups:thread_groups_count
-                threadsPerThreadgroup:threads_per_thread_group
+                threadsPerThreadgroup:threads_per_threadgroup
+            ]
+        }
+    }
+
+    pub fn dispatch_threads(&self, threads_per_grid: MTLSize, threads_per_threadgroup: MTLSize) {
+        unsafe {
+            msg_send![self,
+                dispatchThreads:threads_per_grid
+                threadsPerThreadgroup:threads_per_threadgroup
             ]
         }
     }
@@ -1001,13 +1010,13 @@ impl ComputeCommandEncoderRef {
         &self,
         buffer: &BufferRef,
         offset: NSUInteger,
-        threads_per_thread_group: MTLSize,
+        threads_per_threadgroup: MTLSize,
     ) {
         unsafe {
             msg_send![self,
                 dispatchThreadgroupsWithIndirectBuffer:buffer
                 indirectBufferOffset:offset
-                threadsPerThreadgroup:threads_per_thread_group
+                threadsPerThreadgroup:threads_per_threadgroup
             ]
         }
     }
@@ -1141,6 +1150,35 @@ impl ArgumentEncoderRef {
                 withRange: NSRange {
                     location: start_index,
                     length: data.len() as _,
+                }
+            ]
+        }
+    }
+
+    pub fn set_render_pipeline_state(
+        &self,
+        at_index: NSUInteger,
+        pipeline: &RenderPipelineStateRef,
+    ) {
+        unsafe {
+            msg_send![self,
+                setRenderPipelineState: pipeline
+                atIndex: at_index
+            ]
+        }
+    }
+
+    pub fn set_render_pipeline_states(
+        &self,
+        start_index: NSUInteger,
+        pipelines: &[&RenderPipelineStateRef],
+    ) {
+        unsafe {
+            msg_send![self,
+                setRenderPipelineStates: pipelines.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: pipelines.len() as _,
                 }
             ]
         }
