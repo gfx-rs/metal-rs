@@ -997,11 +997,11 @@ impl ComputeCommandEncoderRef {
         }
     }
 
-    pub fn dispatch_threads(&self, threads_per_grid: MTLSize, threads_per_threadgroup: MTLSize) {
+    pub fn dispatch_threads(&self, threads_per_grid: MTLSize, threads_per_thread_group: MTLSize) {
         unsafe {
             msg_send![self,
                 dispatchThreads:threads_per_grid
-                threadsPerThreadgroup:threads_per_threadgroup
+                threadsPerThreadgroup:threads_per_thread_group
             ]
         }
     }
