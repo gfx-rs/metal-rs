@@ -50,7 +50,7 @@ impl BufferRef {
     }
 
     /// Only available on (macos(10.15), NOT available on (ios)
-    pub fn new_remote_buffer_view_for_device(&self, device: &DeviceRef) -> &BufferRef {
+    pub fn new_remote_buffer_view_for_device(&self, device: &DeviceRef) -> Buffer {
         unsafe { msg_send![self, newRemoteBufferViewForDevice: device] }
     }
 

@@ -14,6 +14,7 @@ use objc::runtime::{Object, NO, YES};
 use super::*;
 
 use std::ffi::CStr;
+use std::os::raw::c_char;
 use std::path::Path;
 use std::ptr;
 
@@ -1708,7 +1709,7 @@ impl DeviceRef {
             let () = msg_send![source, release];
             if !err.is_null() {
                 let desc: *mut Object = msg_send![err, localizedDescription];
-                let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
+                let compile_error: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 if library.is_null() {
                     return Err(message);
@@ -1767,7 +1768,7 @@ impl DeviceRef {
             if !err.is_null() {
                 // FIXME: copy pasta
                 let desc: *mut Object = msg_send![err, localizedDescription];
-                let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
+                let compile_error: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 Err(message)
             } else {
@@ -1785,7 +1786,7 @@ impl DeviceRef {
             if !err.is_null() {
                 // FIXME: copy pasta
                 let desc: *mut Object = msg_send![err, localizedDescription];
-                let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
+                let compile_error: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 Err(message)
             } else {
@@ -1806,7 +1807,7 @@ impl DeviceRef {
             if !err.is_null() {
                 // TODO: copy pasta
                 let desc: *mut Object = msg_send![err, localizedDescription];
-                let c_msg: *const std::os::raw::c_char = msg_send![desc, UTF8String];
+                let c_msg: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(c_msg).to_string_lossy().into_owned();
                 Err(message)
             } else {
