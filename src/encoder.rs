@@ -987,12 +987,12 @@ impl ComputeCommandEncoderRef {
     pub fn dispatch_thread_groups(
         &self,
         thread_groups_count: MTLSize,
-        threads_per_thread_group: MTLSize,
+        threads_per_threadgroup: MTLSize,
     ) {
         unsafe {
             msg_send![self,
                 dispatchThreadgroups:thread_groups_count
-                threadsPerThreadgroup:threads_per_thread_group
+                threadsPerThreadgroup:threads_per_threadgroup
             ]
         }
     }
@@ -1010,13 +1010,13 @@ impl ComputeCommandEncoderRef {
         &self,
         buffer: &BufferRef,
         offset: NSUInteger,
-        threads_per_thread_group: MTLSize,
+        threads_per_threadgroup: MTLSize,
     ) {
         unsafe {
             msg_send![self,
                 dispatchThreadgroupsWithIndirectBuffer:buffer
                 indirectBufferOffset:offset
-                threadsPerThreadgroup:threads_per_thread_group
+                threadsPerThreadgroup:threads_per_threadgroup
             ]
         }
     }

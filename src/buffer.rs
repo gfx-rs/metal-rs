@@ -29,19 +29,29 @@ impl BufferRef {
         unsafe { msg_send![self, didModifyRange: range] }
     }
 
-    pub fn new_texture_from_contents(
+    pub fn new_texture_with_descriptor(
         &self,
         descriptor: &TextureDescriptorRef,
         offset: u64,
-        stride: u64,
+        bytes_per_row: u64,
     ) -> Texture {
         unsafe {
             msg_send![self,
                 newTextureWithDescriptor:descriptor
                 offset:offset
-                bytesPerRow:stride
+                bytesPerRow:bytes_per_row
             ]
         }
+    }
+
+    /// Only available on macos(10.15), NOT available on (ios)
+    pub fn remote_storage_buffer(&self) -> &BufferRef {
+        unsafe { msg_send![self, remoteStorageBuffer] }
+    }
+
+    /// Only available on (macos(10.15), NOT available on (ios)
+    pub fn new_remote_buffer_view_for_device(&self, device: &DeviceRef) -> Buffer {
+        unsafe { msg_send![self, newRemoteBufferViewForDevice: device] }
     }
 
     pub fn add_debug_marker(&self, name: &str, range: crate::NSRange) {

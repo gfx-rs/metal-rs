@@ -498,3 +498,31 @@ unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
 
 #[allow(non_camel_case_types)]
 type c_size_t = usize;
+
+// TODO: expand supported interface
+pub enum NSURL {}
+
+foreign_obj_type! {
+    type CType = NSURL;
+    pub struct URL;
+    pub struct URLRef;
+}
+
+impl URL {
+    pub fn new_with_string(string: &str) -> Self {
+        unsafe {
+            let ns_str = crate::nsstring_from_str(string);
+            let class = class!(NSURL);
+            msg_send![class, URLWithString: ns_str]
+        }
+    }
+}
+
+impl URLRef {
+    pub fn absolute_string(&self) -> &str {
+        unsafe {
+            let absolute_string = msg_send![self, absoluteString];
+            crate::nsstring_as_str(absolute_string)
+        }
+    }
+}

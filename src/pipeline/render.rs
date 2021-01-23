@@ -48,10 +48,12 @@ pub enum MTLBlendOperation {
 
 bitflags! {
     pub struct MTLColorWriteMask: NSUInteger {
+        const None  = 0;
         const Red   = 0x1 << 3;
         const Green = 0x1 << 2;
         const Blue  = 0x1 << 1;
         const Alpha = 0x1 << 0;
+        const All   = 0xf;
     }
 }
 
@@ -64,6 +66,11 @@ pub enum MTLPrimitiveTopologyClass {
     Line = 2,
     Triangle = 3,
 }
+
+// TODO: MTLTessellationPartitionMode
+// TODO: MTLTessellationFactorStepFunction
+// TODO: MTLTessellationFactorFormat
+// TODO: MTLTessellationControlPointIndexType
 
 pub enum MTLRenderPipelineColorAttachmentDescriptor {}
 
@@ -252,12 +259,22 @@ impl RenderPipelineDescriptorRef {
         unsafe { msg_send![self, setVertexDescriptor: descriptor] }
     }
 
+    /// DEPRECATED - aliases rasterSampleCount property
     pub fn sample_count(&self) -> NSUInteger {
         unsafe { msg_send![self, sampleCount] }
     }
 
+    /// DEPRECATED - aliases rasterSampleCount property
     pub fn set_sample_count(&self, count: NSUInteger) {
         unsafe { msg_send![self, setSampleCount: count] }
+    }
+
+    pub fn raster_sample_count(&self) -> NSUInteger {
+        unsafe { msg_send![self, rasterSampleCount] }
+    }
+
+    pub fn set_raster_sample_count(&self, count: NSUInteger) {
+        unsafe { msg_send![self, setRasterSampleCount: count] }
     }
 
     pub fn max_vertex_amplification_count(&self) -> NSUInteger {
@@ -373,6 +390,11 @@ impl RenderPipelineDescriptorRef {
     pub fn fragment_buffers(&self) -> Option<&PipelineBufferDescriptorArrayRef> {
         unsafe { msg_send![self, fragmentBuffers] }
     }
+
+    // TODO: tesselation stuff
+
+    // TODO: binaryArchives
+    // @property (readwrite, nullable, nonatomic, copy) NSArray<id<MTLBinaryArchive>> *binaryArchives API_AVAILABLE(macos(11.0), ios(14.0));
 
     pub fn reset(&self) {
         unsafe { msg_send![self, reset] }
