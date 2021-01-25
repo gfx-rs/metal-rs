@@ -46,4 +46,4 @@ jobs:
       run: cargo check --all-features
 
     - name: Run all tests
-      run: cargo test --all
+      run: cargo test --all-features
