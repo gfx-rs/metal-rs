@@ -2041,4 +2041,9 @@ impl DeviceRef {
     pub fn current_allocated_size(&self) -> NSUInteger {
         unsafe { msg_send![self, currentAllocatedSize] }
     }
+
+    /// Only available on (macos(10.14), ios(12.0), tvos(12.0))
+    pub fn max_buffer_length(&self) -> NSUInteger {
+        unsafe { msg_send![self, maxBufferLength] }
+    }
 }
