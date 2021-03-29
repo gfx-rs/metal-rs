@@ -17,4 +17,8 @@ impl DrawableRef {
     pub fn present(&self) {
         unsafe { msg_send![self, present] }
     }
+
+    pub fn drawable_id(&self) -> NSUInteger {
+        unsafe { msg_send![self, drawableID] }
+    }
 }
