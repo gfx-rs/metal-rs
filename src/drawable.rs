@@ -5,6 +5,8 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use cocoa_foundation::foundation::NSUInteger;
+
 pub enum MTLDrawable {}
 
 foreign_obj_type! {
