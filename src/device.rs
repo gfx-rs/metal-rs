@@ -1799,10 +1799,10 @@ impl DeviceRef {
     pub fn new_binary_archive_with_descriptor(
         &self,
         descriptor: &BinaryArchiveDescriptorRef,
-    ) -> Result<(), String> {
+    ) -> Result<BinaryArchive, String> {
         unsafe {
             let mut err: *mut Object = ptr::null_mut();
-            let _r: () = msg_send![self, newBinaryArchiveWithDescriptor:descriptor
+            let binary_archive: *mut MTLBinaryArchive = msg_send![self, newBinaryArchiveWithDescriptor:descriptor
                                                      error:&mut err];
             if !err.is_null() {
                 // TODO: copy pasta
@@ -1811,7 +1811,7 @@ impl DeviceRef {
                 let message = CStr::from_ptr(c_msg).to_string_lossy().into_owned();
                 Err(message)
             } else {
-                Ok(())
+                Ok(BinaryArchive::from_ptr(binary_archive))
             }
         }
     }
