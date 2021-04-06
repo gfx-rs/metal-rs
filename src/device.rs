@@ -537,6 +537,14 @@ impl MTLFeatureSet {
         }
     }
 
+    pub fn supports_binary_archive(&self) -> bool {
+        match self.os() {
+            OS::iOS => self.gpu_family() >= 3,
+            OS::tvOS => self.gpu_family() >= 3,
+            OS::macOS => self.gpu_family() >= 1,
+        }
+    }
+
     pub fn max_vertex_attributes(&self) -> u32 {
         31
     }
