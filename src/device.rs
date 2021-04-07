@@ -1844,6 +1844,27 @@ impl DeviceRef {
         }
     }
 
+    /// Useful for debugging binary archives.
+    pub fn new_render_pipeline_state_with_fail_on_binary_archive_miss(
+        &self,
+        descriptor: &RenderPipelineDescriptorRef,
+    ) -> Result<RenderPipelineState, String> {
+        unsafe {
+            let pipeline_options = MTLPipelineOption::FailOnBinaryArchiveMiss;
+
+            let reflection: *mut MTLRenderPipelineReflection = std::ptr::null_mut();
+
+            let pipeline_state: *mut MTLRenderPipelineState = try_objc! { err =>
+                msg_send![self, newRenderPipelineStateWithDescriptor:descriptor
+                                                             options:pipeline_options
+                                                          reflection:reflection
+                                                               error:&mut err]
+            };
+
+            Ok(RenderPipelineState::from_ptr(pipeline_state))
+        }
+    }
+
     pub fn new_render_pipeline_state(
         &self,
         descriptor: &RenderPipelineDescriptorRef,
