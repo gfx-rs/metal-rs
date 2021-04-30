@@ -48,6 +48,6 @@ debugging Metal applications in XCode.
 
 # Capture GPU Command Data to a File
 
-TODO: Show an example of capturing data without using XCode by using the capture descriptor.
+You can also [capture GPU command data programatically](https://developer.apple.com/documentation/metal/frame_capture_debugging_tools/capturing_gpu_command_data_programmatically). 
 
-https://developer.apple.com/documentation/metal/frame_capture_debugging_tools/capturing_gpu_command_data_programmatically
+Note that Xcode has a closed source approach to how it sets the `GT_HOST_URL_MTL` environment variable that is required for captures, so you must run your application within Xcode in order to use the frame capture debugging tools.
