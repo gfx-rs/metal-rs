@@ -1744,6 +1744,8 @@ impl DeviceRef {
                                              error:&mut err]
             };
 
+            let () = msg_send![filename, release];
+
             Ok(Library::from_ptr(library))
         }
     }
