@@ -21,7 +21,7 @@ private = []
 mps = []
 
 [dependencies]
-cocoa-foundation = "0.1"
+core-graphics-types = "0.1"
 bitflags = "1"
 log = "0.4"
 block = "0.1.6"

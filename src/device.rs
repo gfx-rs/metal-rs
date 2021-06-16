@@ -5,18 +5,18 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use super::*;
+
 use block::{Block, ConcreteBlock};
-use cocoa_foundation::base::id;
-use cocoa_foundation::foundation::NSUInteger;
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
 
-use super::*;
-
-use std::ffi::CStr;
-use std::os::raw::c_char;
-use std::path::Path;
-use std::ptr;
+use std::{
+    ffi::CStr,
+    os::raw::c_char,
+    path::Path,
+    ptr,
+};
 
 #[allow(non_camel_case_types)]
 #[repr(u64)]
@@ -1421,9 +1421,9 @@ extern "C" {
 }
 
 #[allow(non_camel_case_types)]
-type dispatch_data_t = id;
+type dispatch_data_t = *mut Object;
 #[allow(non_camel_case_types)]
-pub type dispatch_queue_t = id;
+pub type dispatch_queue_t = *mut Object;
 #[allow(non_camel_case_types)]
 type dispatch_block_t = *const Block<(), ()>;
 
@@ -1705,11 +1705,9 @@ impl DeviceRef {
         src: &str,
         options: &CompileOptionsRef,
     ) -> Result<Library, String> {
-        use cocoa_foundation::base::nil as cocoa_nil;
-        use cocoa_foundation::foundation::NSString as cocoa_NSString;
 
+        let source = nsstring_from_str(src);
         unsafe {
-            let source = cocoa_NSString::alloc(cocoa_nil).init_str(src);
             let mut err: *mut Object = ptr::null_mut();
             let library: *mut MTLLibrary = msg_send![self, newLibraryWithSource:source
                                                                         options:options
@@ -1732,13 +1730,8 @@ impl DeviceRef {
     }
 
     pub fn new_library_with_file<P: AsRef<Path>>(&self, file: P) -> Result<Library, String> {
-        use cocoa_foundation::base::nil as cocoa_nil;
-        use cocoa_foundation::foundation::NSString as cocoa_NSString;
-
+        let filename = nsstring_from_str(file.as_ref().to_string_lossy().as_ref());
         unsafe {
-            let filename =
-                cocoa_NSString::alloc(cocoa_nil).init_str(file.as_ref().to_string_lossy().as_ref());
-
             let library: *mut MTLLibrary = try_objc! { err =>
                 msg_send![self, newLibraryWithFile:filename.as_ref()
                                              error:&mut err]
