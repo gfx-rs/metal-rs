@@ -21,14 +21,13 @@ use std::{
     borrow::{Borrow, ToOwned},
     marker::PhantomData,
     mem,
-    os::raw::c_void,
     ops::Deref,
+    os::raw::c_void,
 };
 
 use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
-
 
 #[cfg(target_pointer_width = "64")]
 pub type NSInteger = i64;
