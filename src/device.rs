@@ -11,12 +11,7 @@ use block::{Block, ConcreteBlock};
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
 
-use std::{
-    ffi::CStr,
-    os::raw::c_char,
-    path::Path,
-    ptr,
-};
+use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
 
 #[allow(non_camel_case_types)]
 #[repr(u64)]
@@ -1705,7 +1700,6 @@ impl DeviceRef {
         src: &str,
         options: &CompileOptionsRef,
     ) -> Result<Library, String> {
-
         let source = nsstring_from_str(src);
         unsafe {
             let mut err: *mut Object = ptr::null_mut();
