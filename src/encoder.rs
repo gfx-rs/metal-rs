@@ -7,8 +7,6 @@
 
 use super::*;
 
-use cocoa_foundation::foundation::{NSInteger, NSUInteger};
-
 use std::ops::Range;
 
 #[repr(u64)]
