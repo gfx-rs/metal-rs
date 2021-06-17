@@ -1899,6 +1899,21 @@ impl DeviceRef {
         }
     }
 
+    pub fn new_buffer_with_bytes_no_copy(
+        &self,
+        bytes: *const std::ffi::c_void,
+        length: NSUInteger,
+        options: MTLResourceOptions,
+        deallocator: Option<&Block<(*const std::ffi::c_void, NSUInteger), ()>>,
+    ) -> Buffer {
+        unsafe {
+            msg_send![self, newBufferWithBytesNoCopy:bytes
+                length:length
+                options:options
+                deallocator:deallocator]
+        }
+    }
+
     pub fn new_buffer_with_data(
         &self,
         bytes: *const std::ffi::c_void,
