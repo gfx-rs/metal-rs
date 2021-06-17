@@ -1706,7 +1706,6 @@ impl DeviceRef {
             let library: *mut MTLLibrary = msg_send![self, newLibraryWithSource:source
                                                                         options:options
                                                                           error:&mut err];
-            let () = msg_send![source, release];
             if !err.is_null() {
                 let desc: *mut Object = msg_send![err, localizedDescription];
                 let compile_error: *const c_char = msg_send![desc, UTF8String];
@@ -1730,9 +1729,6 @@ impl DeviceRef {
                 msg_send![self, newLibraryWithFile:filename.as_ref()
                                              error:&mut err]
             };
-
-            let () = msg_send![filename, release];
-
             Ok(Library::from_ptr(library))
         }
     }
