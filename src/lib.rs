@@ -25,7 +25,7 @@ use std::{
     os::raw::c_void,
 };
 
-use core_graphics_types::{base::CGFloat, geometry::CGSize};
+pub use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
 
