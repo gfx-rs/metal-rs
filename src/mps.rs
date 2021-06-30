@@ -548,3 +548,211 @@ pub struct MPSIntersectionDistancePrimitiveIndexCoordinates {
     /// if the intersection type is `MPSIntersectionTypeAny`.
     pub coordinates: [f32; 2],
 }
+
+pub enum MPSMatrixDescriptor {}
+
+foreign_obj_type! {
+    type CType = MPSMatrixDescriptor;
+    pub struct MatrixDescriptor;
+    pub struct MatrixDescriptorRef;
+}
+
+impl MatrixDescriptor {
+    pub fn new<'a>(rows: NSUInteger, columns: NSUInteger, row_bytes: NSUInteger, data_type: MPSDataType) -> &'a MatrixDescriptorRef {
+        unsafe {
+            let class = class!(MPSMatrixDescriptor);
+            msg_send![class, matrixDescriptorWithRows: rows columns: columns rowBytes: row_bytes dataType: data_type]
+        }
+    }
+}
+
+impl MatrixDescriptorRef {
+    pub fn set_rows(&self, rows: NSUInteger) {
+        unsafe { msg_send![self, setRows: rows] }
+    }
+
+    pub fn set_columns(&self, columns: NSUInteger) {
+        unsafe { msg_send![self, setColumns: columns] }
+    }
+
+    pub fn set_data_type(&self, ty: MPSDataType) {
+        unsafe { msg_send![self, setDataType: ty] }
+    }
+
+    pub fn set_row_bytes(&self, row_bytes: NSUInteger) {
+        unsafe { msg_send![self, setRowBytes: row_bytes] }
+    }
+}
+
+pub enum MPSMatrix {}
+
+foreign_obj_type! {
+    type CType = MPSMatrix;
+    pub struct Matrix;
+    pub struct MatrixRef;
+}
+
+impl Matrix {
+    pub fn init_with_buffer(buffer: &BufferRef, descriptor: &MatrixDescriptorRef) -> Option<Self> {
+        unsafe {
+            let matrix: Matrix = msg_send![class!(MPSMatrix), alloc];
+            let ptr: *mut Object = msg_send![matrix.as_ref(), initWithBuffer: buffer descriptor: descriptor];
+            if ptr.is_null() {
+                None
+            } else {
+                Some(matrix)
+            }
+        }
+    }
+
+    pub fn init_with_buffer_and_offset(buffer: &BufferRef, offset: NSUInteger, descriptor: &MatrixDescriptorRef) -> Option<Self> {
+        unsafe {
+            let matrix: Matrix = msg_send![class!(MPSMatrix), alloc];
+            let ptr: *mut Object = msg_send![matrix.as_ref(), initWithBuffer: buffer offset: offset descriptor: descriptor];
+            if ptr.is_null() {
+                None
+            } else {
+                Some(matrix)
+            }
+        }
+    }
+}
+
+impl MatrixRef {
+    pub fn set_device(&self, device: &DeviceRef) {
+        unsafe { msg_send![self, setDevice: device] }
+    }
+
+    pub fn set_rows(&self, rows: NSUInteger) {
+        unsafe { msg_send![self, setRows: rows] }
+    }
+
+    pub fn set_columns(&self, columns: NSUInteger) {
+        unsafe { msg_send![self, setColumns: columns] }
+    }
+
+    pub fn set_data_type(&self, ty: MPSDataType) {
+        unsafe { msg_send![self, setDataType: ty] }
+    }
+
+    pub fn set_row_bytes(&self, row_bytes: NSUInteger) {
+        unsafe { msg_send![self, setRowBytes: row_bytes] }
+    }
+
+    pub fn set_data(&self, data: &BufferRef) {
+        unsafe { msg_send![self, setData: data] }
+    }
+
+    pub fn set_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setOffset: offset] }
+    }
+
+    pub fn resource_size(&self) -> NSUInteger {
+        unsafe { msg_send![self, resourceSize] }
+    }
+
+    pub fn synchronize_command_buffer(&self, command_buffer: &CommandBufferRef) {
+        unsafe { msg_send![self, synchronizeOnCommandBuffer: command_buffer] }
+    }
+}
+
+pub enum MPSMatrixMultiplication {}
+
+foreign_obj_type! {
+    type CType = MPSMatrixMultiplication;
+    pub struct MatrixMultiplication;
+    pub struct MatrixMultiplicationRef;
+}
+
+impl MatrixMultiplication {
+    pub fn init(
+        device: &DeviceRef,
+        result_rows: NSUInteger,
+        result_columns: NSUInteger,
+        interior_columns: NSUInteger) -> Option<Self>
+    {
+        unsafe {
+            let matmul: MatrixMultiplication = msg_send![class!(MPSMatrixMultiplication), alloc];
+            let ptr: *mut Object = msg_send![
+                matmul.as_ref(),
+                initWithDevice: device
+                resultRows: result_rows
+                resultColumns: result_columns
+                interiorColumns: interior_columns];
+            if ptr.is_null() {
+                None
+            } else {
+                Some(matmul)
+            }
+        }
+    }
+
+    pub fn init_with_detail(
+        device: &DeviceRef,
+        transpose_left: BOOL,
+        transpose_right: BOOL,
+        result_rows: NSUInteger,
+        result_columns: NSUInteger,
+        interior_columns: NSUInteger,
+        alpha: f64,
+        beta: f64) -> Option<Self>
+    {
+        unsafe {
+            let matmul: MatrixMultiplication = msg_send![class!(MPSMatrixMultiplication), alloc];
+            let ptr: *mut Object = msg_send![
+                matmul.as_ref(),
+                initWithDevice: device
+                transposeLeft: transpose_left
+                transposeRight: transpose_right
+                resultRows: result_rows
+                resultColumns: result_columns
+                interiorColumns: interior_columns
+                alpha: alpha
+                beta: beta];
+            if ptr.is_null() {
+                None
+            } else {
+                Some(matmul)
+            }
+        }
+    }
+}
+
+impl MatrixMultiplicationRef {
+    pub fn encode_to_command_buffer(
+        &self,
+        command_buffer: &CommandBufferRef,
+        left_matrix: &MatrixRef,
+        right_matrix: &MatrixRef,
+        result_matrix: &MatrixRef)
+    {
+        unsafe {
+            msg_send![
+                self,
+                encodeToCommandBuffer: command_buffer
+                leftMatrix: left_matrix
+                rightMatrix: right_matrix
+                resultMatrix: result_matrix]
+        }
+    }
+
+    pub fn set_left_matrix_origin(&self, origin: MTLOrigin) {
+        unsafe { msg_send![self, setLeftMatrixOrigin: origin] }
+    }
+
+    pub fn set_right_matrix_origin(&self, origin: MTLOrigin) {
+        unsafe { msg_send![self, setRightMatrixOrigin: origin] }
+    }
+
+    pub fn set_result_matrix_origin(&self, origin: MTLOrigin) {
+        unsafe { msg_send![self, setResultMatrixOrigin: origin] }
+    }
+
+    pub fn set_batch_size(&self, batch_size: NSUInteger) {
+        unsafe { msg_send![self, setBatchSize: batch_size] }
+    }
+
+    pub fn set_batch_start(&self, batch_start: NSUInteger) {
+        unsafe { msg_send![self, setBatchStart: batch_start] }
+    }
+}
