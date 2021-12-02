@@ -1931,6 +1931,20 @@ impl DeviceRef {
         unsafe { msg_send![self, newTextureWithDescriptor: descriptor] }
     }
 
+    pub fn new_texture_with_io_surface_plane(
+        &self,
+        descriptor: &TextureDescriptorRef,
+        io_surface: *const std::ffi::c_void,
+        plane: NSUInteger,
+    ) -> Texture {
+        unsafe {
+            msg_send![self, newTextureWithDescriptor: descriptor
+                                           iosurface: io_surface
+                                               plane: plane
+            ]
+        }
+    }
+
     pub fn new_sampler(&self, descriptor: &SamplerDescriptorRef) -> SamplerState {
         unsafe { msg_send![self, newSamplerStateWithDescriptor: descriptor] }
     }
