@@ -27,6 +27,7 @@ log = "0.4"
 block = "0.1.6"
 foreign-types = "0.3.2"
 dispatch = { version = "0.2", optional = true }
+io-surface = "0.15.1"
 
 [dependencies.objc]
 version = "0.2.4"

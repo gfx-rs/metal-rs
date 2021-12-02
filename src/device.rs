@@ -1934,7 +1934,7 @@ impl DeviceRef {
     pub fn new_texture_with_io_surface_plane(
         &self,
         descriptor: &TextureDescriptorRef,
-        io_surface: *const std::ffi::c_void,
+        io_surface: io_surface::IOSurfaceRef,
         plane: NSUInteger,
     ) -> Texture {
         unsafe {
