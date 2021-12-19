@@ -62,6 +62,8 @@ pub enum MTLGPUFamily {
     Apple4 = 1004,
     Apple5 = 1005,
     Apple6 = 1006,
+    Apple7 = 1007,
+    Apple8 = 1008,
     Mac1 = 2001,
     Mac2 = 2002,
     MacCatalyst1 = 4001,
