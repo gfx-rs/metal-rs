@@ -52,6 +52,7 @@ pub enum MTLFeatureSet {
 
 #[repr(i64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[non_exhaustive]
 pub enum MTLGPUFamily {
     Common1 = 3001,
     Common2 = 3002,
@@ -62,6 +63,9 @@ pub enum MTLGPUFamily {
     Apple4 = 1004,
     Apple5 = 1005,
     Apple6 = 1006,
+    Apple7 = 1007,
+    Apple8 = 1008,
+    Apple9 = 1009,
     Mac1 = 2001,
     Mac2 = 2002,
     MacCatalyst1 = 4001,
