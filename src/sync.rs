@@ -139,8 +139,8 @@ impl FenceRef {
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLRenderStages {
-    Vertex = 0,
-    Fragment = 1,
+    Vertex = 1,
+    Fragment = 2,
 }
 
 const BLOCK_HAS_COPY_DISPOSE: i32 = 0x02000000;
