@@ -109,7 +109,7 @@ fn main() {
         // Bind argument buffer.
         encoder.set_fragment_buffer(0, Some(&argument_buffer), 0);
         // Make sure all textures are available to the pass.
-        encoder.use_heap(&heap, MTLRenderStages::Fragment);
+        encoder.use_heap_at(&heap, MTLRenderStages::Fragment);
 
         // Bind material buffer at index 1
         // Draw

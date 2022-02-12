@@ -674,6 +674,25 @@ impl RenderCommandEncoderRef {
     // fn setVertexBuffers_offsets_withRange(self, buffers: *const id, offsets: *const NSUInteger, range: NSRange);
     // fn setVertexSamplerStates_lodMinClamps_lodMaxClamps_withRange(self, samplers: *const id, lodMinClamps: *const f32, lodMaxClamps: *const f32, range: NSRange);
 
+    /// Adds an untracked resource to the render pass.
+    ///
+    /// Availability: iOS 11.0+, macOS 10.13+
+    ///
+    /// # Arguments
+    /// * `resource`: A resource within an argument buffer.
+    /// * `usage`: Options for describing how a graphics function uses the resource.
+    ///
+    /// See <https://developer.apple.com/documentation/metal/mtlrendercommandencoder/2866168-useresource?language=objc>
+    #[deprecated(note = "Use use_resource_at instead")]
+    pub fn use_resource(&self, resource: &ResourceRef, usage: MTLResourceUsage) {
+        unsafe {
+            msg_send![self,
+                useResource:resource
+                usage:usage
+            ]
+        }
+    }
+
     /// Adds an untracked resource to the render pass, specifying which render stages need it.
     ///
     /// Availability: iOS 13.0+, macOS 10.15+
@@ -682,7 +701,9 @@ impl RenderCommandEncoderRef {
     /// * `resource`: A resource within an argument buffer.
     /// * `usage`: Options for describing how a graphics function uses the resource.
     /// * `stages`: The render stages where the resource must be resident.
-    pub fn use_resource(
+    ///
+    /// See <https://developer.apple.com/documentation/metal/mtlrendercommandencoder/3043404-useresource>
+    pub fn use_resource_at(
         &self,
         resource: &ResourceRef,
         usage: MTLResourceUsage,
@@ -723,6 +744,19 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    /// Adds the resources in a heap to the render pass.
+    ///
+    /// Availability: iOS 11.0+, macOS 10.13+
+    ///
+    /// # Arguments:
+    /// * `heap`: A heap that contains resources within an argument buffer.
+    ///
+    /// See <https://developer.apple.com/documentation/metal/mtlrendercommandencoder/2866163-useheap?language=objc>
+    #[deprecated(note = "Use use_heap_at instead")]
+    pub fn use_heap(&self, heap: &HeapRef) {
+        unsafe { msg_send![self, useHeap: heap] }
+    }
+
     /// Adds the resources in a heap to the render pass, specifying which render stages need them.
     ///
     /// Availability: iOS 13.0+, macOS 10.15+
@@ -731,7 +765,7 @@ impl RenderCommandEncoderRef {
     /// * `heap`: A heap that contains resources within an argument buffer.
     /// * `stages`: The render stages where the resources must be resident.
     ///
-    pub fn use_heap(&self, heap: &HeapRef, stages: MTLRenderStages) {
+    pub fn use_heap_at(&self, heap: &HeapRef, stages: MTLRenderStages) {
         unsafe {
             msg_send![self,
                 useHeap: heap
