@@ -674,22 +674,6 @@ impl RenderCommandEncoderRef {
     // fn setVertexBuffers_offsets_withRange(self, buffers: *const id, offsets: *const NSUInteger, range: NSRange);
     // fn setVertexSamplerStates_lodMinClamps_lodMaxClamps_withRange(self, samplers: *const id, lodMinClamps: *const f32, lodMaxClamps: *const f32, range: NSRange);
 
-    /// Encodes a barrier so that changes to a set of resources made by commands encoded before the
-    /// barrier are completed before further commands are executed.
-    ///
-    /// Availability: iOS 12.0+, macOS 10.14+
-    ///
-    /// # Arguments
-    /// * `resources`: A slice of resources.
-    pub fn memory_barrier_with_resources(&self, resources: &[&ResourceRef]) {
-        unsafe {
-            msg_send![self,
-                memoryBarrierWithResources: resources.as_ptr()
-                count: resources.len() as NSUInteger
-            ]
-        }
-    }
-
     /// Adds an untracked resource to the render pass.
     ///
     /// Availability: iOS 11.0+, macOS 10.13+
@@ -1162,6 +1146,22 @@ impl ComputeCommandEncoderRef {
             msg_send![self,
                 setThreadgroupMemoryLength:size
                 atIndex: at_index
+            ]
+        }
+    }
+
+    /// Encodes a barrier so that changes to a set of resources made by commands encoded before the
+    /// barrier are completed before further commands are executed.
+    ///
+    /// Availability: iOS 12.0+, macOS 10.14+
+    ///
+    /// # Arguments
+    /// * `resources`: A slice of resources.
+    pub fn memory_barrier_with_resources(&self, resources: &[&ResourceRef]) {
+        unsafe {
+            msg_send![self,
+                memoryBarrierWithResources: resources.as_ptr()
+                count: resources.len() as NSUInteger
             ]
         }
     }
