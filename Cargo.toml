@@ -35,9 +35,9 @@ features = ["objc_exception"]
 [dev-dependencies]
 cocoa = "0.24.0"
 cty = "0.2.1"
-winit = "0.24"
+winit = "0.27"
 sema = "0.1.4"
-png = "0.16"
+png = "0.17"
 
 [[example]]
 name = "window"
