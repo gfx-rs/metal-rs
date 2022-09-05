@@ -25,6 +25,7 @@ use std::{
     os::raw::c_void,
 };
 
+use color_space::ColorSpaceRef;
 use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
@@ -315,7 +316,6 @@ impl MetalLayer {
         }
     }
 }
-
 impl MetalLayerRef {
     pub fn device(&self) -> &DeviceRef {
         unsafe { msg_send![self, device] }
@@ -331,6 +331,10 @@ impl MetalLayerRef {
 
     pub fn set_pixel_format(&self, pixel_format: MTLPixelFormat) {
         unsafe { msg_send![self, setPixelFormat: pixel_format] }
+    }
+
+    pub fn set_color_space(&self, color_space: ColorSpace) {
+        unsafe { msg_send![self, setColorspace: color_space] }
     }
 
     pub fn drawable_size(&self) -> CGSize {
@@ -457,6 +461,7 @@ mod argument;
 mod buffer;
 mod capturedescriptor;
 mod capturemanager;
+mod color_space;
 mod commandbuffer;
 mod commandqueue;
 mod constants;
@@ -484,6 +489,7 @@ pub use {
     buffer::*,
     capturedescriptor::*,
     capturemanager::*,
+    color_space::*,
     commandbuffer::*,
     commandqueue::*,
     constants::*,
