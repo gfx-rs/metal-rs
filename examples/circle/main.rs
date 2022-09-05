@@ -86,7 +86,10 @@ fn main() {
     layer.set_device(&device);
     layer.set_pixel_format(MTLPixelFormat::BGRA8Unorm);
     layer.set_presents_with_transaction(false);
-
+    // Set color space
+    if let Some(cs) = ColorSpace::create_with_name(ColorSpaceName::DisplayP3) {
+        layer.set_color_space(cs);
+    }
     unsafe {
         let view = window.ns_view() as cocoa_id;
         view.setWantsLayer(YES);
