@@ -1972,7 +1972,7 @@ impl DeviceRef {
         options:MTLResourceOptions 
     )-> Buffer {
         self.new_buffer_with_data(
-            &data[0] as *const _ as *const std::ffi::c_void,
+            data.as_ptr().cast::<std::ffi::c_void>(),
             (data.len() * std::mem::size_of::<T>()) as NSUInteger,
             options
         )
