@@ -1965,6 +1965,18 @@ impl DeviceRef {
                                        options:options]
         }
     }
+    
+    pub fn new_buffer_from_slice<T:Copy>(
+        &self,
+        data:&[T],
+        options:MTLResourceOptions 
+    )-> Buffer {
+        self.new_buffer_with_data(
+            &data[0] as *const _ as *const std::ffi::c_void,
+            (data.len() * std::mem::size_of::<T>()) as NSUInteger,
+            options
+        )
+    }
 
     pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Texture {
         unsafe { msg_send![self, newTextureWithDescriptor: descriptor] }
