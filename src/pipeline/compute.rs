@@ -9,6 +9,7 @@ use super::*;
 
 use objc::runtime::{NO, YES};
 
+/// See <https://developer.apple.com/documentation/metal/mtlattributeformat>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -67,6 +68,7 @@ pub enum MTLAttributeFormat {
     Half = 53,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlstepfunction>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -82,6 +84,7 @@ pub enum MTLStepFunction {
     ThreadPositionInGridYIndexed = 8,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcomputepipelinedescriptor>
 pub enum MTLComputePipelineDescriptor {}
 
 foreign_obj_type! {
@@ -268,6 +271,7 @@ impl ComputePipelineDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcomputepipelinestate>
 pub enum MTLComputePipelineState {}
 
 foreign_obj_type! {
@@ -332,6 +336,7 @@ impl ComputePipelineStateRef {
     // - (nullable id <MTLIntersectionFunctionTable>)newIntersectionFunctionTableWithDescriptor:(MTLIntersectionFunctionTableDescriptor * _Nonnull)descriptor
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlstageinputoutputdescriptor>
 pub enum MTLStageInputOutputDescriptor {}
 
 foreign_obj_type! {
@@ -379,6 +384,7 @@ impl StageInputOutputDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlattributedescriptorarray>
 pub enum MTLAttributeDescriptorArray {}
 
 foreign_obj_type! {
@@ -397,6 +403,7 @@ impl AttributeDescriptorArrayRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlattributedescriptor>
 pub enum MTLAttributeDescriptor {}
 
 foreign_obj_type! {
@@ -431,6 +438,7 @@ impl AttributeDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlbufferlayoutdescriptorarray>
 pub enum MTLBufferLayoutDescriptorArray {}
 
 foreign_obj_type! {
@@ -453,6 +461,7 @@ impl BufferLayoutDescriptorArrayRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlbufferlayoutdescriptor>
 pub enum MTLBufferLayoutDescriptor {}
 
 foreign_obj_type! {

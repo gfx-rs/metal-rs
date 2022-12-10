@@ -7,6 +7,7 @@
 
 use super::NSUInteger;
 
+/// See <https://developer.apple.com/documentation/metal/mtldrawable>
 pub enum MTLDrawable {}
 
 foreign_obj_type! {

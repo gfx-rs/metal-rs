@@ -7,6 +7,7 @@
 
 use super::NSUInteger;
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexformat>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -65,6 +66,7 @@ pub enum MTLVertexFormat {
     Half = 53,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexstepfunction>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVertexStepFunction {
@@ -75,6 +77,7 @@ pub enum MTLVertexStepFunction {
     PerPatchControlPoint = 4,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexbufferlayoutdescriptor>
 pub enum MTLVertexBufferLayoutDescriptor {}
 
 foreign_obj_type! {
@@ -118,6 +121,7 @@ impl VertexBufferLayoutDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexbufferlayoutdescriptorarray>
 pub enum MTLVertexBufferLayoutDescriptorArray {}
 
 foreign_obj_type! {
@@ -143,6 +147,7 @@ impl VertexBufferLayoutDescriptorArrayRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexattributedescriptor>
 pub enum MTLVertexAttributeDescriptor {}
 
 foreign_obj_type! {
@@ -186,6 +191,7 @@ impl VertexAttributeDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexattributedescriptorarray>
 pub enum MTLVertexAttributeDescriptorArray {}
 
 foreign_obj_type! {
@@ -211,6 +217,7 @@ impl VertexAttributeDescriptorArrayRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexdescriptor>
 pub enum MTLVertexDescriptor {}
 
 foreign_obj_type! {

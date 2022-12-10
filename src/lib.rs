@@ -5,6 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+#![allow(deprecated)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
@@ -29,15 +30,23 @@ use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
 
+/// See <https://developer.apple.com/documentation/objectivec/nsinteger>
 #[cfg(target_pointer_width = "64")]
 pub type NSInteger = i64;
+
+/// See <https://developer.apple.com/documentation/objectivec/nsinteger>
 #[cfg(not(target_pointer_width = "64"))]
 pub type NSInteger = i32;
+
+/// See <https://developer.apple.com/documentation/objectivec/nsuinteger>
 #[cfg(target_pointer_width = "64")]
 pub type NSUInteger = u64;
+
+/// See <https://developer.apple.com/documentation/objectivec/nsuinteger>
 #[cfg(target_pointer_width = "32")]
 pub type NSUInteger = u32;
 
+/// See <https://developer.apple.com/documentation/foundation/nsrange>
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct NSRange {
@@ -156,6 +165,7 @@ macro_rules! try_objc {
     };
 }
 
+/// See <https://developer.apple.com/documentation/foundation/nsarray>
 pub struct NSArray<T> {
     _phantom: PhantomData<T>,
 }
@@ -284,6 +294,7 @@ where
     }
 }
 
+/// See <https://developer.apple.com/documentation/quartzcore/cametaldrawable>
 pub enum CAMetalDrawable {}
 
 foreign_obj_type! {
@@ -299,6 +310,7 @@ impl MetalDrawableRef {
     }
 }
 
+// See <https://developer.apple.com/documentation/quartzcore/cametallayer>
 pub enum CAMetalLayer {}
 
 foreign_obj_type! {
@@ -521,6 +533,7 @@ unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
 type c_size_t = usize;
 
 // TODO: expand supported interface
+/// See <https://developer.apple.com/documentation/foundation/nsurl>
 pub enum NSURL {}
 
 foreign_obj_type! {

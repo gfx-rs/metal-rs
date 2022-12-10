@@ -9,6 +9,7 @@ use super::*;
 
 use objc::runtime::{NO, YES};
 
+/// See <https://developer.apple.com/documentation/metal/mtltexturetype>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -23,6 +24,7 @@ pub enum MTLTextureType {
     D3 = 7,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtltexturecompressiontype>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum MTLTextureCompressionType {
@@ -31,6 +33,7 @@ pub enum MTLTextureCompressionType {
 }
 
 bitflags! {
+    /// See <https://developer.apple.com/documentation/metal/mtltextureusage>
     pub struct MTLTextureUsage: NSUInteger {
         const Unknown         = 0x0000;
         const ShaderRead      = 0x0001;
@@ -40,6 +43,7 @@ bitflags! {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtltexturedescriptor>
 pub enum MTLTextureDescriptor {}
 
 foreign_obj_type! {
@@ -173,6 +177,7 @@ impl TextureDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtltexture>
 pub enum MTLTexture {}
 
 foreign_obj_type! {

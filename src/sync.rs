@@ -12,8 +12,10 @@ use std::mem;
 #[cfg(feature = "dispatch_queue")]
 use dispatch;
 
+/// See <https://developer.apple.com/documentation/metal/mtlsharedeventnotificationblock>
 type MTLSharedEventNotificationBlock<'a> = RcBlock<(&'a SharedEventRef, u64), ()>;
 
+/// See <https://developer.apple.com/documentation/metal/mtlevent>
 pub enum MTLEvent {}
 
 foreign_obj_type! {
@@ -28,6 +30,7 @@ impl EventRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlsharedevent>
 pub enum MTLSharedEvent {}
 
 foreign_obj_type! {
@@ -81,6 +84,7 @@ impl SharedEventRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlsharedeventlistener>
 pub enum MTLSharedEventListener {}
 
 foreign_obj_type! {
@@ -108,6 +112,7 @@ impl SharedEventListener {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlfence>
 pub enum MTLFence {}
 
 foreign_obj_type! {

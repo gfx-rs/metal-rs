@@ -1,6 +1,7 @@
 use super::*;
 
 bitflags! {
+    /// See <https://developer.apple.com/documentation/metal/mtlindirectcommandtype/>
     #[allow(non_upper_case_globals)]
     pub struct MTLIndirectCommandType: NSUInteger {
         const Draw                      = 1 << 0;
@@ -12,6 +13,7 @@ bitflags! {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlindirectcommandbufferdescriptor/>
 pub enum MTLIndirectCommandBufferDescriptor {}
 
 foreign_obj_type! {
@@ -82,6 +84,7 @@ impl IndirectCommandBufferDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlindirectcommandbuffer/>
 pub enum MTLIndirectCommandBuffer {}
 
 foreign_obj_type! {
@@ -112,6 +115,7 @@ impl IndirectCommandBufferRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlindirectrendercommand/>
 pub enum MTLIndirectRenderCommand {}
 
 foreign_obj_type! {
@@ -266,6 +270,7 @@ impl IndirectRenderCommandRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlindirectcomputecommand/>
 pub enum MTLIndirectComputeCommand {}
 
 foreign_obj_type! {
