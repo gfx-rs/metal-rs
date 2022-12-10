@@ -7,6 +7,7 @@
 
 use super::*;
 
+/// See <https://developer.apple.com/documentation/metal/mtlcommandqueue>.
 pub enum MTLCommandQueue {}
 
 foreign_obj_type! {

@@ -9,6 +9,7 @@ use super::*;
 
 use objc::runtime::{NO, YES};
 
+/// See <https://developer.apple.com/documentation/metal/mtlblendfactor>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -34,6 +35,7 @@ pub enum MTLBlendFactor {
     OneMinusSource1Alpha = 18,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlblendoperation>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -46,6 +48,7 @@ pub enum MTLBlendOperation {
 }
 
 bitflags! {
+    /// See <https://developer.apple.com/documentation/metal/mtlcolorwritemask>
     pub struct MTLColorWriteMask: NSUInteger {
         const None  = 0;
         const Red   = 0x1 << 3;
@@ -56,6 +59,7 @@ bitflags! {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlprimitivetopologyclass>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -71,6 +75,7 @@ pub enum MTLPrimitiveTopologyClass {
 // TODO: MTLTessellationFactorFormat
 // TODO: MTLTessellationControlPointIndexType
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpipelinecolorattachmentdescriptor>
 pub enum MTLRenderPipelineColorAttachmentDescriptor {}
 
 foreign_obj_type! {
@@ -159,6 +164,7 @@ impl RenderPipelineColorAttachmentDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpipelinereflection>
 pub enum MTLRenderPipelineReflection {}
 
 foreign_obj_type! {
@@ -209,6 +215,7 @@ impl RenderPipelineReflectionRef {
     }
 }
 
+/// TODO: Find documentation link.
 pub enum MTLArgumentArray {}
 
 foreign_obj_type! {
@@ -227,6 +234,7 @@ impl ArgumentArrayRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcomputepipelinereflection>
 pub enum MTLComputePipelineReflection {}
 
 foreign_obj_type! {
@@ -242,6 +250,7 @@ impl ComputePipelineReflectionRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpipelinedescriptor>
 pub enum MTLRenderPipelineDescriptor {}
 
 foreign_obj_type! {
@@ -460,6 +469,7 @@ impl RenderPipelineDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpipelinestate>
 pub enum MTLRenderPipelineState {}
 
 foreign_obj_type! {
@@ -481,6 +491,7 @@ impl RenderPipelineStateRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpipelinecolorattachmentdescriptorarray>
 pub enum MTLRenderPipelineColorAttachmentDescriptorArray {}
 
 foreign_obj_type! {

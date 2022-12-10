@@ -8,6 +8,7 @@
 use super::*;
 use std::ffi::CStr;
 
+/// See <https://developer.apple.com/documentation/metal/mtlcapturescope>
 pub enum MTLCaptureScope {}
 
 foreign_obj_type! {
@@ -33,6 +34,7 @@ impl CaptureScopeRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcapturemanager>
 pub enum MTLCaptureManager {}
 
 foreign_obj_type! {
@@ -70,7 +72,7 @@ impl CaptureManagerRef {
         unsafe { msg_send![self, setDefaultCaptureScope: scope] }
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlcapturemanager/3237259-startcapture
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturemanager/3237259-startcapture>
     pub fn start_capture(&self, descriptor: &CaptureDescriptorRef) -> Result<(), String> {
         unsafe {
             try_objc! { err =>
@@ -100,7 +102,7 @@ impl CaptureManagerRef {
         unsafe { msg_send![self, isCapturing] }
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlcapturemanager/3237260-supportsdestination?language=objc
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturemanager/3237260-supportsdestination?language=objc>
     pub fn supports_destination(&self, destination: MTLCaptureDestination) -> bool {
         unsafe { msg_send![self, supportsDestination: destination] }
     }

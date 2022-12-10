@@ -9,6 +9,7 @@ use super::*;
 
 use std::ops::Range;
 
+/// See <https://developer.apple.com/documentation/metal/mtlprimitivetype>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLPrimitiveType {
@@ -19,6 +20,7 @@ pub enum MTLPrimitiveType {
     TriangleStrip = 4,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlindextype>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -27,6 +29,7 @@ pub enum MTLIndexType {
     UInt32 = 1,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvisibilityresultmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVisibilityResultMode {
@@ -35,6 +38,7 @@ pub enum MTLVisibilityResultMode {
     Counting = 2,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcullmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCullMode {
@@ -43,6 +47,7 @@ pub enum MTLCullMode {
     Back = 2,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlwinding>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLWinding {
@@ -50,6 +55,7 @@ pub enum MTLWinding {
     CounterClockwise = 1,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtldepthclipmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDepthClipMode {
@@ -57,6 +63,7 @@ pub enum MTLDepthClipMode {
     Clamp = 1,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtltrianglefillmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLTriangleFillMode {
@@ -79,6 +86,7 @@ bitflags! {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlscissorrect>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct MTLScissorRect {
@@ -88,6 +96,7 @@ pub struct MTLScissorRect {
     pub height: NSUInteger,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlviewport>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct MTLViewport {
@@ -99,6 +108,7 @@ pub struct MTLViewport {
     pub zfar: f64,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtldrawprimitivesindirectarguments>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct MTLDrawPrimitivesIndirectArguments {
@@ -108,6 +118,7 @@ pub struct MTLDrawPrimitivesIndirectArguments {
     pub baseInstance: u32,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtldrawindexedprimitivesindirectarguments>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct MTLDrawIndexedPrimitivesIndirectArguments {
@@ -118,6 +129,7 @@ pub struct MTLDrawIndexedPrimitivesIndirectArguments {
     pub baseInstance: u32,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexamplificationviewmapping>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct VertexAmplificationViewMapping {
@@ -125,6 +137,10 @@ pub struct VertexAmplificationViewMapping {
     pub viewportArrayIndexOffset: u32,
 }
 
+#[allow(dead_code)]
+type MTLVertexAmplicationViewMapping = VertexAmplificationViewMapping;
+
+/// See <https://developer.apple.com/documentation/metal/mtlcommandencoder>
 pub enum MTLCommandEncoder {}
 
 foreign_obj_type! {
@@ -171,6 +187,7 @@ impl CommandEncoderRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlparallelrendercommandencoder>
 pub enum MTLParallelRenderCommandEncoder {}
 
 foreign_obj_type! {
@@ -186,6 +203,7 @@ impl ParallelRenderCommandEncoderRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrendercommandencoder/>
 pub enum MTLRenderCommandEncoder {}
 
 foreign_obj_type! {
@@ -819,6 +837,7 @@ impl RenderCommandEncoderRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlblitcommandencoder/>
 pub enum MTLBlitCommandEncoder {}
 
 foreign_obj_type! {
@@ -922,7 +941,7 @@ impl BlitCommandEncoderRef {
         }
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlblitcommandencoder/1400756-copy
+    /// See <https://developer.apple.com/documentation/metal/mtlblitcommandencoder/1400756-copy>
     pub fn copy_from_texture_to_buffer(
         &self,
         source_texture: &TextureRef,
@@ -999,6 +1018,7 @@ impl BlitCommandEncoderRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcomputecommandencoder/>
 pub enum MTLComputeCommandEncoder {}
 
 foreign_obj_type! {
@@ -1238,6 +1258,7 @@ impl ComputeCommandEncoderRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlargumentencoder/>
 pub enum MTLArgumentEncoder {}
 
 foreign_obj_type! {
