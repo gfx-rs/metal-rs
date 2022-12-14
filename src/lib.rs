@@ -82,6 +82,49 @@ fn nsstring_from_str(string: &str) -> *mut objc::runtime::Object {
     }
 }
 
+/// Define a Rust wrapper for an Objective-C opaque type.
+///
+/// This macro adapts the `foreign-types` crate's [`foreign_type!`]
+/// macro to Objective-C, defining Rust types that represent owned and
+/// borrowed forms of some underlying Objective-C type, using
+/// Objective-C's reference counting to manage its lifetime.
+///
+/// Given a use of the form:
+///
+/// ```ignore
+/// foreign_obj_type! {
+///     type CType = MTLBuffer;   // underlying Objective-C type
+///     pub struct Buffer;        // owned Rust type
+///     pub struct BufferRef;     // borrowed Rust type
+///     type ParentType = ResourceRef;  // borrowed parent class
+/// }
+/// ```
+///
+/// This defines the types `Buffer` and `BufferRef` as owning and
+/// non-owning types, analogous to `String` and `str`, that manage
+/// some underlying `*mut MTLBuffer`:
+///
+/// - Both `Buffer` and `BufferRef` implement [`obj::Message`], indicating
+///   that they can be sent Objective-C messages.
+///
+/// - Dropping a `Buffer` sends the underlying `MTLBuffer` a `release`
+///   message, and cloning a `BufferRef` sends a `retain` message and
+///   returns a new `Buffer`.
+///
+/// - `Buffer` dereferences to `BufferRef`.
+///
+/// - `BufferRef` dereferences to its parent type `ResourceRef`. The
+///   `ParentType` component is optional; if omitted, the `Ref` type
+///   doesn't implement `Deref` or `DerefMut`.
+///
+/// - Both `Buffer` and `BufferRef` implement `std::fmt::Debug`,
+///   sending an Objective-C `debugDescription` message to the
+///   underlying `MTLBuffer`.
+///
+/// Following the `foreign_types` crate's nomenclature, the `Ref`
+/// suffix indicates that `BufferRef` and `ResourceRef` are non-owning
+/// types, used *by reference*, like `&BufferRef` or `&ResourceRef`.
+/// These types are not, themselves, references.
 macro_rules! foreign_obj_type {
     {type CType = $raw_ident:ident;
     pub struct $owned_ident:ident;
