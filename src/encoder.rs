@@ -1233,7 +1233,7 @@ impl ComputeCommandEncoderRef {
     }
 
     /// Only available in (macos(11.0), ios(14.0))
-    pub fn set_acceleration_structure(&self, index: NSUInteger, accel: &AccelerationStructureRef) {
+    pub fn set_acceleration_structure(&self, index: NSUInteger, accel: &accelerator_structure::AccelerationStructureRef) {
         unsafe {
             msg_send![
                 self,

@@ -4,7 +4,7 @@ use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use glam::{Vec3, Vec4, Vec4Swizzles};
 use rand::{RngCore, thread_rng};
 
-use metal::{*, foreign_types::ForeignType};
+use metal::{*, accelerator_structure as mry, foreign_types::ForeignType};
 
 use crate::{camera::Camera, scene::Scene, geometry::get_managed_buffer_storage_mode};
 
@@ -54,7 +54,7 @@ pub struct Renderer {
     pub scene: Scene,
     pub uniform_buffer: Buffer,
     pub resource_buffer: Buffer,
-    pub instance_acceleration_structure: AccelerationStructure,
+    pub instance_acceleration_structure: mry::AccelerationStructure,
     pub accumulation_targets: [Texture; 2],
     pub random_texture: Texture,
     pub frame_index: NSUInteger,
@@ -65,7 +65,7 @@ pub struct Renderer {
     pub queue: CommandQueue,
     instance_buffer: Buffer,
     intersection_function_table: IntersectionFunctionTable,
-    primitive_acceleration_structures: Vec<AccelerationStructure>,
+    primitive_acceleration_structures: Vec<mry::AccelerationStructure>,
     raytracing_pipeline: ComputePipelineState,
     copy_pipeline: RenderPipelineState,
 }
@@ -124,7 +124,7 @@ impl Renderer {
         let mut primitive_acceleration_structures = Vec::new();
         for i in 0..scene.geometries.len() {
             let mesh = scene.geometries[i].as_ref();
-            let mut geometry_descriptor = mesh.get_geometry_descriptor();
+            let geometry_descriptor = mesh.get_geometry_descriptor();
             geometry_descriptor.set_intersection_function_table_offset(i as NSUInteger);
             let geometry_descriptors = Array::from_owned_slice(&[geometry_descriptor]);
             let mut accel_descriptor = PrimitiveAccelerationStructureDescriptor::descriptor();
@@ -196,7 +196,7 @@ impl Renderer {
                 intersection_function_table.set_function(handle, geometry_index as NSUInteger);
            }
         }
-        let mut render_descriptor = RenderPipelineDescriptor::new();
+        let render_descriptor = RenderPipelineDescriptor::new();
         render_descriptor.set_vertex_function(Some(&library.get_function("copyVertex", None).unwrap()));
         render_descriptor.set_fragment_function(Some(&library.get_function("copyFragment", None).unwrap()));
         render_descriptor.color_attachments().object_at(0).unwrap().set_pixel_format(MTLPixelFormat::RGBA16Float);
@@ -232,7 +232,7 @@ impl Renderer {
     }
 
     fn create_target_descriptor(width: NSUInteger, height: NSUInteger) -> TextureDescriptor {
-        let mut texture_descriptor = TextureDescriptor::new();
+        let texture_descriptor = TextureDescriptor::new();
         texture_descriptor.set_pixel_format(MTLPixelFormat::RGBA32Float);
         texture_descriptor.set_texture_type(MTLTextureType::D2);
         texture_descriptor.set_width(width);
@@ -244,7 +244,7 @@ impl Renderer {
 
     pub fn window_resized(&mut self, size: CGSize) {
         self.size = size;
-        let mut texture_descriptor = Self::create_target_descriptor(
+        let texture_descriptor = Self::create_target_descriptor(
             size.width as NSUInteger, size.height as NSUInteger);
         self.accumulation_targets[0] = self.device.new_texture(&texture_descriptor);
         self.accumulation_targets[1] = self.device.new_texture(&texture_descriptor);
@@ -313,7 +313,7 @@ impl Renderer {
         self.update_uniforms();
         let command_buffer = self.queue.new_command_buffer();
         let sem = self.semaphore.clone();
-        let block = block::ConcreteBlock::new(move |buffer| {
+        let block = block::ConcreteBlock::new(move |_| {
             sem.release();
         }).copy();
         command_buffer.add_completed_handler(&block);
@@ -324,7 +324,7 @@ impl Renderer {
             (width + threads_per_thread_group.width - 1) / threads_per_thread_group.width,
             (height + threads_per_thread_group.height - 1) / threads_per_thread_group.height,
             1);
-        let mut compute_encoder = command_buffer.new_compute_command_encoder();
+        let compute_encoder = command_buffer.new_compute_command_encoder();
         compute_encoder.set_buffer(0, Some(&self.uniform_buffer), self.uniform_buffer_offset);
         compute_encoder.set_buffer(2, Some(&self.instance_buffer), 0);
         compute_encoder.set_buffer(3, Some(&self.scene.lights_buffer), 0);
@@ -366,13 +366,13 @@ impl Renderer {
     fn new_acceleration_structure_with_descriptor(
         device: &Device,
         queue: &CommandQueue,
-        descriptor: &AccelerationStructureDescriptorRef) -> AccelerationStructure {
+        descriptor: &mry::AccelerationStructureDescriptorRef) -> mry::AccelerationStructure {
         let accel_sizes = device.acceleration_structure_sizes_with_descriptor(descriptor);
         let acceleration_structure = device.new_acceleration_structure_with_size(accel_sizes.acceleration_structure_size);
-        let mut scratch_buffer = device.new_buffer(accel_sizes.build_scratch_buffer_size, MTLResourceOptions::StorageModePrivate);
-        let mut command_buffer = queue.new_command_buffer();
-        let mut command_encoder = command_buffer.new_acceleration_structure_command_encoder();
-        let mut compacted_size_buffer = device.new_buffer(size_of::<u32>() as NSUInteger, MTLResourceOptions::StorageModeShared);
+        let scratch_buffer = device.new_buffer(accel_sizes.build_scratch_buffer_size, MTLResourceOptions::StorageModePrivate);
+        let command_buffer = queue.new_command_buffer();
+        let command_encoder = command_buffer.new_acceleration_structure_command_encoder();
+        let compacted_size_buffer = device.new_buffer(size_of::<u32>() as NSUInteger, MTLResourceOptions::StorageModeShared);
         command_encoder.build_acceleration_structure(&acceleration_structure, &descriptor, &scratch_buffer, 0);
         command_encoder.write_compacted_acceleration_structure_size(&acceleration_structure, &compacted_size_buffer, 0);
         command_encoder.end_encoding();
@@ -390,7 +390,7 @@ impl Renderer {
     }
 
     fn new_specialised_function_with_name(library: &Library, resources_stride: u32, name: &str) -> Function {
-        let mut constants = FunctionConstantValues::new();
+        let constants = FunctionConstantValues::new();
         let resources_stride = resources_stride * size_of::<u64>() as u32;
         constants.set_constant_value_at_index(&resources_stride as *const u32 as *const c_void, MTLDataType::UInt, 0);
         let v = true;
@@ -402,11 +402,11 @@ impl Renderer {
     fn new_compute_pipeline_state_with_function(
         device: &Device, function: &Function, linked_functions: &[&FunctionRef]) -> ComputePipelineState {
         let linked_functions = {
-            let mut lf = LinkedFunctions::new();
+            let lf = LinkedFunctions::new();
             lf.set_functions(linked_functions);
             lf
         };
-        let mut descriptor = ComputePipelineDescriptor::new();
+        let descriptor = ComputePipelineDescriptor::new();
         descriptor.set_compute_function(Some(function));
         descriptor.set_linked_functions(linked_functions.as_ref());
         descriptor.set_thread_group_size_is_multiple_of_thread_execution_width(true);

@@ -2118,7 +2118,7 @@ impl DeviceRef {
         unsafe { msg_send![self, accelerationStructureSizesWithDescriptor:desc] }
     }
 
-    pub fn new_acceleration_structure_with_size(&self, size: NSUInteger) -> AccelerationStructure {
+    pub fn new_acceleration_structure_with_size(&self, size: NSUInteger) -> accelerator_structure::AccelerationStructure {
         unsafe {  msg_send![self, newAccelerationStructureWithSize: size] }
     }
 }

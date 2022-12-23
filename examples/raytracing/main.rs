@@ -5,8 +5,6 @@ use core_graphics_types::geometry::CGSize;
 use metal::*;
 use objc::{rc::autoreleasepool, runtime::YES};
 use std::mem;
-use std::thread::sleep;
-use std::time::Duration;
 use winit::{
     platform::macos::WindowExtMacOS,
     event::{Event, WindowEvent},

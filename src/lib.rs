@@ -480,31 +480,31 @@ impl MetalLayerRef {
     }
 }
 
-mod accelerator_structure;
-mod argument;
-mod buffer;
-mod capturedescriptor;
-mod capturemanager;
-mod commandbuffer;
-mod commandqueue;
-mod constants;
-mod depthstencil;
-mod device;
-mod drawable;
-mod encoder;
-mod heap;
-mod indirect_encoder;
-mod library;
+pub mod accelerator_structure;
+pub mod argument;
+pub mod buffer;
+pub mod capturedescriptor;
+pub mod capturemanager;
+pub mod commandbuffer;
+pub mod commandqueue;
+pub mod constants;
+pub mod depthstencil;
+pub mod device;
+pub mod drawable;
+pub mod encoder;
+pub mod heap;
+pub mod indirect_encoder;
+pub mod library;
 #[cfg(feature = "mps")]
-mod mps;
-mod pipeline;
-mod renderpass;
-mod resource;
-mod sampler;
-mod sync;
-mod texture;
-mod types;
-mod vertexdescriptor;
+pub mod mps;
+pub mod pipeline;
+pub mod renderpass;
+pub mod resource;
+pub mod sampler;
+pub mod sync;
+pub mod texture;
+pub mod types;
+pub mod vertexdescriptor;
 
 #[rustfmt::skip]
 pub use {

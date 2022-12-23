@@ -204,8 +204,8 @@ foreign_obj_type! {
 impl AccelerationStructureCommandEncoderRef {
     pub fn build_acceleration_structure(
         &self,
-        acceleration_structure: &AccelerationStructureRef,
-        descriptor: &AccelerationStructureDescriptorRef,
+        acceleration_structure: &self::AccelerationStructureRef,
+        descriptor: &self::AccelerationStructureDescriptorRef,
         scratch_buffer: &BufferRef,
         scratch_buffer_offset: NSUInteger,
     ) {
