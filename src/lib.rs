@@ -5,7 +5,6 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-#![feature(concat_idents)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
@@ -17,6 +16,8 @@ pub extern crate log;
 pub extern crate objc;
 #[macro_use]
 pub extern crate foreign_types;
+#[macro_use]
+pub extern crate paste;
 
 use std::{
     borrow::{Borrow, ToOwned},
@@ -94,8 +95,8 @@ macro_rules! foreign_obj_type {
             pub struct $owned_ident;
         }
 
-        impl ::std::ops::Deref for concat_idents!($owned_ident, Ref) {
-            type Target = concat_idents!($parent_ident, Ref);
+        impl ::std::ops::Deref for paste!{[<$owned_ident Ref>]} {
+            type Target = paste!{[<$parent_ident Ref>]};
 
             #[inline]
             fn deref(&self) -> &Self::Target {
@@ -123,10 +124,10 @@ macro_rules! foreign_obj_type {
 
         unsafe impl ::objc::Message for $raw_ident {
         }
-        unsafe impl ::objc::Message for concat_idents!($owned_ident, Ref) {
+        unsafe impl ::objc::Message for paste!{[<$owned_ident Ref>]} {
         }
 
-        impl ::std::fmt::Debug for concat_idents!($owned_ident, Ref) {
+        impl ::std::fmt::Debug for paste!{[<$owned_ident Ref>]} {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 unsafe {
                     let string: *mut ::objc::runtime::Object = msg_send![self, debugDescription];
