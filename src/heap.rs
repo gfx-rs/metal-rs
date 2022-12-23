@@ -22,7 +22,6 @@ pub enum MTLHeap {}
 foreign_obj_type! {
     type CType = MTLHeap;
     pub struct Heap;
-    pub struct HeapRef;
 }
 
 impl HeapRef {
@@ -153,7 +152,6 @@ pub enum MTLHeapDescriptor {}
 foreign_obj_type! {
     type CType = MTLHeapDescriptor;
     pub struct HeapDescriptor;
-    pub struct HeapDescriptorRef;
 }
 
 impl HeapDescriptor {

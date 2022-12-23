@@ -78,3 +78,9 @@ pub struct MTLSamplePosition {
     pub x: f32,
     pub y: f32,
 }
+
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
+pub struct MTLResourceID {
+    pub _impl: u64,
+}

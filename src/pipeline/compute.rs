@@ -87,7 +87,6 @@ pub enum MTLComputePipelineDescriptor {}
 foreign_obj_type! {
     type CType = MTLComputePipelineDescriptor;
     pub struct ComputePipelineDescriptor;
-    pub struct ComputePipelineDescriptorRef;
 }
 
 impl ComputePipelineDescriptor {
@@ -273,7 +272,6 @@ pub enum MTLComputePipelineState {}
 foreign_obj_type! {
     type CType = MTLComputePipelineState;
     pub struct ComputePipelineState;
-    pub struct ComputePipelineStateRef;
 }
 
 impl ComputePipelineStateRef {
@@ -327,9 +325,13 @@ impl ComputePipelineStateRef {
     // API_AVAILABLE(macos(11.0), ios(14.0));
     // TODO: newVisibleFunctionTableWithDescriptor
     // - (nullable id<MTLVisibleFunctionTable>)newVisibleFunctionTableWithDescriptor:(MTLVisibleFunctionTableDescriptor * __nonnull)descriptor
-    // API_AVAILABLE(macos(11.0), ios(14.0));
-    // TODO: newIntersectionFunctionTableWithDescriptor
-    // - (nullable id <MTLIntersectionFunctionTable>)newIntersectionFunctionTableWithDescriptor:(MTLIntersectionFunctionTableDescriptor * _Nonnull)descriptor
+
+    /// Only available on (macos(11.0), ios(14.0))
+    pub fn new_intersection_function_table_with_descriptor(&self, descriptor: &IntersectionFunctionTableDescriptorRef) -> IntersectionFunctionTable {
+        unsafe {
+            msg_send![self, newIntersectionFunctionTableWithDescriptor: descriptor]
+        }
+    }
 }
 
 pub enum MTLStageInputOutputDescriptor {}
@@ -337,7 +339,6 @@ pub enum MTLStageInputOutputDescriptor {}
 foreign_obj_type! {
     type CType = MTLStageInputOutputDescriptor;
     pub struct StageInputOutputDescriptor;
-    pub struct StageInputOutputDescriptorRef;
 }
 
 impl StageInputOutputDescriptor {
@@ -384,7 +385,6 @@ pub enum MTLAttributeDescriptorArray {}
 foreign_obj_type! {
     type CType = MTLAttributeDescriptorArray;
     pub struct AttributeDescriptorArray;
-    pub struct AttributeDescriptorArrayRef;
 }
 
 impl AttributeDescriptorArrayRef {
@@ -402,7 +402,6 @@ pub enum MTLAttributeDescriptor {}
 foreign_obj_type! {
     type CType = MTLAttributeDescriptor;
     pub struct AttributeDescriptor;
-    pub struct AttributeDescriptorRef;
 }
 
 impl AttributeDescriptorRef {
@@ -436,7 +435,6 @@ pub enum MTLBufferLayoutDescriptorArray {}
 foreign_obj_type! {
     type CType = MTLBufferLayoutDescriptorArray;
     pub struct BufferLayoutDescriptorArray;
-    pub struct BufferLayoutDescriptorArrayRef;
 }
 
 impl BufferLayoutDescriptorArrayRef {
@@ -458,7 +456,6 @@ pub enum MTLBufferLayoutDescriptor {}
 foreign_obj_type! {
     type CType = MTLBufferLayoutDescriptor;
     pub struct BufferLayoutDescriptor;
-    pub struct BufferLayoutDescriptorRef;
 }
 
 impl BufferLayoutDescriptorRef {

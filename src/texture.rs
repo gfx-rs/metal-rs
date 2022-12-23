@@ -45,7 +45,6 @@ pub enum MTLTextureDescriptor {}
 foreign_obj_type! {
     type CType = MTLTextureDescriptor;
     pub struct TextureDescriptor;
-    pub struct TextureDescriptorRef;
 }
 
 impl TextureDescriptor {
@@ -178,8 +177,7 @@ pub enum MTLTexture {}
 foreign_obj_type! {
     type CType = MTLTexture;
     pub struct Texture;
-    pub struct TextureRef;
-    type ParentType = ResourceRef;
+    type ParentType = Resource;
 }
 
 impl TextureRef {
@@ -344,5 +342,9 @@ impl TextureRef {
                                                      levels:mipmap_levels
                                                      slices:slices]
         }
+    }
+
+    pub fn gpu_resource_id(&self) -> MTLResourceID {
+        unsafe { msg_send![self, gpuResourceID] }
     }
 }

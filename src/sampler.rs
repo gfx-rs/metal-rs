@@ -46,7 +46,6 @@ pub enum MTLSamplerDescriptor {}
 foreign_obj_type! {
     type CType = MTLSamplerDescriptor;
     pub struct SamplerDescriptor;
-    pub struct SamplerDescriptorRef;
 }
 
 impl SamplerDescriptor {
@@ -140,7 +139,6 @@ pub enum MTLSamplerState {}
 foreign_obj_type! {
     type CType = MTLSamplerState;
     pub struct SamplerState;
-    pub struct SamplerStateRef;
 }
 
 impl SamplerStateRef {

@@ -59,7 +59,6 @@ pub enum MTLRenderPassAttachmentDescriptor {}
 foreign_obj_type! {
     type CType = MTLRenderPassAttachmentDescriptor;
     pub struct RenderPassAttachmentDescriptor;
-    pub struct RenderPassAttachmentDescriptorRef;
 }
 
 impl RenderPassAttachmentDescriptorRef {
@@ -149,8 +148,7 @@ pub enum MTLRenderPassColorAttachmentDescriptor {}
 foreign_obj_type! {
     type CType = MTLRenderPassColorAttachmentDescriptor;
     pub struct RenderPassColorAttachmentDescriptor;
-    pub struct RenderPassColorAttachmentDescriptorRef;
-    type ParentType = RenderPassAttachmentDescriptorRef;
+    type ParentType = RenderPassAttachmentDescriptor;
 }
 
 impl RenderPassColorAttachmentDescriptor {
@@ -177,8 +175,7 @@ pub enum MTLRenderPassDepthAttachmentDescriptor {}
 foreign_obj_type! {
     type CType = MTLRenderPassDepthAttachmentDescriptor;
     pub struct RenderPassDepthAttachmentDescriptor;
-    pub struct RenderPassDepthAttachmentDescriptorRef;
-    type ParentType = RenderPassAttachmentDescriptorRef;
+    type ParentType = RenderPassAttachmentDescriptor;
 }
 
 impl RenderPassDepthAttachmentDescriptorRef {
@@ -196,8 +193,7 @@ pub enum MTLRenderPassStencilAttachmentDescriptor {}
 foreign_obj_type! {
     type CType = MTLRenderPassStencilAttachmentDescriptor;
     pub struct RenderPassStencilAttachmentDescriptor;
-    pub struct RenderPassStencilAttachmentDescriptorRef;
-    type ParentType = RenderPassAttachmentDescriptorRef;
+    type ParentType = RenderPassAttachmentDescriptor;
 }
 
 impl RenderPassStencilAttachmentDescriptorRef {
@@ -226,7 +222,6 @@ pub enum MTLRenderPassColorAttachmentDescriptorArray {}
 foreign_obj_type! {
     type CType = MTLRenderPassColorAttachmentDescriptorArray;
     pub struct RenderPassColorAttachmentDescriptorArray;
-    pub struct RenderPassColorAttachmentDescriptorArrayRef;
 }
 
 impl RenderPassColorAttachmentDescriptorArrayRef {
@@ -251,7 +246,6 @@ pub enum MTLRenderPassDescriptor {}
 foreign_obj_type! {
     type CType = MTLRenderPassDescriptor;
     pub struct RenderPassDescriptor;
-    pub struct RenderPassDescriptorRef;
 }
 
 impl RenderPassDescriptor {

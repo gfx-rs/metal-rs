@@ -1,6 +1,6 @@
 [package]
 name = "metal"
-version = "0.24.0"
+version = "0.25.0"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -25,7 +25,7 @@ core-graphics-types = "0.1"
 bitflags = "1"
 log = "0.4"
 block = "0.1.6"
-foreign-types = "0.3.2"
+foreign-types = "0.5"
 dispatch = { version = "0.2", optional = true }
 
 [dependencies.objc]
@@ -38,6 +38,8 @@ cty = "0.2.1"
 winit = "0.27"
 sema = "0.1.4"
 png = "0.17"
+glam = "0.22"
+rand = "0.8"
 
 [[example]]
 name = "window"
@@ -47,6 +49,9 @@ name = "headless-render"
 
 [[example]]
 name = "library"
+
+[[example]]
+name = "raytracing"
 
 [[example]]
 name = "reflection"

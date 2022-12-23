@@ -24,7 +24,6 @@ pub enum MTLCaptureDescriptor {}
 foreign_obj_type! {
     type CType = MTLCaptureDescriptor;
     pub struct CaptureDescriptor;
-    pub struct CaptureDescriptorRef;
 }
 
 impl CaptureDescriptor {

@@ -76,7 +76,6 @@ pub enum MTLRenderPipelineColorAttachmentDescriptor {}
 foreign_obj_type! {
     type CType = MTLRenderPipelineColorAttachmentDescriptor;
     pub struct RenderPipelineColorAttachmentDescriptor;
-    pub struct RenderPipelineColorAttachmentDescriptorRef;
 }
 
 impl RenderPipelineColorAttachmentDescriptorRef {
@@ -164,7 +163,6 @@ pub enum MTLRenderPipelineReflection {}
 foreign_obj_type! {
     type CType = MTLRenderPipelineReflection;
     pub struct RenderPipelineReflection;
-    pub struct RenderPipelineReflectionRef;
 }
 
 impl RenderPipelineReflection {
@@ -214,7 +212,6 @@ pub enum MTLArgumentArray {}
 foreign_obj_type! {
     type CType = MTLArgumentArray;
     pub struct ArgumentArray;
-    pub struct ArgumentArrayRef;
 }
 
 impl ArgumentArrayRef {
@@ -232,7 +229,6 @@ pub enum MTLComputePipelineReflection {}
 foreign_obj_type! {
     type CType = MTLComputePipelineReflection;
     pub struct ComputePipelineReflection;
-    pub struct ComputePipelineReflectionRef;
 }
 
 impl ComputePipelineReflectionRef {
@@ -247,7 +243,6 @@ pub enum MTLRenderPipelineDescriptor {}
 foreign_obj_type! {
     type CType = MTLRenderPipelineDescriptor;
     pub struct RenderPipelineDescriptor;
-    pub struct RenderPipelineDescriptorRef;
 }
 
 impl RenderPipelineDescriptor {
@@ -465,7 +460,6 @@ pub enum MTLRenderPipelineState {}
 foreign_obj_type! {
     type CType = MTLRenderPipelineState;
     pub struct RenderPipelineState;
-    pub struct RenderPipelineStateRef;
 }
 
 impl RenderPipelineStateRef {
@@ -486,7 +480,6 @@ pub enum MTLRenderPipelineColorAttachmentDescriptorArray {}
 foreign_obj_type! {
     type CType = MTLRenderPipelineColorAttachmentDescriptorArray;
     pub struct RenderPipelineColorAttachmentDescriptorArray;
-    pub struct RenderPipelineColorAttachmentDescriptorArrayRef;
 }
 
 impl RenderPipelineColorAttachmentDescriptorArrayRef {

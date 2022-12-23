@@ -52,7 +52,6 @@ pub enum MTLCommandBuffer {}
 foreign_obj_type! {
     type CType = MTLCommandBuffer;
     pub struct CommandBuffer;
-    pub struct CommandBufferRef;
 }
 
 impl CommandBufferRef {
@@ -118,6 +117,10 @@ impl CommandBufferRef {
         descriptor: &RenderPassDescriptorRef,
     ) -> &ParallelRenderCommandEncoderRef {
         unsafe { msg_send![self, parallelRenderCommandEncoderWithDescriptor: descriptor] }
+    }
+
+    pub fn new_acceleration_structure_command_encoder(&self) -> AccelerationStructureCommandEncoder {
+        unsafe { msg_send![self, accelerationStructureCommandEncoder] }
     }
 
     pub fn compute_command_encoder_with_dispatch_type(

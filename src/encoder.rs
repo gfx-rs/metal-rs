@@ -130,7 +130,6 @@ pub enum MTLCommandEncoder {}
 foreign_obj_type! {
     type CType = MTLCommandEncoder;
     pub struct CommandEncoder;
-    pub struct CommandEncoderRef;
 }
 
 impl CommandEncoderRef {
@@ -176,8 +175,7 @@ pub enum MTLParallelRenderCommandEncoder {}
 foreign_obj_type! {
     type CType = MTLParallelRenderCommandEncoder;
     pub struct ParallelRenderCommandEncoder;
-    pub struct ParallelRenderCommandEncoderRef;
-    type ParentType = CommandEncoderRef;
+    type ParentType = CommandEncoder;
 }
 
 impl ParallelRenderCommandEncoderRef {
@@ -191,8 +189,7 @@ pub enum MTLRenderCommandEncoder {}
 foreign_obj_type! {
     type CType = MTLRenderCommandEncoder;
     pub struct RenderCommandEncoder;
-    pub struct RenderCommandEncoderRef;
-    type ParentType = CommandEncoderRef;
+    type ParentType = CommandEncoder;
 }
 
 impl RenderCommandEncoderRef {
@@ -824,8 +821,7 @@ pub enum MTLBlitCommandEncoder {}
 foreign_obj_type! {
     type CType = MTLBlitCommandEncoder;
     pub struct BlitCommandEncoder;
-    pub struct BlitCommandEncoderRef;
-    type ParentType = CommandEncoderRef;
+    type ParentType = CommandEncoder;
 }
 
 impl BlitCommandEncoderRef {
@@ -1004,8 +1000,7 @@ pub enum MTLComputeCommandEncoder {}
 foreign_obj_type! {
     type CType = MTLComputeCommandEncoder;
     pub struct ComputeCommandEncoder;
-    pub struct ComputeCommandEncoderRef;
-    type ParentType = CommandEncoderRef;
+    type ParentType = CommandEncoder;
 }
 
 impl ComputeCommandEncoderRef {
@@ -1236,6 +1231,28 @@ impl ComputeCommandEncoderRef {
     pub fn wait_for_fence(&self, fence: &FenceRef) {
         unsafe { msg_send![self, waitForFence: fence] }
     }
+
+    /// Only available in (macos(11.0), ios(14.0))
+    pub fn set_acceleration_structure(&self, index: NSUInteger, accel: &AccelerationStructureRef) {
+        unsafe {
+            msg_send![
+                self,
+                setAccelerationStructure: accel
+                atBufferIndex: index
+            ]
+        }
+    }
+
+    /// Only available in (macos(11.0), ios(14.0))
+    pub fn set_intersection_function_table(&self, index: NSUInteger, table: &IntersectionFunctionTableRef) {
+        unsafe {
+            msg_send![
+                self,
+                setIntersectionFunctionTable: table
+                atBufferIndex: index
+            ]
+        }
+    }
 }
 
 pub enum MTLArgumentEncoder {}
@@ -1243,7 +1260,6 @@ pub enum MTLArgumentEncoder {}
 foreign_obj_type! {
     type CType = MTLArgumentEncoder;
     pub struct ArgumentEncoder;
-    pub struct ArgumentEncoderRef;
 }
 
 impl ArgumentEncoderRef {

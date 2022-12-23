@@ -39,7 +39,6 @@ pub enum MTLStencilDescriptor {}
 foreign_obj_type! {
     type CType = MTLStencilDescriptor;
     pub struct StencilDescriptor;
-    pub struct StencilDescriptorRef;
 }
 
 impl StencilDescriptor {
@@ -106,7 +105,6 @@ pub enum MTLDepthStencilDescriptor {}
 foreign_obj_type! {
     type CType = MTLDepthStencilDescriptor;
     pub struct DepthStencilDescriptor;
-    pub struct DepthStencilDescriptorRef;
 }
 
 impl DepthStencilDescriptor {
@@ -177,7 +175,6 @@ pub enum MTLDepthStencilState {}
 foreign_obj_type! {
     type CType = MTLDepthStencilState;
     pub struct DepthStencilState;
-    pub struct DepthStencilStateRef;
 }
 
 impl DepthStencilStateRef {

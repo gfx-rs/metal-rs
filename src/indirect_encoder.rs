@@ -17,7 +17,6 @@ pub enum MTLIndirectCommandBufferDescriptor {}
 foreign_obj_type! {
     type CType = MTLIndirectCommandBufferDescriptor;
     pub struct IndirectCommandBufferDescriptor;
-    pub struct IndirectCommandBufferDescriptorRef;
 }
 
 impl IndirectCommandBufferDescriptorRef {
@@ -87,8 +86,7 @@ pub enum MTLIndirectCommandBuffer {}
 foreign_obj_type! {
     type CType = MTLIndirectCommandBuffer;
     pub struct IndirectCommandBuffer;
-    pub struct IndirectCommandBufferRef;
-    type ParentType = ResourceRef;
+    type ParentType = Resource;
 }
 
 impl IndirectCommandBufferRef {
@@ -117,7 +115,6 @@ pub enum MTLIndirectRenderCommand {}
 foreign_obj_type! {
     type CType = MTLIndirectRenderCommand;
     pub struct IndirectRenderCommand;
-    pub struct IndirectRenderCommandRef;
 }
 
 impl IndirectRenderCommandRef {
@@ -271,7 +268,6 @@ pub enum MTLIndirectComputeCommand {}
 foreign_obj_type! {
     type CType = MTLIndirectComputeCommand;
     pub struct IndirectComputeCommand;
-    pub struct IndirectComputeCommandRef;
 }
 
 impl IndirectComputeCommandRef {

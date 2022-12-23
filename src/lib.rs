@@ -1,21 +1,22 @@
-// Copyright 2017 GFX developers
+// Copyright 2023 GFX developers
 //
 // Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
 // http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+#![feature(concat_idents)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
 #[macro_use]
-extern crate bitflags;
+pub extern crate bitflags;
 #[macro_use]
-extern crate log;
+pub extern crate log;
 #[macro_use]
-extern crate objc;
+pub extern crate objc;
 #[macro_use]
-extern crate foreign_types;
+pub extern crate foreign_types;
 
 use std::{
     borrow::{Borrow, ToOwned},
@@ -83,44 +84,49 @@ fn nsstring_from_str(string: &str) -> *mut objc::runtime::Object {
 }
 
 macro_rules! foreign_obj_type {
-    {type CType = $raw_ident:ident;
-    pub struct $owned_ident:ident;
-    pub struct $ref_ident:ident;
-    type ParentType = $parent_ref:ident;
+    {
+        type CType = $raw_ident:ident;
+        pub struct $owned_ident:ident;
+        type ParentType = $parent_ident:ident;
     } => {
         foreign_obj_type! {
             type CType = $raw_ident;
             pub struct $owned_ident;
-            pub struct $ref_ident;
         }
 
-        impl ::std::ops::Deref for $ref_ident {
-            type Target = $parent_ref;
+        impl ::std::ops::Deref for concat_idents!($owned_ident, Ref) {
+            type Target = concat_idents!($parent_ident, Ref);
 
             #[inline]
-            fn deref(&self) -> &$parent_ref {
-                unsafe { &*(self as *const $ref_ident as *const $parent_ref)  }
+            fn deref(&self) -> &Self::Target {
+                unsafe { &*(self as *const Self as *const Self::Target)  }
+            }
+        }
+
+        impl ::std::convert::From<$owned_ident> for $parent_ident {
+            fn from(item: $owned_ident) -> Self {
+                unsafe { Self::from_ptr(::std::mem::transmute(item.into_ptr())) }
             }
         }
     };
-    {type CType = $raw_ident:ident;
-    pub struct $owned_ident:ident;
-    pub struct $ref_ident:ident;
+    {
+        type CType = $raw_ident:ident;
+        pub struct $owned_ident:ident;
     } => {
         foreign_type! {
-            type CType = $raw_ident;
-            fn drop = crate::obj_drop;
-            fn clone = crate::obj_clone;
-            pub struct $owned_ident;
-            pub struct $ref_ident;
+            pub unsafe type $owned_ident: Sync + Send {
+                type CType = $raw_ident;
+                fn drop = crate::obj_drop;
+                fn clone = crate::obj_clone;
+            }
         }
 
         unsafe impl ::objc::Message for $raw_ident {
         }
-        unsafe impl ::objc::Message for $ref_ident {
+        unsafe impl ::objc::Message for concat_idents!($owned_ident, Ref) {
         }
 
-        impl ::std::fmt::Debug for $ref_ident {
+        impl ::std::fmt::Debug for concat_idents!($owned_ident, Ref) {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 unsafe {
                     let string: *mut ::objc::runtime::Object = msg_send![self, debugDescription];
@@ -161,18 +167,19 @@ pub struct NSArray<T> {
 }
 
 pub struct Array<T>(*mut NSArray<T>)
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static;
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static;
+
 pub struct ArrayRef<T>(foreign_types::Opaque, PhantomData<T>)
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static;
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static;
 
 impl<T> Drop for Array<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
 {
     fn drop(&mut self) {
         unsafe {
@@ -182,9 +189,9 @@ where
 }
 
 impl<T> Clone for Array<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
 {
     fn clone(&self) -> Self {
         unsafe { Array(msg_send![self.0, retain]) }
@@ -192,22 +199,21 @@ where
 }
 
 unsafe impl<T> objc::Message for NSArray<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
-{
-}
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
+{}
+
 unsafe impl<T> objc::Message for ArrayRef<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
-{
-}
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
+{}
 
 impl<T> Array<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
 {
     pub fn from_slice<'a>(s: &[&T::Ref]) -> &'a ArrayRef<T> {
         unsafe {
@@ -224,10 +230,10 @@ where
     }
 }
 
-impl<T> foreign_types::ForeignType for Array<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+unsafe impl<T> foreign_types::ForeignType for Array<T>
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
 {
     type CType = NSArray<T>;
     type Ref = ArrayRef<T>;
@@ -241,18 +247,18 @@ where
     }
 }
 
-impl<T> foreign_types::ForeignTypeRef for ArrayRef<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+unsafe impl<T> foreign_types::ForeignTypeRef for ArrayRef<T>
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
 {
     type CType = NSArray<T>;
 }
 
 impl<T> Deref for Array<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
 {
     type Target = ArrayRef<T>;
 
@@ -263,9 +269,9 @@ where
 }
 
 impl<T> Borrow<ArrayRef<T>> for Array<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
 {
     fn borrow(&self) -> &ArrayRef<T> {
         unsafe { mem::transmute(self.as_ptr()) }
@@ -273,9 +279,9 @@ where
 }
 
 impl<T> ToOwned for ArrayRef<T>
-where
-    T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    where
+        T: ForeignType + 'static,
+        T::Ref: objc::Message + 'static,
 {
     type Owned = Array<T>;
 
@@ -289,8 +295,7 @@ pub enum CAMetalDrawable {}
 foreign_obj_type! {
     type CType = CAMetalDrawable;
     pub struct MetalDrawable;
-    pub struct MetalDrawableRef;
-    type ParentType = DrawableRef;
+    type ParentType = Drawable;
 }
 
 impl MetalDrawableRef {
@@ -299,12 +304,33 @@ impl MetalDrawableRef {
     }
 }
 
+pub enum NSObject {}
+
+foreign_obj_type! {
+    type CType = NSObject;
+    pub struct NsObject;
+}
+
+impl NsObjectRef {
+    pub fn conforms_to_protocol<T>(&self) -> Result<bool, String> {
+        let name = ::std::any::type_name::<T>();
+        if let Some(name) = name.split("::").last() {
+            if let Some(protocol) = objc::runtime::Protocol::get(name) {
+                Ok(unsafe { msg_send![self, conformsToProtocol:protocol] })
+            } else {
+                Err(format!("Can not find the protocol for type: {}.", name))
+            }
+        } else {
+            Err(format!("Unexpected type name: {}.", name))
+        }
+    }
+}
+
 pub enum CAMetalLayer {}
 
 foreign_obj_type! {
     type CType = CAMetalLayer;
     pub struct MetalLayer;
-    pub struct MetalLayerRef;
 }
 
 impl MetalLayer {
@@ -453,6 +479,7 @@ impl MetalLayerRef {
     }
 }
 
+mod accelerator_structure;
 mod argument;
 mod buffer;
 mod capturedescriptor;
@@ -480,6 +507,7 @@ mod vertexdescriptor;
 
 #[rustfmt::skip]
 pub use {
+    accelerator_structure::*,
     argument::*,
     buffer::*,
     capturedescriptor::*,
@@ -526,7 +554,6 @@ pub enum NSURL {}
 foreign_obj_type! {
     type CType = NSURL;
     pub struct URL;
-    pub struct URLRef;
 }
 
 impl URL {

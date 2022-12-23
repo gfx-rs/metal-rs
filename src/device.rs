@@ -1485,13 +1485,12 @@ pub enum MTLDevice {}
 foreign_obj_type! {
     type CType = MTLDevice;
     pub struct Device;
-    pub struct DeviceRef;
 }
 
 impl Device {
     pub fn system_default() -> Option<Self> {
         // `MTLCreateSystemDefaultDevice` may return null if Metal is not supported
-        unsafe { MTLCreateSystemDefaultDevice().as_mut().map(|x| Self(x)) }
+        unsafe { MTLCreateSystemDefaultDevice().as_mut().map(|x| Self(x.into())) }
     }
 
     pub fn all() -> Vec<Self> {
@@ -2113,5 +2112,13 @@ impl DeviceRef {
     /// Only available on (macos(10.14), ios(12.0), tvos(12.0))
     pub fn max_buffer_length(&self) -> NSUInteger {
         unsafe { msg_send![self, maxBufferLength] }
+    }
+
+    pub fn acceleration_structure_sizes_with_descriptor(&self, desc: &AccelerationStructureDescriptorRef) -> MTLAccelerationStructureSizes {
+        unsafe { msg_send![self, accelerationStructureSizesWithDescriptor:desc] }
+    }
+
+    pub fn new_acceleration_structure_with_size(&self, size: NSUInteger) -> AccelerationStructure {
+        unsafe {  msg_send![self, newAccelerationStructureWithSize: size] }
     }
 }

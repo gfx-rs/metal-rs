@@ -13,7 +13,6 @@ pub enum MTLCaptureScope {}
 foreign_obj_type! {
     type CType = MTLCaptureScope;
     pub struct CaptureScope;
-    pub struct CaptureScopeRef;
 }
 
 impl CaptureScopeRef {
@@ -38,7 +37,6 @@ pub enum MTLCaptureManager {}
 foreign_obj_type! {
     type CType = MTLCaptureManager;
     pub struct CaptureManager;
-    pub struct CaptureManagerRef;
 }
 
 impl CaptureManager {
