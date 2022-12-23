@@ -9,7 +9,7 @@ authors = ["GFX Developers"]
 readme = "README.md"
 keywords = ["metal", "graphics", "bindings"]
 license = "MIT OR Apache-2.0"
-edition = "2018"
+edition = "2021"
 exclude = ["guide/**/*", "examples/texture/**/*", "tests/**/*", "Cargo.lock", "target/**/*"]
 
 [package.metadata.docs.rs]
