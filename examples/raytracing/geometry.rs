@@ -40,7 +40,6 @@ pub struct Triangle {
 
 pub fn get_managed_buffer_storage_mode() -> MTLResourceOptions {
     return MTLResourceOptions::StorageModeManaged;
-    // return MTLResourceStorageModeShared;
 }
 
 pub struct TriangleGeometry {
