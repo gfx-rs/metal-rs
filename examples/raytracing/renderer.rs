@@ -4,7 +4,7 @@ use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use glam::{Vec3, Vec4, Vec4Swizzles};
 use rand::{RngCore, thread_rng};
 
-use metal::{*, accelerator_structure as mry, foreign_types::ForeignType};
+use metal::{*, foreign_types::ForeignType};
 
 use crate::{camera::Camera, scene::Scene, geometry::get_managed_buffer_storage_mode};
 
@@ -54,7 +54,7 @@ pub struct Renderer {
     pub scene: Scene,
     pub uniform_buffer: Buffer,
     pub resource_buffer: Buffer,
-    pub instance_acceleration_structure: mry::AccelerationStructure,
+    pub instance_acceleration_structure: AccelerationStructure,
     pub accumulation_targets: [Texture; 2],
     pub random_texture: Texture,
     pub frame_index: NSUInteger,
@@ -65,7 +65,7 @@ pub struct Renderer {
     pub queue: CommandQueue,
     instance_buffer: Buffer,
     intersection_function_table: IntersectionFunctionTable,
-    primitive_acceleration_structures: Vec<mry::AccelerationStructure>,
+    primitive_acceleration_structures: Vec<AccelerationStructure>,
     raytracing_pipeline: ComputePipelineState,
     copy_pipeline: RenderPipelineState,
 }
@@ -366,7 +366,7 @@ impl Renderer {
     fn new_acceleration_structure_with_descriptor(
         device: &Device,
         queue: &CommandQueue,
-        descriptor: &mry::AccelerationStructureDescriptorRef) -> mry::AccelerationStructure {
+        descriptor: &AccelerationStructureDescriptorRef) -> AccelerationStructure {
         let accel_sizes = device.acceleration_structure_sizes_with_descriptor(descriptor);
         let acceleration_structure = device.new_acceleration_structure_with_size(accel_sizes.acceleration_structure_size);
         let scratch_buffer = device.new_buffer(accel_sizes.build_scratch_buffer_size, MTLResourceOptions::StorageModePrivate);
