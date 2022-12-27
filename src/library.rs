@@ -15,6 +15,8 @@ use std::os::raw::{c_char, c_void};
 use std::ptr;
 
 /// Only available on (macos(10.12), ios(10.0)
+///
+/// See <https://developer.apple.com/documentation/metal/mtlpatchtype/>
 #[repr(u64)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLPatchType {
@@ -23,6 +25,7 @@ pub enum MTLPatchType {
     Quad = 2,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlvertexattribute/>
 pub enum MTLVertexAttribute {}
 
 foreign_obj_type! {
@@ -80,6 +83,8 @@ impl VertexAttributeRef {
 }
 
 /// Only available on (macos(10.12), ios(10.0))
+///
+/// See <https://developer.apple.com/documentation/metal/mtlattribute/>
 pub enum MTLAttribute {}
 
 foreign_obj_type! {
@@ -136,6 +141,7 @@ impl AttributeRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlfunctiontype/>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLFunctionType {
@@ -149,6 +155,8 @@ pub enum MTLFunctionType {
 }
 
 /// Only available on (macos(10.12), ios(10.0))
+///
+/// See <https://developer.apple.com/documentation/metal/mtlfunctionconstant/>
 pub enum MTLFunctionConstant {}
 
 foreign_obj_type! {
@@ -185,6 +193,8 @@ impl FunctionConstantRef {
 
 bitflags! {
     /// Only available on (macos(11.0), ios(14.0))
+    ///
+    /// See <https://developer.apple.com/documentation/metal/mtlfunctionoptions/>
     pub struct MTLFunctionOptions: NSUInteger {
         const None = 0;
         const CompileToBinary = 1 << 0;
@@ -192,6 +202,8 @@ bitflags! {
 }
 
 /// Only available on (macos(11.0), ios(14.0))
+///
+/// See <https://developer.apple.com/documentation/metal/mtlfunctiondescriptor/>
 pub enum MTLFunctionDescriptor {}
 
 foreign_obj_type! {
@@ -255,6 +267,8 @@ impl FunctionDescriptorRef {
 }
 
 /// Only available on (macos(11.0), ios(14.0))
+///
+/// See <https://developer.apple.com/documentation/metal/mtlintersectionfunctiondescriptor/>
 pub enum MTLIntersectionFunctionDescriptor {}
 
 foreign_obj_type! {
@@ -264,6 +278,8 @@ foreign_obj_type! {
 }
 
 /// Only available on (macos(11.0), ios(14.0))
+///
+/// See <https://developer.apple.com/documentation/metal/mtlfunctionhandle/>
 pub enum MTLFunctionHandle {}
 
 foreign_obj_type! {
@@ -295,6 +311,7 @@ impl FunctionHandleRef {
 // MTLIntersectionFunctionTableDescriptor
 // MTLIntersectionFunctionTable
 
+/// See <https://developer.apple.com/documentation/metal/mtlfunction/>
 pub enum MTLFunction {}
 
 foreign_obj_type! {
@@ -371,6 +388,7 @@ impl FunctionRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtllanguageversion/>
 #[repr(u64)]
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub enum MTLLanguageVersion {
@@ -386,6 +404,7 @@ pub enum MTLLanguageVersion {
     V2_4 = 0x20004,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlfunctionconstantvalues/>
 pub enum MTLFunctionConstantValues {}
 
 foreign_obj_type! {
@@ -430,6 +449,8 @@ impl FunctionConstantValuesRef {
 }
 
 /// Only available on (macos(11.0), ios(14.0))
+///
+/// See <https://developer.apple.com/documentation/metal/mtllibrarytype/>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLLibraryType {
@@ -437,6 +458,7 @@ pub enum MTLLibraryType {
     Dynamic = 1,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcompileoptions/>
 pub enum MTLCompileOptions {}
 
 foreign_obj_type! {
@@ -568,6 +590,7 @@ impl CompileOptionsRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtllibraryerror/>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLLibraryError {
@@ -581,6 +604,7 @@ pub enum MTLLibraryError {
     FileNotFound = 6,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtllibrary/>
 pub enum MTLLibrary {}
 
 foreign_obj_type! {
@@ -709,6 +733,8 @@ impl LibraryRef {
 }
 
 /// Only available on (macos(11.0), ios(14.0))
+///
+/// See <https://developer.apple.com/documentation/metal/mtldynamiclibraryerror/>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDynamicLibraryError {
@@ -720,6 +746,7 @@ pub enum MTLDynamicLibraryError {
     Unsupported = 5,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtldynamiclibrary/>
 pub enum MTLDynamicLibrary {}
 
 foreign_obj_type! {
@@ -776,6 +803,8 @@ impl DynamicLibraryRef {
 }
 
 /// macOS 11.0+ iOS 14.0+
+///
+/// See <https://developer.apple.com/documentation/metal/mtlbinaryarchivedescriptor/>
 pub enum MTLBinaryArchiveDescriptor {}
 
 foreign_obj_type! {
@@ -802,6 +831,8 @@ impl BinaryArchiveDescriptorRef {
 }
 
 /// macOS 11.0+ iOS 14.0+
+///
+/// See <https://developer.apple.com/documentation/metal/mtlbinaryarchive/>
 pub enum MTLBinaryArchive {}
 
 foreign_obj_type! {
@@ -903,6 +934,8 @@ impl BinaryArchiveRef {
 }
 
 /// macOS 11.0+ iOS 14.0+
+///
+/// See <https://developer.apple.com/documentation/metal/mtllinkedfunctions/>
 pub enum MTLLinkedFunctions {}
 
 foreign_obj_type! {

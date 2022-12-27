@@ -9,6 +9,7 @@ use super::*;
 
 use block::Block;
 
+/// See <https://developer.apple.com/documentation/metal/mtlcommandbufferstatus>
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -21,6 +22,7 @@ pub enum MTLCommandBufferStatus {
     Error = 5,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcommandbuffererror>
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -37,6 +39,7 @@ pub enum MTLCommandBufferError {
     DeviceRemoved = 11,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtldispatchtype>
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -47,6 +50,7 @@ pub enum MTLDispatchType {
 
 type CommandBufferHandler<'a> = Block<(&'a CommandBufferRef,), ()>;
 
+/// See <https://developer.apple.com/documentation/metal/mtlcommandbuffer>.
 pub enum MTLCommandBuffer {}
 
 foreign_obj_type! {

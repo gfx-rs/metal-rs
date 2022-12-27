@@ -13,8 +13,11 @@ use objc::runtime::{Object, NO, YES};
 
 use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
 
-// Available on macOS 10.11+, iOS 8.0+, tvOS 9.0+
+/// Available on macOS 10.11+, iOS 8.0+, tvOS 9.0+
+///
+/// See <https://developer.apple.com/documentation/metal/mtlfeatureset>
 #[allow(non_camel_case_types)]
+#[deprecated(note = "Since iOS 8.0–16.0 iPadOS 8.0–16.0 macOS 10.11–13.0 Mac Catalyst 13.1–16.0 tvOS 9.0–16.0")]
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLFeatureSet {
@@ -52,7 +55,9 @@ pub enum MTLFeatureSet {
     macOS_GPUFamily2_v1 = 10005,
 }
 
-// Available on macOS 10.15+, iOS 13.0+
+/// Available on macOS 10.15+, iOS 13.0+
+///
+/// See <https://developer.apple.com/documentation/metal/mtlgpufamily>
 #[repr(i64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[non_exhaustive]
@@ -75,6 +80,7 @@ pub enum MTLGPUFamily {
     MacCatalyst2 = 4002,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtldevicelocation>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDeviceLocation {
@@ -1380,6 +1386,7 @@ impl MTLFeatureSet {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlargumentbufferstier>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLArgumentBuffersTier {
@@ -1387,6 +1394,7 @@ pub enum MTLArgumentBuffersTier {
     Tier2 = 1,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlreadwritetexturetier>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLReadWriteTextureTier {
@@ -1396,6 +1404,8 @@ pub enum MTLReadWriteTextureTier {
 }
 
 /// Only available on (macos(11.0), ios(14.0))
+///
+/// See <https://developer.apple.com/documentation/metal/mtlcountersamplingpoint>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCounterSamplingPoint {
@@ -1407,6 +1417,9 @@ pub enum MTLCounterSamplingPoint {
 }
 
 /// Only available on (macos(11.0), macCatalyst(14.0), ios(13.0))
+/// Kinda a long name!
+///
+/// See <https://developer.apple.com/documentation/metal/mtlsparsetextureregionalignmentmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLSparseTextureRegionAlignmentMode {
@@ -1431,6 +1444,7 @@ bitflags! {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlaccelerationstructuresizes>
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 #[repr(C)]
 pub struct MTLAccelerationStructureSizes {
@@ -1480,6 +1494,7 @@ type MTLNewRenderPipelineStateWithReflectionCompletionHandler = extern fn(render
 type MTLNewComputePipelineStateCompletionHandler = extern fn(computePipelineState: id, error: id);
 type MTLNewComputePipelineStateWithReflectionCompletionHandler = extern fn(computePipelineState: id, reflection: id, error: id);*/
 
+/// See <https://developer.apple.com/documentation/metal/mtldevice>
 pub enum MTLDevice {}
 
 foreign_obj_type! {

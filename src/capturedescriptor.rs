@@ -9,7 +9,7 @@ use super::*;
 
 use std::path::Path;
 
-/// https://developer.apple.com/documentation/metal/mtlcapturedestination?language=objc
+/// See <https://developer.apple.com/documentation/metal/mtlcapturedestination?language=objc>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -18,7 +18,7 @@ pub enum MTLCaptureDestination {
     GpuTraceDocument = 2,
 }
 
-/// https://developer.apple.com/documentation/metal/mtlcapturedescriptor
+/// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor>
 pub enum MTLCaptureDescriptor {}
 
 foreign_obj_type! {
@@ -36,22 +36,22 @@ impl CaptureDescriptor {
 }
 
 impl CaptureDescriptorRef {
-    /// https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237248-captureobject
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237248-captureobject>
     pub fn set_capture_device(&self, device: &DeviceRef) {
         unsafe { msg_send![self, setCaptureObject: device] }
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237248-captureobject
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237248-captureobject>
     pub fn set_capture_scope(&self, scope: &CaptureScopeRef) {
         unsafe { msg_send![self, setCaptureObject: scope] }
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237248-captureobject
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237248-captureobject>
     pub fn set_capture_command_queue(&self, command_queue: &CommandQueueRef) {
         unsafe { msg_send![self, setCaptureObject: command_queue] }
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237250-outputurl
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237250-outputurl>
     pub fn output_url(&self) -> &Path {
         let output_url = unsafe { msg_send![self, outputURL] };
         let output_url = nsstring_as_str(output_url);
@@ -59,19 +59,19 @@ impl CaptureDescriptorRef {
         Path::new(output_url)
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237250-outputurl
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237250-outputurl>
     pub fn set_output_url<P: AsRef<Path>>(&self, output_url: P) {
         let output_url = nsstring_from_str(output_url.as_ref().to_str().unwrap());
 
         unsafe { msg_send![self, setOutputURL: output_url] }
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlcapturedescriptor?language=objc
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor?language=objc>
     pub fn destination(&self) -> MTLCaptureDestination {
         unsafe { msg_send![self, destination] }
     }
 
-    /// https://developer.apple.com/documentation/metal/mtlcapturedescriptor?language=objc
+    /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor?language=objc>
     pub fn set_destination(&self, destination: MTLCaptureDestination) {
         unsafe { msg_send![self, setDestination: destination] }
     }

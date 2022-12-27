@@ -7,6 +7,7 @@
 
 use super::*;
 
+/// See <https://developer.apple.com/documentation/metal/mtlloadaction>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug)]
 pub enum MTLLoadAction {
@@ -15,6 +16,7 @@ pub enum MTLLoadAction {
     Clear = 2,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlstoreaction>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug)]
 pub enum MTLStoreAction {
@@ -26,6 +28,7 @@ pub enum MTLStoreAction {
     CustomSampleDepthStore = 5,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlclearcolor>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct MTLClearColor {
@@ -47,6 +50,7 @@ impl MTLClearColor {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlmultisamplestencilresolvefilter>
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MTLMultisampleStencilResolveFilter {
@@ -54,6 +58,7 @@ pub enum MTLMultisampleStencilResolveFilter {
     DepthResolvedSample = 1,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpassattachmentdescriptor>
 pub enum MTLRenderPassAttachmentDescriptor {}
 
 foreign_obj_type! {
@@ -143,6 +148,7 @@ impl RenderPassAttachmentDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpasscolorattachmentdescriptor>
 pub enum MTLRenderPassColorAttachmentDescriptor {}
 
 foreign_obj_type! {
@@ -170,6 +176,7 @@ impl RenderPassColorAttachmentDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpassdepthattachmentdescriptor>
 pub enum MTLRenderPassDepthAttachmentDescriptor {}
 
 foreign_obj_type! {
@@ -188,6 +195,7 @@ impl RenderPassDepthAttachmentDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpassstencilattachmentdescriptor>
 pub enum MTLRenderPassStencilAttachmentDescriptor {}
 
 foreign_obj_type! {
@@ -217,6 +225,7 @@ impl RenderPassStencilAttachmentDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpasscolorattachmentdescriptorarray>
 pub enum MTLRenderPassColorAttachmentDescriptorArray {}
 
 foreign_obj_type! {
@@ -241,6 +250,12 @@ impl RenderPassColorAttachmentDescriptorArrayRef {
     }
 }
 
+/// ## Important!
+/// When configuring a [`MTLTextureDescriptor`] object for use with an attachment, set its usage
+/// value to renderTarget if you already know that you intend to use the resulting MTLTexture object in
+/// an attachment. This may significantly improve your app’s performance with certain hardware.
+///
+/// See <https://developer.apple.com/documentation/metal/mtlrenderpassdescriptor>
 pub enum MTLRenderPassDescriptor {}
 
 foreign_obj_type! {

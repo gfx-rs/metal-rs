@@ -8,6 +8,7 @@
 use super::{MTLTextureType, NSUInteger};
 use objc::runtime::{NO, YES};
 
+/// See <https://developer.apple.com/documentation/metal/mtldatatype>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -107,7 +108,9 @@ pub enum MTLDataType {
     RGB9E5Float = 77,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlargumenttype>
 #[repr(u64)]
+#[deprecated(note = "Since: iOS 8.0–16.0, iPadOS 8.0–16.0, macOS 10.11–13.0, Mac Catalyst 13.1–16.0, tvOS 9.0–16.0")]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLArgumentType {
@@ -119,6 +122,7 @@ pub enum MTLArgumentType {
     Imageblock = 17,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlargumentaccess>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -128,6 +132,7 @@ pub enum MTLArgumentAccess {
     WriteOnly = 2,
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlstructmember>
 pub enum MTLStructMember {}
 
 foreign_obj_type! {
@@ -177,6 +182,7 @@ impl StructMemberArrayRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlstructtype>
 pub enum MTLStructType {}
 
 foreign_obj_type! {
@@ -196,6 +202,7 @@ impl StructTypeRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlarraytype>
 pub enum MTLArrayType {}
 
 foreign_obj_type! {
@@ -225,6 +232,8 @@ impl ArrayTypeRef {
     }
 }
 
+/// <https://developer.apple.com/documentation/metal/mtlargument>
+#[deprecated(note = "Since iOS 8.0–16.0, iPadOS 8.0–16.0, macOS 10.11–13.0, Mac Catalyst 13.1–16.0, tvOS 9.0–16.0")]
 pub enum MTLArgument {}
 
 foreign_obj_type! {
@@ -295,6 +304,7 @@ impl ArgumentRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlargumentdescriptor>
 pub enum MTLArgumentDescriptor {}
 
 foreign_obj_type! {

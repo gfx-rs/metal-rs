@@ -7,6 +7,7 @@
 
 use super::*;
 
+/// See <https://developer.apple.com/documentation/metal/mtlbuffer>
 pub enum MTLBuffer {}
 
 foreign_obj_type! {
