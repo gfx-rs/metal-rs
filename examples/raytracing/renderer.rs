@@ -127,7 +127,7 @@ impl Renderer {
             let geometry_descriptor = mesh.get_geometry_descriptor();
             geometry_descriptor.set_intersection_function_table_offset(i as NSUInteger);
             let geometry_descriptors = Array::from_owned_slice(&[geometry_descriptor]);
-            let mut accel_descriptor = PrimitiveAccelerationStructureDescriptor::descriptor();
+            let accel_descriptor = PrimitiveAccelerationStructureDescriptor::descriptor();
             accel_descriptor.set_geometry_descriptors(&geometry_descriptors);
             let accel_descriptor: AccelerationStructureDescriptor = From::from(accel_descriptor);
             primitive_acceleration_structures.push(Self::new_acceleration_structure_with_descriptor(&device, &queue, &accel_descriptor));
@@ -160,7 +160,7 @@ impl Renderer {
         instance_buffer.set_label("instance buffer");
         instance_buffer.did_modify_range(NSRange::new(0, instance_buffer.length()));
 
-        let mut accel_descriptor = InstanceAccelerationStructureDescriptor::descriptor();
+        let accel_descriptor = InstanceAccelerationStructureDescriptor::descriptor();
         accel_descriptor.set_instanced_acceleration_structures(&Array::from_owned_slice(&primitive_acceleration_structures));
         accel_descriptor.set_instance_count(scene.geometry_instances.len() as NSUInteger);
         accel_descriptor.set_instance_descriptor_buffer(&instance_buffer);
@@ -184,9 +184,9 @@ impl Renderer {
             .values().map(|f| -> &FunctionRef { f } ).collect();
         let raytracing_pipeline = Self::new_compute_pipeline_state_with_function(
             &device, &raytracing_function, &intersection_function_array);
-        let mut intersection_function_table_descriptor = IntersectionFunctionTableDescriptor::new();
+        let intersection_function_table_descriptor = IntersectionFunctionTableDescriptor::new();
         intersection_function_table_descriptor.set_function_count(scene.geometries.len() as NSUInteger);
-        let mut intersection_function_table = raytracing_pipeline
+        let intersection_function_table = raytracing_pipeline
             .new_intersection_function_table_with_descriptor(&intersection_function_table_descriptor);
         for geometry_index in 0..scene.geometries.len() {
             let geometry = scene.geometries[geometry_index].as_ref();
