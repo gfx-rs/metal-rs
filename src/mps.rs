@@ -28,7 +28,6 @@ pub enum MPSKernel {}
 foreign_obj_type! {
     type CType = MPSKernel;
     pub struct Kernel;
-    pub struct KernelRef;
 }
 
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsraydatatype>
@@ -163,8 +162,7 @@ pub enum MPSRayIntersector {}
 foreign_obj_type! {
     type CType = MPSRayIntersector;
     pub struct RayIntersector;
-    pub struct RayIntersectorRef;
-    type ParentType = KernelRef;
+    type ParentType = Kernel;
 }
 
 impl RayIntersector {
@@ -268,7 +266,6 @@ pub enum MPSAccelerationStructureGroup {}
 foreign_obj_type! {
     type CType = MPSAccelerationStructureGroup;
     pub struct AccelerationStructureGroup;
-    pub struct AccelerationStructureGroupRef;
 }
 
 impl AccelerationStructureGroup {
@@ -300,7 +297,6 @@ pub enum MPSAccelerationStructure {}
 foreign_obj_type! {
     type CType = MPSAccelerationStructure;
     pub struct AccelerationStructure;
-    pub struct AccelerationStructureRef;
 }
 
 impl AccelerationStructureRef {
@@ -335,8 +331,7 @@ pub enum MPSPolygonAccelerationStructure {}
 foreign_obj_type! {
     type CType = MPSPolygonAccelerationStructure;
     pub struct PolygonAccelerationStructure;
-    pub struct PolygonAccelerationStructureRef;
-    type ParentType = AccelerationStructureRef;
+    type ParentType = AccelerationStructure;
 }
 
 impl PolygonAccelerationStructureRef {
@@ -381,8 +376,7 @@ pub enum MPSTriangleAccelerationStructure {}
 foreign_obj_type! {
     type CType = MPSTriangleAccelerationStructure;
     pub struct TriangleAccelerationStructure;
-    pub struct TriangleAccelerationStructureRef;
-    type ParentType = PolygonAccelerationStructureRef;
+    type ParentType = PolygonAccelerationStructure;
 }
 
 impl TriangleAccelerationStructure {
@@ -426,8 +420,7 @@ pub enum MPSInstanceAccelerationStructure {}
 foreign_obj_type! {
     type CType = MPSInstanceAccelerationStructure;
     pub struct InstanceAccelerationStructure;
-    pub struct InstanceAccelerationStructureRef;
-    type ParentType = AccelerationStructureRef;
+    type ParentType = AccelerationStructure;
 }
 
 impl InstanceAccelerationStructure {

@@ -13,7 +13,6 @@ pub enum MTLDrawable {}
 foreign_obj_type! {
     type CType = MTLDrawable;
     pub struct Drawable;
-    pub struct DrawableRef;
 }
 
 impl DrawableRef {

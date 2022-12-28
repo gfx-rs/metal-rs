@@ -21,7 +21,6 @@ pub enum MTLEvent {}
 foreign_obj_type! {
     type CType = MTLEvent;
     pub struct Event;
-    pub struct EventRef;
 }
 
 impl EventRef {
@@ -36,8 +35,7 @@ pub enum MTLSharedEvent {}
 foreign_obj_type! {
     type CType = MTLSharedEvent;
     pub struct SharedEvent;
-    pub struct SharedEventRef;
-    type ParentType = EventRef;
+    type ParentType = Event;
 }
 
 impl SharedEventRef {
@@ -90,7 +88,6 @@ pub enum MTLSharedEventListener {}
 foreign_obj_type! {
     type CType = MTLSharedEventListener;
     pub struct SharedEventListener;
-    pub struct SharedEventListenerRef;
 }
 
 impl SharedEventListener {
@@ -118,7 +115,6 @@ pub enum MTLFence {}
 foreign_obj_type! {
     type CType = MTLFence;
     pub struct Fence;
-    pub struct FenceRef;
 }
 
 impl FenceRef {

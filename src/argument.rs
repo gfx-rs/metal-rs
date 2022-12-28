@@ -138,7 +138,6 @@ pub enum MTLStructMember {}
 foreign_obj_type! {
     type CType = MTLStructMember;
     pub struct StructMember;
-    pub struct StructMemberRef;
 }
 
 impl StructMemberRef {
@@ -171,7 +170,6 @@ pub enum MTLStructMemberArray {}
 foreign_obj_type! {
     type CType = MTLStructMemberArray;
     pub struct StructMemberArray;
-    pub struct StructMemberArrayRef;
 }
 
 impl StructMemberArrayRef {
@@ -190,7 +188,6 @@ pub enum MTLStructType {}
 foreign_obj_type! {
     type CType = MTLStructType;
     pub struct StructType;
-    pub struct StructTypeRef;
 }
 
 impl StructTypeRef {
@@ -211,7 +208,6 @@ pub enum MTLArrayType {}
 foreign_obj_type! {
     type CType = MTLArrayType;
     pub struct ArrayType;
-    pub struct ArrayTypeRef;
 }
 
 impl ArrayTypeRef {
@@ -243,7 +239,6 @@ pub enum MTLArgument {}
 foreign_obj_type! {
     type CType = MTLArgument;
     pub struct Argument;
-    pub struct ArgumentRef;
 }
 
 impl ArgumentRef {
@@ -315,7 +310,6 @@ pub enum MTLArgumentDescriptor {}
 foreign_obj_type! {
     type CType = MTLArgumentDescriptor;
     pub struct ArgumentDescriptor;
-    pub struct ArgumentDescriptorRef;
 }
 
 impl ArgumentDescriptor {

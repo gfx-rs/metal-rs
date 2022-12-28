@@ -5,7 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use super::{DeviceRef, HeapRef, NSUInteger};
+use super::*;
 use objc::runtime::{NO, YES};
 
 /// See <https://developer.apple.com/documentation/metal/mtlpurgeablestate>
@@ -109,7 +109,7 @@ pub enum MTLResource {}
 foreign_obj_type! {
     type CType = MTLResource;
     pub struct Resource;
-    pub struct ResourceRef;
+    type ParentType = NsObject;
 }
 
 impl ResourceRef {
