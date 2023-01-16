@@ -352,4 +352,14 @@ impl TextureRef {
     pub fn gpu_resource_id(&self) -> MTLResourceID {
         unsafe { msg_send![self, gpuResourceID] }
     }
+
+    pub fn is_null(&self) -> bool {
+        use foreign_types::ForeignTypeRef;
+
+        if self.as_ptr().is_null() {
+            true
+        } else {
+            false
+        }
+    }
 }
