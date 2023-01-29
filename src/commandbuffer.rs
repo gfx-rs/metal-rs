@@ -101,6 +101,10 @@ impl CommandBufferRef {
         unsafe { msg_send![self, addCompletedHandler: block] }
     }
 
+    pub fn add_scheduled_handler(&self, block: &CommandBufferHandler) {
+        unsafe { msg_send![self, addScheduledHandler: block] }
+    }
+
     pub fn new_blit_command_encoder(&self) -> &BlitCommandEncoderRef {
         unsafe { msg_send![self, blitCommandEncoder] }
     }
