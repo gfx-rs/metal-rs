@@ -22,6 +22,7 @@ pub enum MTLTextureType {
     Cube = 5,
     CubeArray = 6,
     D3 = 7,
+    D2MultisampleArray = 8,
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtltexturecompressiontype>
