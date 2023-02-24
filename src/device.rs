@@ -17,7 +17,9 @@ use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlfeatureset>
 #[allow(non_camel_case_types)]
-#[deprecated(note = "Since iOS 8.0–16.0 iPadOS 8.0–16.0 macOS 10.11–13.0 Mac Catalyst 13.1–16.0 tvOS 9.0–16.0")]
+#[deprecated(
+    note = "Since iOS 8.0–16.0 iPadOS 8.0–16.0 macOS 10.11–13.0 Mac Catalyst 13.1–16.0 tvOS 9.0–16.0"
+)]
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLFeatureSet {
@@ -1505,7 +1507,11 @@ foreign_obj_type! {
 impl Device {
     pub fn system_default() -> Option<Self> {
         // `MTLCreateSystemDefaultDevice` may return null if Metal is not supported
-        unsafe { MTLCreateSystemDefaultDevice().as_mut().map(|x| Self(x.into())) }
+        unsafe {
+            MTLCreateSystemDefaultDevice()
+                .as_mut()
+                .map(|x| Self(x.into()))
+        }
     }
 
     pub fn all() -> Vec<Self> {
@@ -2129,11 +2135,17 @@ impl DeviceRef {
         unsafe { msg_send![self, maxBufferLength] }
     }
 
-    pub fn acceleration_structure_sizes_with_descriptor(&self, desc: &AccelerationStructureDescriptorRef) -> MTLAccelerationStructureSizes {
-        unsafe { msg_send![self, accelerationStructureSizesWithDescriptor:desc] }
+    pub fn acceleration_structure_sizes_with_descriptor(
+        &self,
+        desc: &AccelerationStructureDescriptorRef,
+    ) -> MTLAccelerationStructureSizes {
+        unsafe { msg_send![self, accelerationStructureSizesWithDescriptor: desc] }
     }
 
-    pub fn new_acceleration_structure_with_size(&self, size: NSUInteger) -> accelerator_structure::AccelerationStructure {
-        unsafe {  msg_send![self, newAccelerationStructureWithSize: size] }
+    pub fn new_acceleration_structure_with_size(
+        &self,
+        size: NSUInteger,
+    ) -> accelerator_structure::AccelerationStructure {
+        unsafe { msg_send![self, newAccelerationStructureWithSize: size] }
     }
 }
