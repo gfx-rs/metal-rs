@@ -54,7 +54,10 @@ impl PrimitiveAccelerationStructureDescriptor {
 }
 
 impl PrimitiveAccelerationStructureDescriptorRef {
-    pub fn set_geometry_descriptors(&self, descriptors: &ArrayRef<AccelerationStructureGeometryDescriptor>) {
+    pub fn set_geometry_descriptors(
+        &self,
+        descriptors: &ArrayRef<AccelerationStructureGeometryDescriptor>,
+    ) {
         unsafe { msg_send![self, setGeometryDescriptors: descriptors] }
     }
 }
@@ -75,7 +78,6 @@ foreign_obj_type! {
     type ParentType = NsObject;
 }
 
-
 impl AccelerationStructureGeometryDescriptorRef {
     pub fn set_primitive_data_buffer(&self, buffer: Option<&BufferRef>) {
         unsafe { msg_send![self, setPrimitiveDataBuffer: buffer] }
@@ -90,7 +92,7 @@ impl AccelerationStructureGeometryDescriptorRef {
     }
 
     pub fn set_intersection_function_table_offset(&self, offset: NSUInteger) {
-        unsafe { msg_send![self, setIntersectionFunctionTableOffset:offset] }
+        unsafe { msg_send![self, setIntersectionFunctionTableOffset: offset] }
     }
 }
 
@@ -178,14 +180,15 @@ impl InstanceAccelerationStructureDescriptor {
 }
 
 impl InstanceAccelerationStructureDescriptorRef {
-    pub fn set_instanced_acceleration_structures(&self, instances: &ArrayRef<AccelerationStructure>) {
-        unsafe {
-            msg_send![self, setInstancedAccelerationStructures:instances]
-        }
+    pub fn set_instanced_acceleration_structures(
+        &self,
+        instances: &ArrayRef<AccelerationStructure>,
+    ) {
+        unsafe { msg_send![self, setInstancedAccelerationStructures: instances] }
     }
 
     pub fn set_instance_count(&self, count: NSUInteger) {
-        unsafe { msg_send![self, setInstanceCount:count] }
+        unsafe { msg_send![self, setInstanceCount: count] }
     }
 
     pub fn set_instance_descriptor_buffer(&self, buffer: &BufferRef) {
@@ -223,7 +226,7 @@ impl AccelerationStructureCommandEncoderRef {
         &self,
         acceleration_structure: &AccelerationStructureRef,
         to_buffer: &BufferRef,
-        offset: NSUInteger
+        offset: NSUInteger,
     ) {
         unsafe {
             msg_send![
@@ -239,7 +242,7 @@ impl AccelerationStructureCommandEncoderRef {
         &self,
         source: &AccelerationStructureRef,
         destination: &AccelerationStructureRef,
-    ){
+    ) {
         unsafe {
             msg_send![
                 self,
@@ -270,9 +273,7 @@ impl IntersectionFunctionTableDescriptor {
 
 impl IntersectionFunctionTableDescriptorRef {
     pub fn set_function_count(&self, count: NSUInteger) {
-        unsafe {
-            msg_send![self, setFunctionCount: count]
-        }
+        unsafe { msg_send![self, setFunctionCount: count] }
     }
 }
 
@@ -286,9 +287,6 @@ foreign_obj_type! {
 
 impl IntersectionFunctionTableRef {
     pub fn set_function(&self, function: &FunctionHandleRef, index: NSUInteger) {
-        unsafe {
-            msg_send![self, setFunction: function atIndex: index]
-        }
+        unsafe { msg_send![self, setFunction: function atIndex: index] }
     }
 }
-

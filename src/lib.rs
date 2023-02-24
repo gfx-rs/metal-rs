@@ -178,19 +178,19 @@ pub struct NSArray<T> {
 }
 
 pub struct Array<T>(*mut NSArray<T>)
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static;
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static;
 
 pub struct ArrayRef<T>(foreign_types::Opaque, PhantomData<T>)
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static;
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static;
 
 impl<T> Drop for Array<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
 {
     fn drop(&mut self) {
         unsafe {
@@ -200,9 +200,9 @@ impl<T> Drop for Array<T>
 }
 
 impl<T> Clone for Array<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
 {
     fn clone(&self) -> Self {
         unsafe { Array(msg_send![self.0, retain]) }
@@ -210,21 +210,23 @@ impl<T> Clone for Array<T>
 }
 
 unsafe impl<T> objc::Message for NSArray<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
-{}
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+}
 
 unsafe impl<T> objc::Message for ArrayRef<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
-{}
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
+{
+}
 
 impl<T> Array<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
 {
     pub fn from_slice<'a>(s: &[&T::Ref]) -> &'a ArrayRef<T> {
         unsafe {
@@ -242,9 +244,9 @@ impl<T> Array<T>
 }
 
 unsafe impl<T> foreign_types::ForeignType for Array<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
 {
     type CType = NSArray<T>;
     type Ref = ArrayRef<T>;
@@ -259,17 +261,17 @@ unsafe impl<T> foreign_types::ForeignType for Array<T>
 }
 
 unsafe impl<T> foreign_types::ForeignTypeRef for ArrayRef<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
 {
     type CType = NSArray<T>;
 }
 
 impl<T> Deref for Array<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
 {
     type Target = ArrayRef<T>;
 
@@ -280,9 +282,9 @@ impl<T> Deref for Array<T>
 }
 
 impl<T> Borrow<ArrayRef<T>> for Array<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
 {
     fn borrow(&self) -> &ArrayRef<T> {
         unsafe { mem::transmute(self.as_ptr()) }
@@ -290,9 +292,9 @@ impl<T> Borrow<ArrayRef<T>> for Array<T>
 }
 
 impl<T> ToOwned for ArrayRef<T>
-    where
-        T: ForeignType + 'static,
-        T::Ref: objc::Message + 'static,
+where
+    T: ForeignType + 'static,
+    T::Ref: objc::Message + 'static,
 {
     type Owned = Array<T>;
 
@@ -328,7 +330,7 @@ impl NsObjectRef {
         let name = ::std::any::type_name::<T>();
         if let Some(name) = name.split("::").last() {
             if let Some(protocol) = objc::runtime::Protocol::get(name) {
-                Ok(unsafe { msg_send![self, conformsToProtocol:protocol] })
+                Ok(unsafe { msg_send![self, conformsToProtocol: protocol] })
             } else {
                 Err(format!("Can not find the protocol for type: {}.", name))
             }

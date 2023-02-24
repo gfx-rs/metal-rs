@@ -123,7 +123,9 @@ impl CommandBufferRef {
         unsafe { msg_send![self, parallelRenderCommandEncoderWithDescriptor: descriptor] }
     }
 
-    pub fn new_acceleration_structure_command_encoder(&self) -> AccelerationStructureCommandEncoder {
+    pub fn new_acceleration_structure_command_encoder(
+        &self,
+    ) -> AccelerationStructureCommandEncoder {
         unsafe { msg_send![self, accelerationStructureCommandEncoder] }
     }
 

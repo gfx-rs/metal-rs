@@ -331,10 +331,11 @@ impl ComputePipelineStateRef {
     // - (nullable id<MTLVisibleFunctionTable>)newVisibleFunctionTableWithDescriptor:(MTLVisibleFunctionTableDescriptor * __nonnull)descriptor
 
     /// Only available on (macos(11.0), ios(14.0))
-    pub fn new_intersection_function_table_with_descriptor(&self, descriptor: &IntersectionFunctionTableDescriptorRef) -> IntersectionFunctionTable {
-        unsafe {
-            msg_send![self, newIntersectionFunctionTableWithDescriptor: descriptor]
-        }
+    pub fn new_intersection_function_table_with_descriptor(
+        &self,
+        descriptor: &IntersectionFunctionTableDescriptorRef,
+    ) -> IntersectionFunctionTable {
+        unsafe { msg_send![self, newIntersectionFunctionTableWithDescriptor: descriptor] }
     }
 }
 
