@@ -410,6 +410,36 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    /// Only available in (macos(11.0), ios(14.0))
+    pub fn set_vertex_acceleration_structure(
+        &self,
+        index: NSUInteger,
+        accel: Option<&accelerator_structure::AccelerationStructureRef>,
+    ) {
+        unsafe {
+            msg_send![
+                self,
+                setVertexAccelerationStructure: accel
+                atBufferIndex: index
+            ]
+        }
+    }
+
+    /// Only available in (macos(11.0), ios(14.0))
+    pub fn set_vertex_intersection_function_table(
+        &self,
+        index: NSUInteger,
+        table: Option<&IntersectionFunctionTableRef>,
+    ) {
+        unsafe {
+            msg_send![
+                self,
+                setVertexIntersectionFunctionTable: table
+                atBufferIndex: index
+            ]
+        }
+    }
+
     // Specifying Resources for a Fragment Shader Function
 
     pub fn set_fragment_bytes(
@@ -526,6 +556,36 @@ impl RenderCommandEncoderRef {
                 lodMinClamp:lod_clamp.start
                 lodMaxClamp:lod_clamp.end
                 atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(11.0), ios(14.0))
+    pub fn set_fragment_acceleration_structure(
+        &self,
+        index: NSUInteger,
+        accel: Option<&accelerator_structure::AccelerationStructureRef>,
+    ) {
+        unsafe {
+            msg_send![
+                self,
+                setFragmentAccelerationStructure: accel
+                atBufferIndex: index
+            ]
+        }
+    }
+
+    /// Only available in (macos(11.0), ios(14.0))
+    pub fn set_fragment_intersection_function_table(
+        &self,
+        index: NSUInteger,
+        table: Option<&IntersectionFunctionTableRef>,
+    ) {
+        unsafe {
+            msg_send![
+                self,
+                setFragmentIntersectionFunctionTable: table
+                atBufferIndex: index
             ]
         }
     }
@@ -1253,7 +1313,11 @@ impl ComputeCommandEncoderRef {
     }
 
     /// Only available in (macos(11.0), ios(14.0))
-    pub fn set_acceleration_structure(&self, index: NSUInteger, accel: &accelerator_structure::AccelerationStructureRef) {
+    pub fn set_acceleration_structure(
+        &self,
+        index: NSUInteger,
+        accel: Option<&accelerator_structure::AccelerationStructureRef>,
+    ) {
         unsafe {
             msg_send![
                 self,
@@ -1264,7 +1328,11 @@ impl ComputeCommandEncoderRef {
     }
 
     /// Only available in (macos(11.0), ios(14.0))
-    pub fn set_intersection_function_table(&self, index: NSUInteger, table: &IntersectionFunctionTableRef) {
+    pub fn set_intersection_function_table(
+        &self,
+        index: NSUInteger,
+        table: Option<&IntersectionFunctionTableRef>,
+    ) {
         unsafe {
             msg_send![
                 self,
