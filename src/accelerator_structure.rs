@@ -118,6 +118,10 @@ impl AccelerationStructureTriangleGeometryDescriptorRef {
         unsafe { msg_send![self, setIndexBuffer: buffer] }
     }
 
+    pub fn set_index_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setIndexBufferOffset: offset] }
+    }
+
     pub fn set_index_type(&self, t: MTLIndexType) {
         unsafe { msg_send![self, setIndexType: t] }
     }
@@ -126,12 +130,28 @@ impl AccelerationStructureTriangleGeometryDescriptorRef {
         unsafe { msg_send![self, setVertexBuffer: buffer] }
     }
 
+    pub fn set_vertex_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setVertexBufferOffset: offset] }
+    }
+
     pub fn set_vertex_stride(&self, stride: NSUInteger) {
         unsafe { msg_send![self, setVertexStride: stride] }
     }
 
     pub fn set_triangle_count(&self, count: NSUInteger) {
         unsafe { msg_send![self, setTriangleCount: count] }
+    }
+
+    pub fn set_vertex_format(&self, format: MTLAttributeFormat) {
+        unsafe { msg_send![self, setVertexFormat: format] }
+    }
+
+    pub fn set_transformation_matrix_buffer(&self, buffer: Option<&BufferRef>) {
+        unsafe { msg_send![self, setTransformationMatrixBuffer: buffer] }
+    }
+
+    pub fn set_transformation_matrix_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setTransformationMatrixBufferOffset: offset] }
     }
 }
 
@@ -193,6 +213,10 @@ impl InstanceAccelerationStructureDescriptorRef {
 
     pub fn set_instance_descriptor_buffer(&self, buffer: &BufferRef) {
         unsafe { msg_send![self, setInstanceDescriptorBuffer: buffer] }
+    }
+
+    pub fn set_instance_descriptor_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setInstanceDescriptorBufferOffset: offset] }
     }
 }
 
