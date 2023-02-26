@@ -125,7 +125,7 @@ impl CommandBufferRef {
 
     pub fn new_acceleration_structure_command_encoder(
         &self,
-    ) -> AccelerationStructureCommandEncoder {
+    ) -> &AccelerationStructureCommandEncoderRef {
         unsafe { msg_send![self, accelerationStructureCommandEncoder] }
     }
 
