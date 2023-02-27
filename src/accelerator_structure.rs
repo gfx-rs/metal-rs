@@ -79,6 +79,9 @@ foreign_obj_type! {
 }
 
 impl AccelerationStructureGeometryDescriptorRef {
+    pub fn set_opaque(&self, opaque: bool) {
+        unsafe { msg_send![self, setOpaque: opaque] }
+    }
     pub fn set_primitive_data_buffer(&self, buffer: Option<&BufferRef>) {
         unsafe { msg_send![self, setPrimitiveDataBuffer: buffer] }
     }
