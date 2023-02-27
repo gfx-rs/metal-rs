@@ -410,7 +410,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    /// Only available in (macos(11.0), ios(14.0))
+    /// Only available in (macos(12.0), ios(15.0))
     pub fn set_vertex_acceleration_structure(
         &self,
         index: NSUInteger,
@@ -425,7 +425,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    /// Only available in (macos(11.0), ios(14.0))
+    /// Only available in (macos(12.0), ios(15.0))
     pub fn set_vertex_intersection_function_table(
         &self,
         index: NSUInteger,
@@ -560,7 +560,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    /// Only available in (macos(11.0), ios(14.0))
+    /// Only available in (macos(12.0), ios(15.0))
     pub fn set_fragment_acceleration_structure(
         &self,
         index: NSUInteger,
@@ -575,7 +575,7 @@ impl RenderCommandEncoderRef {
         }
     }
 
-    /// Only available in (macos(11.0), ios(14.0))
+    /// Only available in (macos(12.0), ios(15.0))
     pub fn set_fragment_intersection_function_table(
         &self,
         index: NSUInteger,
