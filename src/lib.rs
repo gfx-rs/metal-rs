@@ -201,7 +201,7 @@ macro_rules! try_objc {
         $err_name: ident => $body:expr
     } => {
         {
-            let mut $err_name: *mut ::objc::runtime::Object = ::std::ptr::null_mut();
+            let mut $err_name: *mut Object = ::std::ptr::null_mut();
             let value = $body;
             if !$err_name.is_null() {
                 let desc: *mut Object = msg_send![$err_name, localizedDescription];
@@ -627,6 +627,13 @@ impl URLRef {
         unsafe {
             let absolute_string = msg_send![self, absoluteString];
             crate::nsstring_as_str(absolute_string)
+        }
+    }
+
+    pub fn path(&self) -> &str {
+        unsafe {
+            let path = msg_send![self, path];
+            crate::nsstring_as_str(path)
         }
     }
 }

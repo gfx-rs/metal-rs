@@ -73,10 +73,10 @@ impl CaptureManagerRef {
     /// See <https://developer.apple.com/documentation/metal/mtlcapturemanager/3237259-startcapture>
     pub fn start_capture(&self, descriptor: &CaptureDescriptorRef) -> Result<(), String> {
         unsafe {
-            try_objc! { err =>
+            Ok(try_objc! { err =>
                 msg_send![self, startCaptureWithDescriptor: descriptor
                                 error: &mut err]
-            }
+            })
         }
     }
 

@@ -53,16 +53,14 @@ impl CaptureDescriptorRef {
 
     /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237250-outputurl>
     pub fn output_url(&self) -> &Path {
-        let output_url = unsafe { msg_send![self, outputURL] };
-        let output_url = nsstring_as_str(output_url);
-
-        Path::new(output_url)
+        let url: &URLRef = unsafe { msg_send![self, outputURL] };
+        Path::new(url.path())
     }
 
     /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237250-outputurl>
     pub fn set_output_url<P: AsRef<Path>>(&self, output_url: P) {
-        let output_url = nsstring_from_str(output_url.as_ref().to_str().unwrap());
-
+        let output_url_string = String::from("file://") + output_url.as_ref().to_str().unwrap();
+        let output_url = URL::new_with_string(&output_url_string);
         unsafe { msg_send![self, setOutputURL: output_url] }
     }
 
