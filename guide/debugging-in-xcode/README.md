@@ -1,3 +1,28 @@
+# Saving a GPU trace to a file
+
+GPU command data can be saved to a file using `MTLCaptureManager`. The trace can then be opened and replayed in Xcode at a later time. The following snippet shows how a `CaptureManager` and `CaptureScope` can be used to capture a frame.
+```rust
+let capture_scope = metal::CaptureManager::shared()
+  .new_capture_scope_with_device(&metal::Device::system_default().unwrap());
+
+let capture_descriptor = metal::CaptureDescriptor::new();
+capture_descriptor.set_capture_scope(&capture_scope);
+capture_descriptor.set_output_url(std::path::Path::new(
+  "~/.../.../framecapture.gputrace",
+));
+capture_descriptor.set_destination(metal::MTLCaptureDestination::GpuTraceDocument);
+metal::CaptureManager::shared().start_capture(&capture_descriptor);
+
+capture_scope.begin_scope();
+// Do Metal work
+capture_scope.end_scope();
+```
+
+> **Warning**
+> To capture a GPU trace to a file, you must:
+> - Set `METAL_CAPTURE_ENABLED=1` in the environment, or add an `info.plist` containing the `MetalCaptureEnabled` key with a value of `YES`.
+> - Ensure the capture descriptor output URL does not already exist.
+
 # Debugging in Xcode
 
 If you only want to enable Metal validation without using Xcode, use the `METAL_DEVICE_WRAPPER_TYPE=1` environment variable when lauching your program. For example, to run the `window` example with Metal validation, use the command `METAL_DEVICE_WRAPPER_TYPE=1 cargo run --example window`.
