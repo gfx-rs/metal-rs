@@ -70,7 +70,13 @@ impl CaptureManagerRef {
         unsafe { msg_send![self, setDefaultCaptureScope: scope] }
     }
 
-    /// See <https://developer.apple.com/documentation/metal/mtlcapturemanager/3237259-startcapture>
+    /// Starts capturing with the capture session defined by a descriptor object.
+    ///
+    /// This function will panic if Metal capture is not enabled.  Capture can be enabled by
+    /// either:
+    ///   1. Running from Xcode
+    ///   2. Setting the environment variable `METAL_CAPTURE_ENABLED=1`
+    ///   3. Adding an info.plist file containing the `MetalCaptureEnabled` key set to `YES`
     pub fn start_capture(&self, descriptor: &CaptureDescriptorRef) -> Result<(), String> {
         unsafe {
             Ok(try_objc! { err =>
