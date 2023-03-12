@@ -18,6 +18,16 @@ bitflags! {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlaccelerationstructureinstancedescriptortype>
+#[repr(u64)]
+#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub enum MTLAccelerationStructureInstanceDescriptorType {
+    Default = 0,
+    UserID = 1,
+    Motion = 2,
+}
+
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(C)]
 pub struct MTLAccelerationStructureInstanceDescriptor {
@@ -214,6 +224,10 @@ impl InstanceAccelerationStructureDescriptor {
 }
 
 impl InstanceAccelerationStructureDescriptorRef {
+    pub fn set_instance_descriptor_type(&self, ty: MTLAccelerationStructureInstanceDescriptorType) {
+        unsafe { msg_send![self, setInstanceDescriptorType: ty] }
+    }
+
     pub fn set_instanced_acceleration_structures(
         &self,
         instances: &ArrayRef<AccelerationStructure>,
@@ -231,6 +245,10 @@ impl InstanceAccelerationStructureDescriptorRef {
 
     pub fn set_instance_descriptor_buffer_offset(&self, offset: NSUInteger) {
         unsafe { msg_send![self, setInstanceDescriptorBufferOffset: offset] }
+    }
+
+    pub fn set_instance_descriptor_stride(&self, stride: NSUInteger) {
+        unsafe { msg_send![self, setInstanceDescriptorStride: stride] }
     }
 }
 
