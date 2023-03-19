@@ -10,7 +10,7 @@
 
 ## Documentation
 
-Note that [docs.rs](docs.rs) will fail to build the (albiet limited) documentation for this crate!
+Note that [docs.rs](docs.rs) will fail to build the (albeit limited) documentation for this crate!
 They build in a Linux container, but of course this will only compile on MacOS.
 
 Please build the documentation yourself with `cargo docs`.
