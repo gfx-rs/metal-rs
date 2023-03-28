@@ -19,17 +19,14 @@ fn main() {
             24, 25, 26, 27, 28, 29, 30,
         ];
 
-        let buffer = device.new_buffer_with_data(
-            unsafe { mem::transmute(data.as_ptr()) },
-            (data.len() * mem::size_of::<u32>()) as u64,
+        let buffer = device.new_buffer_from_slice(&data[..],
             MTLResourceOptions::CPUCacheModeDefaultCache,
         );
 
         let sum = {
             let data = [0u32];
-            device.new_buffer_with_data(
-                unsafe { mem::transmute(data.as_ptr()) },
-                (data.len() * mem::size_of::<u32>()) as u64,
+            device.new_buffer_from_slice(
+                &data[..],
                 MTLResourceOptions::CPUCacheModeDefaultCache,
             )
         };
