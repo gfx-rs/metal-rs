@@ -545,6 +545,7 @@ mod capturemanager;
 mod commandbuffer;
 mod commandqueue;
 mod constants;
+mod counters;
 mod depthstencil;
 mod device;
 mod drawable;

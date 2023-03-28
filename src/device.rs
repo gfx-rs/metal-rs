@@ -2149,4 +2149,8 @@ impl DeviceRef {
     ) -> accelerator_structure::AccelerationStructure {
         unsafe { msg_send![self, newAccelerationStructureWithSize: size] }
     }
+
+    pub fn sample_timestamps(&self) -> (u64, u64) {
+        unsafe { msg_send![self, sampleTimestamps] }
+    }
 }
