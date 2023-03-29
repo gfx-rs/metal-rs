@@ -544,6 +544,7 @@ mod capturedescriptor;
 mod capturemanager;
 mod commandbuffer;
 mod commandqueue;
+mod computepass;
 mod constants;
 mod counters;
 mod depthstencil;
@@ -570,6 +571,7 @@ pub use {
     argument::*,
     buffer::*,
     counters::*,
+    computepass::*,
     capturedescriptor::*,
     capturemanager::*,
     commandbuffer::*,
