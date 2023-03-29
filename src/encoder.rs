@@ -1341,6 +1341,22 @@ impl ComputeCommandEncoderRef {
             ]
         }
     }
+
+    /// See: <https://developer.apple.com/documentation/metal/mtlcomputecommandencoder/3194349-samplecountersinbuffer>
+    pub fn sample_counters_in_buffer(
+        &self,
+        sample_buffer: &BufferRef,
+        sample_index: NSUInteger,
+        with_barrier: bool,
+    ) {
+        unsafe {
+            msg_send![self,
+                sampleCountersInBuffer: sample_buffer
+                atSampleIndex: sample_index
+                withBarrier: with_barrier
+            ]
+        }
+    }
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlargumentencoder/>

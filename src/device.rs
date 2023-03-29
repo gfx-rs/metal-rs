@@ -1987,6 +1987,13 @@ impl DeviceRef {
         }
     }
 
+    pub fn new_counter_sample_buffer(
+        &self,
+        descriptor: &CounterSampleBufferDescriptorRef,
+    ) -> CounterSampleBuffer {
+        unsafe { msg_send![self, makeCounterSampleBuffer: descriptor] }
+    }
+
     pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Texture {
         unsafe { msg_send![self, newTextureWithDescriptor: descriptor] }
     }

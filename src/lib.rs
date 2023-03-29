@@ -569,6 +569,7 @@ pub use {
     accelerator_structure::*,
     argument::*,
     buffer::*,
+    counters::*,
     capturedescriptor::*,
     capturemanager::*,
     commandbuffer::*,

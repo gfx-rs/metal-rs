@@ -1,3 +1,11 @@
+/// See <https://developer.apple.com/documentation/metal/mtlcountersamplebufferdescriptor>
+pub enum MTLCounterSampleBufferDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLCounterSampleBufferDescriptor;
+    pub struct CounterSampleBufferDescriptor;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlcountersamplebuffer>
 pub enum MTLCounterSampleBuffer {}
 
