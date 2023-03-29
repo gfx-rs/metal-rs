@@ -2150,7 +2150,7 @@ impl DeviceRef {
         unsafe { msg_send![self, newAccelerationStructureWithSize: size] }
     }
 
-    pub fn sample_timestamps(&self) -> (u64, u64) {
-        unsafe { msg_send![self, sampleTimestamps] }
+    pub fn sample_timestamps(&self, cpu_timestamp: &mut u64, gpu_timestamp: &mut u64) {
+        unsafe { msg_send![self, sampleTimestamps: cpu_timestamp gpuTimestamp: gpu_timestamp] }
     }
 }
