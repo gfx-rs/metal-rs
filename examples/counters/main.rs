@@ -3,19 +3,11 @@ fn main() {
     timestamp_exp();
     let device = Device::system_default().expect("No device found");
 
-    let counter_sample_buffer_desc = metal::CounterSampleBufferDescriptor::new();
-    counter_sample_buffer_desc.set_storage_mode(metal::MTLStorageMode::Shared);
-    counter_sample_buffer_desc.set_sample_count(2_u64);
-    counter_sample_buffer_desc.set_counter_set(&fetch_timestamp_counter_set(&device));
-
-    let csb = device
-        .new_counter_sample_buffer_with_descriptor(&counter_sample_buffer_desc)
-        .unwrap();
+    let counter_sample_buffer = create_counter_sample_buffer(&device);
 
     //Apple silicon uses at stage boundary
     let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
-    let supported = device.supports_counter_sampling(counter_sampling_point);
-    println!("Supports stage boundary sampling: {}", supported);
+    assert!(device.supports_counter_sampling(counter_sampling_point));
 
     let command_queue = device.new_command_queue();
 
@@ -50,7 +42,7 @@ fn main() {
     let sample_buffer_attachments = compute_pass_descriptor.sample_buffer_attachments();
     let sample_buffer_attachment_descriptor = sample_buffer_attachments.object_at(0).unwrap();
 
-    sample_buffer_attachment_descriptor.set_sample_buffer(&csb);
+    sample_buffer_attachment_descriptor.set_sample_buffer(&counter_sample_buffer);
     sample_buffer_attachment_descriptor.set_start_of_encoder_sample_index(0);
     sample_buffer_attachment_descriptor.set_end_of_encoder_sample_index(1);
 
@@ -94,10 +86,10 @@ fn main() {
     let blit_encoder = command_buffer.new_blit_command_encoder();
     let destination_buffer = device.new_buffer(
         (std::mem::size_of::<u64>() * 2) as u64,
-        MTLResourceOptions::StorageModePrivate,
+        MTLResourceOptions::StorageModeShared,
     );
     let range = crate::NSRange::new(0_u64, 2_u64);
-    blit_encoder.resolve_counters(&csb, range, &destination_buffer, 0_u64);
+    blit_encoder.resolve_counters(&counter_sample_buffer, range, &destination_buffer, 0_u64);
     blit_encoder.end_encoding();
 
     command_buffer.commit();
@@ -106,11 +98,30 @@ fn main() {
     let timestamp_sample = destination_buffer.contents() as *mut u32;
     println!("Timestamp sample: {:?}", unsafe { *timestamp_sample });
 
+    let contents = destination_buffer.contents();
+    let timestamps = unsafe { std::slice::from_raw_parts(contents as *const u64, 2) };
+    //start timestamp
+    println!("Start timestamp: {}", timestamps[0]);
+    //end timestamp
+    println!("End timestamp:   {}", timestamps[1]);
+    println!("Elapsed time:    {}", timestamps[1] - timestamps[0]);
+
     let ptr = sum.contents() as *mut u32;
     println!("Compute shader sum: {}", unsafe { *ptr });
     unsafe {
         assert_eq!(4096, *ptr);
     }
+}
+
+fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
+    let counter_sample_buffer_desc = metal::CounterSampleBufferDescriptor::new();
+    counter_sample_buffer_desc.set_storage_mode(metal::MTLStorageMode::Shared);
+    counter_sample_buffer_desc.set_sample_count(2_u64);
+    counter_sample_buffer_desc.set_counter_set(&fetch_timestamp_counter_set(device));
+
+    device
+        .new_counter_sample_buffer_with_descriptor(&counter_sample_buffer_desc)
+        .unwrap()
 }
 
 fn fetch_timestamp_counter_set(device: &Device) -> metal::CounterSet {
