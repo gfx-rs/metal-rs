@@ -1,6 +1,5 @@
 use metal::*;
 fn main() {
-    timestamp_exp();
     let device = Device::system_default().expect("No device found");
 
     let counter_sample_buffer = create_counter_sample_buffer(&device);
@@ -29,14 +28,6 @@ fn main() {
     };
 
     let command_buffer = command_queue.new_command_buffer();
-
-    command_buffer.set_label("CommandBuffer");
-    let block = block::ConcreteBlock::new(move |buffer: &metal::CommandBufferRef| {
-        println!("{}", buffer.label());
-    })
-    .copy();
-
-    command_buffer.add_completed_handler(&block);
 
     let compute_pass_descriptor = ComputePassDescriptor::new();
     let sample_buffer_attachments = compute_pass_descriptor.sample_buffer_attachments();
@@ -95,19 +86,15 @@ fn main() {
     command_buffer.commit();
     command_buffer.wait_until_completed();
 
-    let timestamp_sample = destination_buffer.contents() as *mut u32;
-    println!("Timestamp sample: {:?}", unsafe { *timestamp_sample });
-
-    let contents = destination_buffer.contents();
-    let timestamps = unsafe { std::slice::from_raw_parts(contents as *const u64, 2) };
-    //start timestamp
+    let timestamps =
+        unsafe { std::slice::from_raw_parts(destination_buffer.contents() as *const u64, 2) };
     println!("Start timestamp: {}", timestamps[0]);
-    //end timestamp
     println!("End timestamp:   {}", timestamps[1]);
     println!("Elapsed time:    {}", timestamps[1] - timestamps[0]);
 
     let ptr = sum.contents() as *mut u32;
     println!("Compute shader sum: {}", unsafe { *ptr });
+
     unsafe {
         assert_eq!(4096, *ptr);
     }
@@ -136,21 +123,4 @@ fn fetch_timestamp_counter_set(device: &Device) -> metal::CounterSet {
     timestamp_counter
         .expect("No timestamp counter found")
         .clone()
-}
-
-fn timestamp_exp() {
-    let device = Device::system_default().expect("No device found");
-    let (mut cpu_timestamp0, mut gpu_timestamp0) = (0_u64, 0_u64);
-    device.sample_timestamps(&mut cpu_timestamp0, &mut gpu_timestamp0);
-    println!(
-        "cpu_timestamp0: {}, gpu_timestamp0: {}",
-        cpu_timestamp0, gpu_timestamp0
-    );
-
-    let (mut cpu_timestamp1, mut gpu_timestamp1) = (0_u64, 0_u64);
-    device.sample_timestamps(&mut cpu_timestamp1, &mut gpu_timestamp1);
-    println!(
-        "cpu_timestamp1: {}, gpu_timestamp1: {}",
-        cpu_timestamp1, gpu_timestamp1
-    );
 }
