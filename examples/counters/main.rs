@@ -19,10 +19,7 @@ fn main() {
 
     let command_queue = device.new_command_queue();
 
-    let data = [
-        1u32, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-        25, 26, 27, 28, 29, 30,
-    ];
+    let data = [1u32; 64 * 64];
 
     let buffer = device.new_buffer_with_data(
         unsafe { std::mem::transmute(data.as_ptr()) },
@@ -41,7 +38,7 @@ fn main() {
 
     let command_buffer = command_queue.new_command_buffer();
 
-    command_buffer.set_label("label");
+    command_buffer.set_label("CommandBuffer");
     let block = block::ConcreteBlock::new(move |buffer: &metal::CommandBufferRef| {
         println!("{}", buffer.label());
     })
@@ -106,13 +103,13 @@ fn main() {
     command_buffer.commit();
     command_buffer.wait_until_completed();
 
-    let samples = destination_buffer.contents() as *mut u32;
-    println!("samples: {:?}", unsafe { *samples });
+    let timestamp_sample = destination_buffer.contents() as *mut u32;
+    println!("Timestamp sample: {:?}", unsafe { *timestamp_sample });
 
     let ptr = sum.contents() as *mut u32;
-    println!("sum: {}", unsafe { *ptr });
+    println!("Compute shader sum: {}", unsafe { *ptr });
     unsafe {
-        assert_eq!(465, *ptr);
+        assert_eq!(4096, *ptr);
     }
 }
 
