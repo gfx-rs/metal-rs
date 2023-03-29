@@ -1,5 +1,6 @@
 use super::*;
 
+/// See <https://developer.apple.com/documentation/metal/mtlcomputepassdescriptor>
 pub enum MTLComputePassDescriptor {}
 
 foreign_obj_type! {
@@ -8,7 +9,7 @@ foreign_obj_type! {
 }
 
 impl ComputePassDescriptor {
-    /// Creates a default render pass descriptor with no attachments.
+    /// Creates a default compute pass descriptor with no attachments.
     pub fn new<'a>() -> &'a ComputePassDescriptorRef {
         unsafe { msg_send![class!(MTLComputePassDescriptor), computePassDescriptor] }
     }
@@ -22,6 +23,7 @@ impl ComputePassDescriptorRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcomputepasssamplebufferattachmentdescriptorarray>
 pub enum MTLComputePassSampleBufferAttachmentDescriptorArray {}
 
 foreign_obj_type! {
@@ -49,6 +51,7 @@ impl ComputePassSampleBufferAttachmentDescriptorArrayRef {
     }
 }
 
+/// See <https://developer.apple.com/documentation/metal/mtlcomputepasssamplebufferattachmentdescriptor>
 pub enum MTLComputePassSampleBufferAttachmentDescriptor {}
 
 foreign_obj_type! {
