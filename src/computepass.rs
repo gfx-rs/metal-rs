@@ -75,11 +75,11 @@ impl ComputePassSampleBufferAttachmentDescriptorRef {
         unsafe { msg_send![self, setSampleBuffer: sample_buffer] }
     }
 
-    pub fn start_of_encoder_sample_index(&self) -> u64 {
+    pub fn start_of_encoder_sample_index(&self) -> NSUInteger {
         unsafe { msg_send![self, startOfEncoderSampleIndex] }
     }
 
-    pub fn set_start_of_encoder_sample_index(&self, start_of_encoder_sample_index: u64) {
+    pub fn set_start_of_encoder_sample_index(&self, start_of_encoder_sample_index: NSUInteger) {
         unsafe {
             msg_send![
                 self,
@@ -88,11 +88,11 @@ impl ComputePassSampleBufferAttachmentDescriptorRef {
         }
     }
 
-    pub fn end_of_encoder_sample_index(&self) -> u64 {
+    pub fn end_of_encoder_sample_index(&self) -> NSUInteger {
         unsafe { msg_send![self, endOfEncoderSampleIndex] }
     }
 
-    pub fn set_end_of_encoder_sample_index(&self, end_of_encoder_sample_index: u64) {
+    pub fn set_end_of_encoder_sample_index(&self, end_of_encoder_sample_index: NSUInteger) {
         unsafe {
             msg_send![
                 self,

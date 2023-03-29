@@ -4,7 +4,6 @@ fn main() {
 
     let counter_sample_buffer = create_counter_sample_buffer(&device);
 
-    //Apple silicon uses at stage boundary
     let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
     assert!(device.supports_counter_sampling(counter_sampling_point));
 
@@ -30,13 +29,7 @@ fn main() {
     let command_buffer = command_queue.new_command_buffer();
 
     let compute_pass_descriptor = ComputePassDescriptor::new();
-    let sample_buffer_attachments = compute_pass_descriptor.sample_buffer_attachments();
-    let sample_buffer_attachment_descriptor = sample_buffer_attachments.object_at(0).unwrap();
-
-    sample_buffer_attachment_descriptor.set_sample_buffer(&counter_sample_buffer);
-    sample_buffer_attachment_descriptor.set_start_of_encoder_sample_index(0);
-    sample_buffer_attachment_descriptor.set_end_of_encoder_sample_index(1);
-
+    handle_compute_pass_sample_buffer_attachment(&compute_pass_descriptor, &counter_sample_buffer);
     let encoder = command_buffer.compute_command_encoder_with_descriptor(&compute_pass_descriptor);
     let library_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("examples/compute/shaders.metallib");
@@ -74,23 +67,13 @@ fn main() {
     encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
     encoder.end_encoding();
 
-    let blit_encoder = command_buffer.new_blit_command_encoder();
-    let destination_buffer = device.new_buffer(
-        (std::mem::size_of::<u64>() * 2) as u64,
-        MTLResourceOptions::StorageModeShared,
-    );
-    let range = crate::NSRange::new(0_u64, 2_u64);
-    blit_encoder.resolve_counters(&counter_sample_buffer, range, &destination_buffer, 0_u64);
-    blit_encoder.end_encoding();
+    let timestamps_buffer =
+        resolve_timestamps_into_buffer(&command_buffer, &counter_sample_buffer, &device);
 
     command_buffer.commit();
     command_buffer.wait_until_completed();
 
-    let timestamps =
-        unsafe { std::slice::from_raw_parts(destination_buffer.contents() as *const u64, 2) };
-    println!("Start timestamp: {}", timestamps[0]);
-    println!("End timestamp:   {}", timestamps[1]);
-    println!("Elapsed time:    {}", timestamps[1] - timestamps[0]);
+    print_timestamps(&timestamps_buffer);
 
     let ptr = sum.contents() as *mut u32;
     println!("Compute shader sum: {}", unsafe { *ptr });
@@ -98,6 +81,48 @@ fn main() {
     unsafe {
         assert_eq!(4096, *ptr);
     }
+}
+
+fn handle_compute_pass_sample_buffer_attachment(
+    compute_pass_descriptor: &ComputePassDescriptorRef,
+    counter_sample_buffer: &CounterSampleBufferRef,
+) {
+    let sample_buffer_attachment_descriptor = compute_pass_descriptor
+        .sample_buffer_attachments()
+        .object_at(0)
+        .unwrap();
+
+    sample_buffer_attachment_descriptor.set_sample_buffer(&counter_sample_buffer);
+    sample_buffer_attachment_descriptor.set_start_of_encoder_sample_index(0);
+    sample_buffer_attachment_descriptor.set_end_of_encoder_sample_index(1);
+}
+
+fn resolve_timestamps_into_buffer(
+    command_buffer: &CommandBufferRef,
+    counter_sample_buffer: &CounterSampleBufferRef,
+    device: &Device,
+) -> Buffer {
+    let blit_encoder = command_buffer.new_blit_command_encoder();
+    let timestamps_buffer = device.new_buffer(
+        (std::mem::size_of::<u64>() * 2) as u64,
+        MTLResourceOptions::StorageModeShared,
+    );
+    blit_encoder.resolve_counters(
+        &counter_sample_buffer,
+        crate::NSRange::new(0_u64, 2_u64),
+        &timestamps_buffer,
+        0_u64,
+    );
+    blit_encoder.end_encoding();
+    timestamps_buffer
+}
+
+fn print_timestamps(timestamps_buffer: &BufferRef) {
+    let timestamps =
+        unsafe { std::slice::from_raw_parts(timestamps_buffer.contents() as *const u64, 2) };
+    println!("Start timestamp: {}", timestamps[0]);
+    println!("End timestamp:   {}", timestamps[1]);
+    println!("Elapsed time:    {}", timestamps[1] - timestamps[0]);
 }
 
 fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {

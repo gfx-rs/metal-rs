@@ -46,6 +46,10 @@ fn main() {
     let device = Device::system_default().expect("no device found");
     println!("Your device is: {}", device.name(),);
 
+    let counter_sample_buffer = create_counter_sample_buffer(&device);
+    let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
+    assert!(device.supports_counter_sampling(counter_sampling_point));
+
     let binary_archive_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("examples/circle/binary_archive.metallib");
 
@@ -140,7 +144,14 @@ fn main() {
 
                     // Obtain a renderPassDescriptor generated from the view's drawable textures.
                     let render_pass_descriptor = RenderPassDescriptor::new();
-                    prepare_render_pass_descriptor(&render_pass_descriptor, drawable.texture());
+                    handle_render_pass_color_attachment(
+                        &render_pass_descriptor,
+                        drawable.texture(),
+                    );
+                    handle_render_pass_sample_buffer_attachment(
+                        &render_pass_descriptor,
+                        &counter_sample_buffer,
+                    );
 
                     // Create a render command encoder.
                     let encoder =
@@ -152,11 +163,20 @@ fn main() {
                     encoder.draw_primitives(MTLPrimitiveType::TriangleStrip, 0, 1080);
                     encoder.end_encoding();
 
+                    let timestamps_buffer = resolve_timestamps_into_buffer(
+                        command_buffer,
+                        &counter_sample_buffer,
+                        &device,
+                    );
+
                     // Schedule a present once the framebuffer is complete using the current drawable.
                     command_buffer.present_drawable(&drawable);
 
                     // Finalize rendering here & push the command buffer to the GPU.
                     command_buffer.commit();
+                    command_buffer.wait_until_completed();
+
+                    print_timestamps(&timestamps_buffer);
                 }
                 _ => (),
             }
@@ -210,7 +230,20 @@ fn create_vertex_points_for_circle() -> Vec<AAPLVertex> {
     v
 }
 
-fn prepare_render_pass_descriptor(descriptor: &RenderPassDescriptorRef, texture: &TextureRef) {
+fn handle_render_pass_sample_buffer_attachment(
+    descriptor: &RenderPassDescriptorRef,
+    counter_sample_buffer: &CounterSampleBufferRef,
+) {
+    let sample_buffer_attachment_descriptor =
+        descriptor.sample_buffer_attachments().object_at(0).unwrap();
+    sample_buffer_attachment_descriptor.set_sample_buffer(&counter_sample_buffer);
+    sample_buffer_attachment_descriptor.set_start_of_vertex_sample_index(0 as NSUInteger);
+    sample_buffer_attachment_descriptor.set_end_of_vertex_sample_index(1 as NSUInteger);
+    sample_buffer_attachment_descriptor.set_start_of_fragment_sample_index(2 as NSUInteger);
+    sample_buffer_attachment_descriptor.set_end_of_fragment_sample_index(3 as NSUInteger);
+}
+
+fn handle_render_pass_color_attachment(descriptor: &RenderPassDescriptorRef, texture: &TextureRef) {
     let color_attachment = descriptor.color_attachments().object_at(0).unwrap();
 
     color_attachment.set_texture(Some(texture));
@@ -247,4 +280,60 @@ fn prepare_pipeline_state(
     device
         .new_render_pipeline_state(&pipeline_state_descriptor)
         .unwrap()
+}
+
+fn resolve_timestamps_into_buffer(
+    command_buffer: &CommandBufferRef,
+    counter_sample_buffer: &CounterSampleBufferRef,
+    device: &Device,
+) -> Buffer {
+    let blit_encoder = command_buffer.new_blit_command_encoder();
+    let timestamps_buffer = device.new_buffer(
+        (std::mem::size_of::<u64>() * 4) as u64,
+        MTLResourceOptions::StorageModeShared,
+    );
+    blit_encoder.resolve_counters(
+        &counter_sample_buffer,
+        crate::NSRange::new(0_u64, 4_u64),
+        &timestamps_buffer,
+        0_u64,
+    );
+    blit_encoder.end_encoding();
+    timestamps_buffer
+}
+
+fn print_timestamps(timestamps_buffer: &BufferRef) {
+    let timestamps =
+        unsafe { std::slice::from_raw_parts(timestamps_buffer.contents() as *const u64, 4) };
+    println!("Start of vertex:   {}", timestamps[0]);
+    println!("End of vertex:     {}", timestamps[1]);
+    println!("Vertex elapsed:    {}", timestamps[1] - timestamps[0]);
+    println!("Start of fragment: {}", timestamps[2]);
+    println!("End of fragment:   {}", timestamps[3]);
+    println!("Fragment elapsed:  {}\n", timestamps[3] - timestamps[2]);
+}
+
+fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
+    let counter_sample_buffer_desc = metal::CounterSampleBufferDescriptor::new();
+    counter_sample_buffer_desc.set_storage_mode(metal::MTLStorageMode::Shared);
+    counter_sample_buffer_desc.set_sample_count(4_u64);
+    counter_sample_buffer_desc.set_counter_set(&fetch_timestamp_counter_set(device));
+
+    device
+        .new_counter_sample_buffer_with_descriptor(&counter_sample_buffer_desc)
+        .unwrap()
+}
+
+fn fetch_timestamp_counter_set(device: &Device) -> metal::CounterSet {
+    let counter_sets = device.counter_sets();
+    let mut timestamp_counter = None;
+    for cs in counter_sets.iter() {
+        if cs.name() == "timestamp" {
+            timestamp_counter = Some(cs);
+            break;
+        }
+    }
+    timestamp_counter
+        .expect("No timestamp counter found")
+        .clone()
 }
