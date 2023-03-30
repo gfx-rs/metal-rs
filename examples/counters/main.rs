@@ -6,6 +6,9 @@ const NUM_ELEMENTS: u64 = 64 * 64;
 
 fn main() {
     let device = Device::system_default().expect("No device found");
+    let mut cpu_start = 0;
+    let mut gpu_start = 0;
+    device.sample_timestamps(&mut cpu_start, &mut gpu_start);
 
     let counter_sample_buffer = create_counter_sample_buffer(&device);
     let destination_buffer = device.new_buffer(
@@ -18,7 +21,11 @@ fn main() {
 
     let command_queue = device.new_command_queue();
     let command_buffer = command_queue.new_command_buffer();
-    let block = block::ConcreteBlock::new(move |buffer: &metal::CommandBufferRef| {}).copy();
+
+    let block = block::ConcreteBlock::new(move |_buffer: &metal::CommandBufferRef| {
+        //TODO
+    })
+    .copy();
 
     command_buffer.add_completed_handler(&block);
 
@@ -50,13 +57,15 @@ fn main() {
     encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
     encoder.end_encoding();
 
-    let resolved_sample_buffer =
-        resolve_samples_into_buffer(&command_buffer, &counter_sample_buffer, &device);
+    resolve_samples_into_buffer(&command_buffer, &counter_sample_buffer, &destination_buffer);
 
     command_buffer.commit();
     command_buffer.wait_until_completed();
+    let mut cpu_end = 0;
+    let mut gpu_end = 0;
+    device.sample_timestamps(&mut cpu_end, &mut gpu_end);
 
-    print_timestamps(&resolved_sample_buffer);
+    handle_timestamps(&destination_buffer, cpu_start, cpu_end, gpu_start, gpu_end);
 
     let ptr = sum.contents() as *mut u32;
     println!("Compute shader sum: {}", unsafe { *ptr });
@@ -111,21 +120,27 @@ fn resolve_samples_into_buffer(
     blit_encoder.end_encoding();
 }
 
-fn print_timestamps(resolved_sample_buffer: &BufferRef) {
+fn handle_timestamps(
+    resolved_sample_buffer: &BufferRef,
+    cpu_start: u64,
+    cpu_end: u64,
+    gpu_start: u64,
+    gpu_end: u64,
+) {
     let samples = unsafe {
         std::slice::from_raw_parts(
             resolved_sample_buffer.contents() as *const u64,
             NUM_SAMPLES as usize,
         )
     };
-    let gpu_start = samples[0];
-    let gpu_end = samples[1];
-    println!("GPU start: {}", gpu_start);
-    println!("GPU end: {}", gpu_end);
+    let pass_start = samples[0];
+    let pass_end = samples[1];
 
-    //let micros = absolute_time_in_microseconds(cpu_start, cpu_end, gpu_start, gpu_end);
-    let micros = 0;
-    println!("CPU time: {} microseconds", micros);
+    let cpu_time_span = cpu_end - cpu_start;
+    let gpu_time_span = gpu_end - gpu_start;
+
+    let micros = microseconds_between_begin(pass_start, pass_end, gpu_time_span, cpu_time_span);
+    println!("Pass duration: {} microseconds", micros);
 }
 
 fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
@@ -168,20 +183,9 @@ fn create_input_and_output_buffers(device: &Device) -> (metal::Buffer, metal::Bu
 }
 
 /// <https://developer.apple.com/documentation/metal/gpu_counters_and_counter_sample_buffers/converting_gpu_timestamps_into_cpu_time>
-fn absolute_time_in_microseconds(
-    timestamp: u64,
-    cpu_start: u64,
-    cpu_end: u64,
-    gpu_start: u64,
-    gpu_end: u64,
-) -> u64 {
-    // Convert the GPU time to a value within the range [0.0, 1.0].
-    let normalized_gpu_time = (timestamp - gpu_start) / (gpu_end - gpu_start);
-
-    // Convert GPU time to CPU time.
-    let mut nanoseconds = normalized_gpu_time * (cpu_end - cpu_start);
-    nanoseconds += cpu_start;
-
-    let microseconds = nanoseconds / 1000;
-    microseconds
+fn microseconds_between_begin(begin: u64, end: u64, gpu_time_span: u64, cpu_time_span: u64) -> f64 {
+    let time_span = (end as f64) - (begin as f64);
+    let nanoseconds = time_span / (gpu_time_span as f64) * (cpu_time_span as f64);
+    let microseconds = nanoseconds / 1000.0;
+    return microseconds;
 }
