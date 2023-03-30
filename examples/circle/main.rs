@@ -46,7 +46,15 @@ fn main() {
     let device = Device::system_default().expect("no device found");
     println!("Your device is: {}", device.name(),);
 
+    // Scaffold required to sample the GPU and CPU timestamps
+    let mut cpu_start = 0;
+    let mut gpu_start = 0;
+    device.sample_timestamps(&mut cpu_start, &mut gpu_start);
     let counter_sample_buffer = create_counter_sample_buffer(&device);
+    let destination_buffer = device.new_buffer(
+        (std::mem::size_of::<u64>() * 4 as usize) as u64,
+        MTLResourceOptions::StorageModeShared,
+    );
     let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
     assert!(device.supports_counter_sampling(counter_sampling_point));
 
@@ -163,10 +171,10 @@ fn main() {
                     encoder.draw_primitives(MTLPrimitiveType::TriangleStrip, 0, 1080);
                     encoder.end_encoding();
 
-                    let timestamps_buffer = resolve_timestamps_into_buffer(
-                        command_buffer,
+                    resolve_samples_into_buffer(
+                        &command_buffer,
                         &counter_sample_buffer,
-                        &device,
+                        &destination_buffer,
                     );
 
                     // Schedule a present once the framebuffer is complete using the current drawable.
@@ -176,7 +184,10 @@ fn main() {
                     command_buffer.commit();
                     command_buffer.wait_until_completed();
 
-                    print_timestamps(&timestamps_buffer);
+                    let mut cpu_end = 0;
+                    let mut gpu_end = 0;
+                    device.sample_timestamps(&mut cpu_end, &mut gpu_end);
+                    handle_timestamps(&destination_buffer, cpu_start, cpu_end, gpu_start, gpu_end);
                 }
                 _ => (),
             }
@@ -282,35 +293,54 @@ fn prepare_pipeline_state(
         .unwrap()
 }
 
-fn resolve_timestamps_into_buffer(
+fn resolve_samples_into_buffer(
     command_buffer: &CommandBufferRef,
     counter_sample_buffer: &CounterSampleBufferRef,
-    device: &Device,
-) -> Buffer {
+    destination_buffer: &BufferRef,
+) {
     let blit_encoder = command_buffer.new_blit_command_encoder();
-    let timestamps_buffer = device.new_buffer(
-        (std::mem::size_of::<u64>() * 4) as u64,
-        MTLResourceOptions::StorageModeShared,
-    );
     blit_encoder.resolve_counters(
         &counter_sample_buffer,
-        crate::NSRange::new(0_u64, 4_u64),
-        &timestamps_buffer,
+        crate::NSRange::new(0_u64, 4),
+        &destination_buffer,
         0_u64,
     );
     blit_encoder.end_encoding();
-    timestamps_buffer
 }
 
-fn print_timestamps(timestamps_buffer: &BufferRef) {
-    let timestamps =
-        unsafe { std::slice::from_raw_parts(timestamps_buffer.contents() as *const u64, 4) };
-    println!("Start of vertex:   {}", timestamps[0]);
-    println!("End of vertex:     {}", timestamps[1]);
-    println!("Vertex elapsed:    {}", timestamps[1] - timestamps[0]);
-    println!("Start of fragment: {}", timestamps[2]);
-    println!("End of fragment:   {}", timestamps[3]);
-    println!("Fragment elapsed:  {}\n", timestamps[3] - timestamps[2]);
+fn handle_timestamps(
+    resolved_sample_buffer: &BufferRef,
+    cpu_start: u64,
+    cpu_end: u64,
+    gpu_start: u64,
+    gpu_end: u64,
+) {
+    let samples = unsafe {
+        std::slice::from_raw_parts(resolved_sample_buffer.contents() as *const u64, 4 as usize)
+    };
+    let vertex_pass_start = samples[0];
+    let vertex_pass_end = samples[1];
+    let fragment_pass_start = samples[2];
+    let fragment_pass_end = samples[3];
+
+    let cpu_time_span = cpu_end - cpu_start;
+    let gpu_time_span = gpu_end - gpu_start;
+
+    let vertex_micros = microseconds_between_begin(
+        vertex_pass_start,
+        vertex_pass_end,
+        gpu_time_span,
+        cpu_time_span,
+    );
+    let fragment_micros = microseconds_between_begin(
+        fragment_pass_start,
+        fragment_pass_end,
+        gpu_time_span,
+        cpu_time_span,
+    );
+
+    println!("Vertex pass duration:   {:.2} µs", vertex_micros);
+    println!("Fragment pass duration: {:.2} µs\n", fragment_micros);
 }
 
 fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
@@ -336,4 +366,12 @@ fn fetch_timestamp_counter_set(device: &Device) -> metal::CounterSet {
     timestamp_counter
         .expect("No timestamp counter found")
         .clone()
+}
+
+/// <https://developer.apple.com/documentation/metal/gpu_counters_and_counter_sample_buffers/converting_gpu_timestamps_into_cpu_time>
+fn microseconds_between_begin(begin: u64, end: u64, gpu_time_span: u64, cpu_time_span: u64) -> f64 {
+    let time_span = (end as f64) - (begin as f64);
+    let nanoseconds = time_span / (gpu_time_span as f64) * (cpu_time_span as f64);
+    let microseconds = nanoseconds / 1000.0;
+    return microseconds;
 }

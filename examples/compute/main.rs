@@ -140,7 +140,7 @@ fn handle_timestamps(
     let gpu_time_span = gpu_end - gpu_start;
 
     let micros = microseconds_between_begin(pass_start, pass_end, gpu_time_span, cpu_time_span);
-    println!("Pass duration: {} microseconds", micros);
+    println!("Compute pass duration: {} µs", micros);
 }
 
 fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
