@@ -1063,13 +1063,11 @@ impl RenderCommandEncoderRef {
         threads_per_mesh_threadgroup: MTLSize,
     ) {
         unsafe {
-            unsafe {
-                msg_send![self,
-                    drawMeshThreads: threads_per_grid
-                    threadsPerObjectThreadgroup: threads_per_object_threadgroup
-                    threadsPerMeshThreadgroup: threads_per_mesh_threadgroup
-                ]
-            }
+            msg_send![self,
+                drawMeshThreads: threads_per_grid
+                threadsPerObjectThreadgroup: threads_per_object_threadgroup
+                threadsPerMeshThreadgroup: threads_per_mesh_threadgroup
+            ]
         }
     }
 
