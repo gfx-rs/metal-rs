@@ -1,4 +1,9 @@
 use metal::*;
+use std::path::PathBuf;
+
+const NUM_SAMPLES: u64 = 2;
+const NUM_ELEMENTS: u64 = 64 * 64;
+
 fn main() {
     let device = Device::system_default().expect("No device found");
 
@@ -7,33 +12,17 @@ fn main() {
     let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
     assert!(device.supports_counter_sampling(counter_sampling_point));
 
+    let (buffer, sum) = create_input_and_output_buffers(&device);
+
     let command_queue = device.new_command_queue();
-
-    let data = [1u32; 64 * 64];
-
-    let buffer = device.new_buffer_with_data(
-        unsafe { std::mem::transmute(data.as_ptr()) },
-        (data.len() * std::mem::size_of::<u32>()) as u64,
-        MTLResourceOptions::CPUCacheModeDefaultCache,
-    );
-
-    let sum = {
-        let data = [0u32];
-        device.new_buffer_with_data(
-            unsafe { std::mem::transmute(data.as_ptr()) },
-            (data.len() * std::mem::size_of::<u32>()) as u64,
-            MTLResourceOptions::CPUCacheModeDefaultCache,
-        )
-    };
-
     let command_buffer = command_queue.new_command_buffer();
 
     let compute_pass_descriptor = ComputePassDescriptor::new();
     handle_compute_pass_sample_buffer_attachment(&compute_pass_descriptor, &counter_sample_buffer);
     let encoder = command_buffer.compute_command_encoder_with_descriptor(&compute_pass_descriptor);
-    let library_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("examples/compute/shaders.metallib");
 
+    let library_path =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("examples/compute/shaders.metallib");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("sum", None).unwrap();
 
@@ -59,7 +48,7 @@ fn main() {
     };
 
     let thread_group_size = MTLSize {
-        width: (data.len() as u64 + width) / width,
+        width: (NUM_ELEMENTS + width) / width,
         height: 1,
         depth: 1,
     };
@@ -68,7 +57,7 @@ fn main() {
     encoder.end_encoding();
 
     let timestamps_buffer =
-        resolve_timestamps_into_buffer(&command_buffer, &counter_sample_buffer, &device);
+        resolve_samples_into_buffer(&command_buffer, &counter_sample_buffer, &device);
 
     command_buffer.commit();
     command_buffer.wait_until_completed();
@@ -79,7 +68,7 @@ fn main() {
     println!("Compute shader sum: {}", unsafe { *ptr });
 
     unsafe {
-        assert_eq!(4096, *ptr);
+        assert_eq!(NUM_ELEMENTS as u32, *ptr);
     }
 }
 
@@ -97,19 +86,19 @@ fn handle_compute_pass_sample_buffer_attachment(
     sample_buffer_attachment_descriptor.set_end_of_encoder_sample_index(1);
 }
 
-fn resolve_timestamps_into_buffer(
+fn resolve_samples_into_buffer(
     command_buffer: &CommandBufferRef,
     counter_sample_buffer: &CounterSampleBufferRef,
     device: &Device,
 ) -> Buffer {
     let blit_encoder = command_buffer.new_blit_command_encoder();
     let timestamps_buffer = device.new_buffer(
-        (std::mem::size_of::<u64>() * 2) as u64,
+        (std::mem::size_of::<u64>() * NUM_SAMPLES as usize) as u64,
         MTLResourceOptions::StorageModeShared,
     );
     blit_encoder.resolve_counters(
         &counter_sample_buffer,
-        crate::NSRange::new(0_u64, 2_u64),
+        crate::NSRange::new(0_u64, NUM_SAMPLES),
         &timestamps_buffer,
         0_u64,
     );
@@ -118,8 +107,12 @@ fn resolve_timestamps_into_buffer(
 }
 
 fn print_timestamps(timestamps_buffer: &BufferRef) {
-    let timestamps =
-        unsafe { std::slice::from_raw_parts(timestamps_buffer.contents() as *const u64, 2) };
+    let timestamps = unsafe {
+        std::slice::from_raw_parts(
+            timestamps_buffer.contents() as *const u64,
+            NUM_SAMPLES as usize,
+        )
+    };
     println!("Start timestamp: {}", timestamps[0]);
     println!("End timestamp:   {}", timestamps[1]);
     println!("Elapsed time:    {}", timestamps[1] - timestamps[0]);
@@ -128,7 +121,7 @@ fn print_timestamps(timestamps_buffer: &BufferRef) {
 fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
     let counter_sample_buffer_desc = metal::CounterSampleBufferDescriptor::new();
     counter_sample_buffer_desc.set_storage_mode(metal::MTLStorageMode::Shared);
-    counter_sample_buffer_desc.set_sample_count(2_u64);
+    counter_sample_buffer_desc.set_sample_count(NUM_SAMPLES);
     counter_sample_buffer_desc.set_counter_set(&fetch_timestamp_counter_set(device));
 
     device
@@ -138,14 +131,28 @@ fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
 
 fn fetch_timestamp_counter_set(device: &Device) -> metal::CounterSet {
     let counter_sets = device.counter_sets();
-    let mut timestamp_counter = None;
-    for cs in counter_sets.iter() {
-        if cs.name() == "timestamp" {
-            timestamp_counter = Some(cs);
-            break;
-        }
-    }
+    let timestamp_counter = counter_sets.iter().find(|cs| cs.name() == "timestamp");
     timestamp_counter
         .expect("No timestamp counter found")
         .clone()
+}
+
+fn create_input_and_output_buffers(device: &Device) -> (metal::Buffer, metal::Buffer) {
+    let data = [1u32; 64 * 64];
+
+    let buffer = device.new_buffer_with_data(
+        unsafe { std::mem::transmute(data.as_ptr()) },
+        (data.len() * std::mem::size_of::<u32>()) as u64,
+        MTLResourceOptions::CPUCacheModeDefaultCache,
+    );
+
+    let sum = {
+        let data = [0u32];
+        device.new_buffer_with_data(
+            unsafe { std::mem::transmute(data.as_ptr()) },
+            (data.len() * std::mem::size_of::<u32>()) as u64,
+            MTLResourceOptions::CPUCacheModeDefaultCache,
+        )
+    };
+    (buffer, sum)
 }
