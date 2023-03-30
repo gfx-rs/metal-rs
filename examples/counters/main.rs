@@ -12,8 +12,6 @@ fn main() {
     let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
     assert!(device.supports_counter_sampling(counter_sampling_point));
 
-    let (buffer, sum) = create_input_and_output_buffers(&device);
-
     let command_queue = device.new_command_queue();
     let command_buffer = command_queue.new_command_buffer();
 
@@ -21,21 +19,10 @@ fn main() {
     handle_compute_pass_sample_buffer_attachment(&compute_pass_descriptor, &counter_sample_buffer);
     let encoder = command_buffer.compute_command_encoder_with_descriptor(&compute_pass_descriptor);
 
-    let library_path =
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("examples/compute/shaders.metallib");
-    let library = device.new_library_with_file(library_path).unwrap();
-    let kernel = library.get_function("sum", None).unwrap();
-
-    let pipeline_state_descriptor = ComputePipelineDescriptor::new();
-    pipeline_state_descriptor.set_compute_function(Some(&kernel));
-
-    let pipeline_state = device
-        .new_compute_pipeline_state_with_function(
-            pipeline_state_descriptor.compute_function().unwrap(),
-        )
-        .unwrap();
-
+    let pipeline_state = create_pipeline_state(&device);
     encoder.set_compute_pipeline_state(&pipeline_state);
+
+    let (buffer, sum) = create_input_and_output_buffers(&device);
     encoder.set_buffer(0, Some(&buffer), 0);
     encoder.set_buffer(1, Some(&sum), 0);
 
@@ -56,13 +43,13 @@ fn main() {
     encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
     encoder.end_encoding();
 
-    let timestamps_buffer =
+    let resolved_sample_buffer =
         resolve_samples_into_buffer(&command_buffer, &counter_sample_buffer, &device);
 
     command_buffer.commit();
     command_buffer.wait_until_completed();
 
-    print_timestamps(&timestamps_buffer);
+    print_timestamps(&resolved_sample_buffer);
 
     let ptr = sum.contents() as *mut u32;
     println!("Compute shader sum: {}", unsafe { *ptr });
@@ -70,6 +57,22 @@ fn main() {
     unsafe {
         assert_eq!(NUM_ELEMENTS as u32, *ptr);
     }
+}
+
+fn create_pipeline_state(device: &Device) -> ComputePipelineState {
+    let library_path =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("examples/compute/shaders.metallib");
+    let library = device.new_library_with_file(library_path).unwrap();
+    let kernel = library.get_function("sum", None).unwrap();
+
+    let pipeline_state_descriptor = ComputePipelineDescriptor::new();
+    pipeline_state_descriptor.set_compute_function(Some(&kernel));
+
+    device
+        .new_compute_pipeline_state_with_function(
+            pipeline_state_descriptor.compute_function().unwrap(),
+        )
+        .unwrap()
 }
 
 fn handle_compute_pass_sample_buffer_attachment(
@@ -106,16 +109,21 @@ fn resolve_samples_into_buffer(
     timestamps_buffer
 }
 
-fn print_timestamps(timestamps_buffer: &BufferRef) {
-    let timestamps = unsafe {
+fn print_timestamps(resolved_sample_buffer: &BufferRef) {
+    let samples = unsafe {
         std::slice::from_raw_parts(
-            timestamps_buffer.contents() as *const u64,
+            resolved_sample_buffer.contents() as *const u64,
             NUM_SAMPLES as usize,
         )
     };
-    println!("Start timestamp: {}", timestamps[0]);
-    println!("End timestamp:   {}", timestamps[1]);
-    println!("Elapsed time:    {}", timestamps[1] - timestamps[0]);
+    let gpu_start = samples[0];
+    let gpu_end = samples[1];
+    println!("GPU start: {}", gpu_start);
+    println!("GPU end: {}", gpu_end);
+
+    //let micros = absolute_time_in_microseconds(cpu_start, cpu_end, gpu_start, gpu_end);
+    let micros = 0;
+    println!("CPU time: {} microseconds", micros);
 }
 
 fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
@@ -155,4 +163,22 @@ fn create_input_and_output_buffers(device: &Device) -> (metal::Buffer, metal::Bu
         )
     };
     (buffer, sum)
+}
+
+/// <https://developer.apple.com/documentation/metal/gpu_counters_and_counter_sample_buffers/converting_gpu_timestamps_into_cpu_time>
+fn absolute_time_in_microseconds(
+    cpu_start: u64,
+    cpu_end: u64,
+    gpu_start: u64,
+    gpu_end: u64,
+) -> u64 {
+    // Convert the GPU time to a value within the range [0.0, 1.0].
+    let normalized_gpu_time = (gpu_end - gpu_start) / (gpu_end - gpu_start);
+
+    // Convert GPU time to CPU time.
+    let mut nanoseconds = normalized_gpu_time * (cpu_end - cpu_start);
+    nanoseconds += cpu_start;
+
+    let microseconds = nanoseconds / 1000;
+    microseconds
 }
