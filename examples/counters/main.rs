@@ -8,12 +8,19 @@ fn main() {
     let device = Device::system_default().expect("No device found");
 
     let counter_sample_buffer = create_counter_sample_buffer(&device);
+    let destination_buffer = device.new_buffer(
+        (std::mem::size_of::<u64>() * NUM_SAMPLES as usize) as u64,
+        MTLResourceOptions::StorageModeShared,
+    );
 
     let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
     assert!(device.supports_counter_sampling(counter_sampling_point));
 
     let command_queue = device.new_command_queue();
     let command_buffer = command_queue.new_command_buffer();
+    let block = block::ConcreteBlock::new(move |buffer: &metal::CommandBufferRef| {}).copy();
+
+    command_buffer.add_completed_handler(&block);
 
     let compute_pass_descriptor = ComputePassDescriptor::new();
     handle_compute_pass_sample_buffer_attachment(&compute_pass_descriptor, &counter_sample_buffer);
@@ -92,21 +99,16 @@ fn handle_compute_pass_sample_buffer_attachment(
 fn resolve_samples_into_buffer(
     command_buffer: &CommandBufferRef,
     counter_sample_buffer: &CounterSampleBufferRef,
-    device: &Device,
-) -> Buffer {
+    destination_buffer: &BufferRef,
+) {
     let blit_encoder = command_buffer.new_blit_command_encoder();
-    let timestamps_buffer = device.new_buffer(
-        (std::mem::size_of::<u64>() * NUM_SAMPLES as usize) as u64,
-        MTLResourceOptions::StorageModeShared,
-    );
     blit_encoder.resolve_counters(
         &counter_sample_buffer,
         crate::NSRange::new(0_u64, NUM_SAMPLES),
-        &timestamps_buffer,
+        &destination_buffer,
         0_u64,
     );
     blit_encoder.end_encoding();
-    timestamps_buffer
 }
 
 fn print_timestamps(resolved_sample_buffer: &BufferRef) {
@@ -167,13 +169,14 @@ fn create_input_and_output_buffers(device: &Device) -> (metal::Buffer, metal::Bu
 
 /// <https://developer.apple.com/documentation/metal/gpu_counters_and_counter_sample_buffers/converting_gpu_timestamps_into_cpu_time>
 fn absolute_time_in_microseconds(
+    timestamp: u64,
     cpu_start: u64,
     cpu_end: u64,
     gpu_start: u64,
     gpu_end: u64,
 ) -> u64 {
     // Convert the GPU time to a value within the range [0.0, 1.0].
-    let normalized_gpu_time = (gpu_end - gpu_start) / (gpu_end - gpu_start);
+    let normalized_gpu_time = (timestamp - gpu_start) / (gpu_end - gpu_start);
 
     // Convert GPU time to CPU time.
     let mut nanoseconds = normalized_gpu_time * (cpu_end - cpu_start);
