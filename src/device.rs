@@ -1899,6 +1899,45 @@ impl DeviceRef {
         }
     }
 
+    /// Only available on (macos(13.0), ios(16.0))
+    pub fn new_mesh_render_pipeline_state_with_reflection(
+        &self,
+        descriptor: &MeshRenderPipelineDescriptorRef,
+        reflection_options: MTLPipelineOption,
+    ) -> Result<(RenderPipelineState, RenderPipelineReflection), String> {
+        unsafe {
+            let mut reflection: *mut Object = ptr::null_mut();
+            let pipeline_state: *mut MTLRenderPipelineState = try_objc! { err =>
+                msg_send![self, newRenderPipelineStateWithMeshDescriptor:descriptor
+                                                             options:reflection_options
+                                                          reflection:&mut reflection
+                                                               error:&mut err]
+            };
+
+            let state = RenderPipelineState::from_ptr(pipeline_state);
+
+            let () = msg_send![reflection, retain];
+            let reflection = RenderPipelineReflection::from_ptr(reflection as _);
+
+            Ok((state, reflection))
+        }
+    }
+
+    /// Only available on (macos(13.0), ios(16.0))
+    pub fn new_mesh_render_pipeline_state(
+        &self,
+        descriptor: &MeshRenderPipelineDescriptorRef,
+    ) -> Result<RenderPipelineState, String> {
+        unsafe {
+            let pipeline_state: *mut MTLRenderPipelineState = try_objc! { err =>
+                msg_send![self, newRenderPipelineStateWithMeshDescriptor:descriptor
+                                                               error:&mut err]
+            };
+
+            Ok(RenderPipelineState::from_ptr(pipeline_state))
+        }
+    }
+
     pub fn new_compute_pipeline_state_with_function(
         &self,
         function: &FunctionRef,
