@@ -49,9 +49,6 @@ name = "window"
 name = "headless-render"
 
 [[example]]
-name = "counters"
-
-[[example]]
 name = "library"
 
 [[example]]
