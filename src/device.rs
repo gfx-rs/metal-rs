@@ -2174,8 +2174,9 @@ impl DeviceRef {
             let count: NSUInteger = msg_send![counter_sets, count];
             let ret = (0..count)
                 .map(|i| {
-                    let a = msg_send![counter_sets, objectAtIndex: i];
-                    CounterSet::from_ptr(a)
+                    let csp: *mut MTLCounterSet = msg_send![counter_sets, objectAtIndex: i];
+                    let () = msg_send![csp, retain];
+                    CounterSet::from_ptr(csp)
                 })
                 .collect();
             ret
