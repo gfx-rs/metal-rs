@@ -140,6 +140,13 @@ impl CommandBufferRef {
         unsafe { msg_send![self, computeCommandEncoderWithDispatchType: ty] }
     }
 
+    pub fn compute_command_encoder_with_descriptor(
+        &self,
+        descriptor: &ComputePassDescriptorRef,
+    ) -> &ComputeCommandEncoderRef {
+        unsafe { msg_send![self, computeCommandEncoderWithDescriptor: descriptor] }
+    }
+
     pub fn encode_signal_event(&self, event: &EventRef, new_value: u64) {
         unsafe {
             msg_send![self,

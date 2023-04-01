@@ -1987,6 +1987,20 @@ impl DeviceRef {
         }
     }
 
+    pub fn new_counter_sample_buffer_with_descriptor(
+        &self,
+        descriptor: &CounterSampleBufferDescriptorRef,
+    ) -> Result<CounterSampleBuffer, String> {
+        unsafe {
+            let counter_sample_buffer: *mut MTLCounterSampleBuffer = try_objc! { err =>
+                msg_send![self, newCounterSampleBufferWithDescriptor: descriptor error:&mut err]
+            };
+
+            assert!(!counter_sample_buffer.is_null());
+            Ok(CounterSampleBuffer::from_ptr(counter_sample_buffer))
+        }
+    }
+
     pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Texture {
         unsafe { msg_send![self, newTextureWithDescriptor: descriptor] }
     }
@@ -2148,5 +2162,24 @@ impl DeviceRef {
         size: NSUInteger,
     ) -> accelerator_structure::AccelerationStructure {
         unsafe { msg_send![self, newAccelerationStructureWithSize: size] }
+    }
+
+    pub fn sample_timestamps(&self, cpu_timestamp: &mut u64, gpu_timestamp: &mut u64) {
+        unsafe { msg_send![self, sampleTimestamps: cpu_timestamp gpuTimestamp: gpu_timestamp] }
+    }
+
+    pub fn counter_sets(&self) -> Vec<CounterSet> {
+        unsafe {
+            let counter_sets: *mut Object = msg_send![self, counterSets];
+            let count: NSUInteger = msg_send![counter_sets, count];
+            let ret = (0..count)
+                .map(|i| {
+                    let csp: *mut MTLCounterSet = msg_send![counter_sets, objectAtIndex: i];
+                    let () = msg_send![csp, retain];
+                    CounterSet::from_ptr(csp)
+                })
+                .collect();
+            ret
+        }
     }
 }

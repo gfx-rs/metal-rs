@@ -1072,6 +1072,23 @@ impl BlitCommandEncoderRef {
     pub fn wait_for_fence(&self, fence: &FenceRef) {
         unsafe { msg_send![self, waitForFence: fence] }
     }
+
+    pub fn resolve_counters(
+        &self,
+        sample_buffer: &CounterSampleBufferRef,
+        range: crate::NSRange,
+        destination_buffer: &BufferRef,
+        destination_offset: NSUInteger,
+    ) {
+        unsafe {
+            msg_send![self,
+                resolveCounters: sample_buffer
+                inRange: range
+                destinationBuffer: destination_buffer
+                destinationOffset: destination_offset
+            ]
+        }
+    }
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcomputecommandencoder/>
@@ -1338,6 +1355,22 @@ impl ComputeCommandEncoderRef {
                 self,
                 setIntersectionFunctionTable: table
                 atBufferIndex: index
+            ]
+        }
+    }
+
+    /// See: <https://developer.apple.com/documentation/metal/mtlcomputecommandencoder/3194349-samplecountersinbuffer>
+    pub fn sample_counters_in_buffer(
+        &self,
+        sample_buffer: &CounterSampleBufferRef,
+        sample_index: NSUInteger,
+        with_barrier: bool,
+    ) {
+        unsafe {
+            msg_send![self,
+                sampleCountersInBuffer: sample_buffer
+                atSampleIndex: sample_index
+                withBarrier: with_barrier
             ]
         }
     }

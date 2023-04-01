@@ -544,7 +544,9 @@ mod capturedescriptor;
 mod capturemanager;
 mod commandbuffer;
 mod commandqueue;
+mod computepass;
 mod constants;
+mod counters;
 mod depthstencil;
 mod device;
 mod drawable;
@@ -568,6 +570,8 @@ pub use {
     accelerator_structure::*,
     argument::*,
     buffer::*,
+    counters::*,
+    computepass::*,
     capturedescriptor::*,
     capturemanager::*,
     commandbuffer::*,
