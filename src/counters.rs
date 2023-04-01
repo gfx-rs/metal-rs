@@ -25,11 +25,17 @@ impl CounterSampleBufferDescriptorRef {
     }
 
     pub fn label(&self) -> &str {
-        unsafe { msg_send![self, label] }
+        unsafe {
+            let label = msg_send![self, label];
+            crate::nsstring_as_str(label)
+        }
     }
 
     pub fn set_label(&self, label: &str) {
-        unsafe { msg_send![self, setLabel: label] }
+        unsafe {
+            let nslabel = crate::nsstring_from_str(label);
+            let () = msg_send![self, setLabel: nslabel];
+        }
     }
 
     pub fn sample_count(&self) -> u64 {
