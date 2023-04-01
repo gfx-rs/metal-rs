@@ -440,6 +440,278 @@ impl RenderCommandEncoderRef {
         }
     }
 
+    // Specifying Resources for a Object Shader Function
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_buffer(
+        &self,
+        index: NSUInteger,
+        buffer: Option<&BufferRef>,
+        offset: NSUInteger,
+    ) {
+        unsafe {
+            msg_send![self,
+                setObjectBuffer:buffer
+                offset:offset
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_buffer_offset(&self, index: NSUInteger, offset: NSUInteger) {
+        unsafe {
+            msg_send![self,
+                setObjectBufferOffset:offset
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_bytes(
+        &self,
+        index: NSUInteger,
+        length: NSUInteger,
+        bytes: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            msg_send![self,
+                setObjectBytes:bytes
+                length:length
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_sampler_state(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>) {
+        unsafe {
+            msg_send![self,
+                setObjectSamplerState:sampler
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_sampler_state_with_lod(
+        &self,
+        index: NSUInteger,
+        sampler: Option<&SamplerStateRef>,
+        lod_clamp: Range<f32>,
+    ) {
+        unsafe {
+            msg_send![self,
+                setObjectSamplerState:sampler
+                lodMinClamp:lod_clamp.start
+                lodMaxClamp:lod_clamp.end
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_texture(&self, index: NSUInteger, texture: Option<&TextureRef>) {
+        unsafe {
+            msg_send![self,
+                setObjectTexture:texture
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_threadgroup_memory_length(&self, index: NSUInteger, length: NSUInteger) {
+        unsafe {
+            msg_send![self,
+                setObjectThreadgroupMemoryLength: length
+                atIndex: index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_buffers(
+        &self,
+        start_index: NSUInteger,
+        data: &[Option<&BufferRef>],
+        offsets: &[NSUInteger],
+    ) {
+        debug_assert_eq!(offsets.len(), data.len());
+        unsafe {
+            msg_send![self,
+                setObjectBuffers: data.as_ptr()
+                offsets: offsets.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_sampler_states(
+        &self,
+        start_index: NSUInteger,
+        data: &[Option<&SamplerStateRef>],
+    ) {
+        unsafe {
+            msg_send![self,
+                setObjectSamplerStates: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_object_textures(&self, start_index: NSUInteger, data: &[Option<&TextureRef>]) {
+        unsafe {
+            msg_send![self,
+                setObjectTextures: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
+    // Specifying Resources for a Mesh Shader
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_buffer(
+        &self,
+        index: NSUInteger,
+        buffer: Option<&BufferRef>,
+        offset: NSUInteger,
+    ) {
+        unsafe {
+            msg_send![self,
+                setMeshBuffer:buffer
+                offset:offset
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_buffer_offset(&self, index: NSUInteger, offset: NSUInteger) {
+        unsafe {
+            msg_send![self,
+                setMeshBufferOffset:offset
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_bytes(
+        &self,
+        index: NSUInteger,
+        length: NSUInteger,
+        bytes: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            msg_send![self,
+                setMeshBytes:bytes
+                length:length
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_sampler_state(&self, index: NSUInteger, sampler: Option<&SamplerStateRef>) {
+        unsafe {
+            msg_send![self,
+                setMeshSamplerState:sampler
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_sampler_state_with_lod(
+        &self,
+        index: NSUInteger,
+        sampler: Option<&SamplerStateRef>,
+        lod_clamp: Range<f32>,
+    ) {
+        unsafe {
+            msg_send![self,
+                setMeshSamplerState:sampler
+                lodMinClamp:lod_clamp.start
+                lodMaxClamp:lod_clamp.end
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_texture(&self, index: NSUInteger, texture: Option<&TextureRef>) {
+        unsafe {
+            msg_send![self,
+                setMeshTexture:texture
+                atIndex:index
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_buffers(
+        &self,
+        start_index: NSUInteger,
+        data: &[Option<&BufferRef>],
+        offsets: &[NSUInteger],
+    ) {
+        debug_assert_eq!(offsets.len(), data.len());
+        unsafe {
+            msg_send![self,
+                setMeshBuffers: data.as_ptr()
+                offsets: offsets.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_sampler_states(
+        &self,
+        start_index: NSUInteger,
+        data: &[Option<&SamplerStateRef>],
+    ) {
+        unsafe {
+            msg_send![self,
+                setMeshSamplerStates: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn set_mesh_textures(&self, start_index: NSUInteger, data: &[Option<&TextureRef>]) {
+        unsafe {
+            msg_send![self,
+                setMeshTextures: data.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
     // Specifying Resources for a Fragment Shader Function
 
     pub fn set_fragment_bytes(
@@ -748,6 +1020,56 @@ impl RenderCommandEncoderRef {
     // fn setVertexBufferOffset_atIndex(self, offset: NSUInteger, index: NSUInteger);
     // fn setVertexBuffers_offsets_withRange(self, buffers: *const id, offsets: *const NSUInteger, range: NSRange);
     // fn setVertexSamplerStates_lodMinClamps_lodMaxClamps_withRange(self, samplers: *const id, lodMinClamps: *const f32, lodMaxClamps: *const f32, range: NSRange);
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn draw_mesh_threadgroups(
+        &self,
+        threadgroups_per_grid: MTLSize,
+        threads_per_object_threadgroup: MTLSize,
+        threads_per_mesh_threadgroup: MTLSize,
+    ) {
+        unsafe {
+            msg_send![self,
+                drawMeshThreadgroups: threadgroups_per_grid
+                threadsPerObjectThreadgroup: threads_per_object_threadgroup
+                threadsPerMeshThreadgroup: threads_per_mesh_threadgroup
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn draw_mesh_threadgroups_with_indirect_buffer(
+        &self,
+        indirect_buffer: &BufferRef,
+        indirect_buffer_offset: NSUInteger,
+        threads_per_object_threadgroup: MTLSize,
+        threads_per_mesh_threadgroup: MTLSize,
+    ) {
+        unsafe {
+            msg_send![self,
+                drawMeshThreadgroupsWithIndirectBuffer: indirect_buffer
+                indirectBufferOffset: indirect_buffer_offset
+                threadsPerObjectThreadgroup: threads_per_object_threadgroup
+                threadsPerMeshThreadgroup: threads_per_mesh_threadgroup
+            ]
+        }
+    }
+
+    /// Only available in (macos(13.0), ios(16.0))
+    pub fn draw_mesh_threads(
+        &self,
+        threads_per_grid: MTLSize,
+        threads_per_object_threadgroup: MTLSize,
+        threads_per_mesh_threadgroup: MTLSize,
+    ) {
+        unsafe {
+            msg_send![self,
+                drawMeshThreads: threads_per_grid
+                threadsPerObjectThreadgroup: threads_per_object_threadgroup
+                threadsPerMeshThreadgroup: threads_per_mesh_threadgroup
+            ]
+        }
+    }
 
     /// Adds an untracked resource to the render pass.
     ///
