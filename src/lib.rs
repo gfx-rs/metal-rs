@@ -207,7 +207,6 @@ macro_rules! try_objc {
                 let desc: *mut Object = msg_send![$err_name, localizedDescription];
                 let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
-                let () = msg_send![$err_name, release];
                 return Err(message);
             }
             value
