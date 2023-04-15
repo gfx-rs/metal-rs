@@ -429,7 +429,6 @@ impl MetalLayerRef {
             match msg_send![self, presentsWithTransaction] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -443,7 +442,6 @@ impl MetalLayerRef {
             match msg_send![self, displaySyncEnabled] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -490,7 +488,6 @@ impl MetalLayerRef {
             match msg_send![self, framebufferOnly] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -504,7 +501,6 @@ impl MetalLayerRef {
             match msg_send![self, isOpaque] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -518,7 +514,6 @@ impl MetalLayerRef {
             match msg_send![self, wantsExtendedDynamicRangeContent] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }

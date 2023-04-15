@@ -179,7 +179,6 @@ impl ResourceRef {
             match msg_send![self, isAliasable] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }

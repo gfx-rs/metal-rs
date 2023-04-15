@@ -270,7 +270,6 @@ impl ArgumentRef {
             match msg_send![self, isActive] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }

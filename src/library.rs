@@ -54,7 +54,6 @@ impl VertexAttributeRef {
             match msg_send![self, isActive] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -65,7 +64,6 @@ impl VertexAttributeRef {
             match msg_send![self, isPatchData] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -76,7 +74,6 @@ impl VertexAttributeRef {
             match msg_send![self, isPatchControlPointData] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -113,7 +110,6 @@ impl AttributeRef {
             match msg_send![self, isActive] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -124,7 +120,6 @@ impl AttributeRef {
             match msg_send![self, isPatchData] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -135,7 +130,6 @@ impl AttributeRef {
             match msg_send![self, isPatchControlPointData] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -185,7 +179,6 @@ impl FunctionConstantRef {
             match msg_send![self, required] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -489,7 +482,6 @@ impl CompileOptionsRef {
             match msg_send![self, fastMathEnabled] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -579,7 +571,6 @@ impl CompileOptionsRef {
             match msg_send![self, preserveInvariance] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -795,7 +786,6 @@ impl DynamicLibraryRef {
                 match result {
                     YES => Ok(true),
                     NO => Ok(false),
-                    _ => unreachable!(),
                 }
             }
         }
@@ -877,7 +867,6 @@ impl BinaryArchiveRef {
                 match result {
                     YES => Ok(true),
                     NO => Ok(false),
-                    _ => unreachable!(),
                 }
             }
         }
@@ -901,7 +890,6 @@ impl BinaryArchiveRef {
                 match result {
                     YES => Ok(true),
                     NO => Ok(false),
-                    _ => unreachable!(),
                 }
             }
         }
@@ -926,7 +914,6 @@ impl BinaryArchiveRef {
                 match result {
                     YES => Ok(true),
                     NO => Ok(false),
-                    _ => unreachable!(),
                 }
             }
         }

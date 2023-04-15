@@ -258,7 +258,6 @@ impl TextureRef {
             match msg_send![self, isFramebufferOnly] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }

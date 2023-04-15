@@ -129,7 +129,6 @@ impl ComputePipelineDescriptorRef {
             match msg_send![self, threadGroupSizeIsMultipleOfThreadExecutionWidth] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -162,7 +161,6 @@ impl ComputePipelineDescriptorRef {
             match msg_send![self, supportIndirectCommandBuffers] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -178,7 +176,6 @@ impl ComputePipelineDescriptorRef {
             match msg_send![self, supportAddingBinaryFunctions] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
@@ -309,7 +306,6 @@ impl ComputePipelineStateRef {
             match msg_send![self, supportIndirectCommandBuffers] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }

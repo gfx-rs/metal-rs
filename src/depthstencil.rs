@@ -134,7 +134,6 @@ impl DepthStencilDescriptorRef {
             match msg_send![self, isDepthWriteEnabled] {
                 YES => true,
                 NO => false,
-                _ => unreachable!(),
             }
         }
     }
