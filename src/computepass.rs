@@ -72,10 +72,7 @@ impl ComputePassSampleBufferAttachmentDescriptorRef {
     }
 
     pub fn set_sample_buffer(&self, sample_buffer: &CounterSampleBufferRef) {
-        unsafe {
-            let () = msg_send![sample_buffer, retain];
-            msg_send![self, setSampleBuffer: sample_buffer]
-        }
+        unsafe { msg_send![self, setSampleBuffer: sample_buffer] }
     }
 
     pub fn start_of_encoder_sample_index(&self) -> NSUInteger {
