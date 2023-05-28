@@ -94,6 +94,7 @@ pub enum MTLDeviceLocation {
 }
 
 bitflags! {
+    #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct PixelFormatCapabilities: u32 {
         const Filter = 1 << 0;
         const Write = 1 << 1;
@@ -1432,6 +1433,7 @@ pub enum MTLSparseTextureRegionAlignmentMode {
 
 bitflags! {
     /// Options that determine how Metal prepares the pipeline.
+    #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct MTLPipelineOption: NSUInteger {
         /// Do not provide any reflection information.
         const None                      = 0;

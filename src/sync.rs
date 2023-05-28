@@ -144,6 +144,7 @@ bitflags! {
     /// allowing for vertex and fragment processing to overlap in execution.
     ///
     /// See <https://developer.apple.com/documentation/metal/mtlrenderstages>
+    #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct MTLRenderStages: NSUInteger {
         /// The vertex rendering stage.
         const Vertex = 1 << 0;

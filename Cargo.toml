@@ -22,7 +22,7 @@ mps = []
 
 [dependencies]
 core-graphics-types = "0.1"
-bitflags = "1"
+bitflags = "2"
 log = "0.4"
 block = "0.1.6"
 foreign-types = "0.5"
