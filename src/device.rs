@@ -1477,7 +1477,7 @@ type dispatch_block_t = *const Block<(), ()>;
     link(name = "System", kind = "dylib")
 )]
 #[cfg_attr(
-    all(feature = "link", not(any(target_os = "macos", target_os = "ios")))
+    all(feature = "link", not(any(target_os = "macos", target_os = "ios"))),
     link(name = "dispatch", kind = "dylib")
 )]
 #[allow(improper_ctypes)]
