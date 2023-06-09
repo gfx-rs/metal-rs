@@ -16,9 +16,10 @@ exclude = ["guide/**/*", "examples/texture/**/*", "tests/**/*", "Cargo.lock", "t
 default-target = "x86_64-apple-darwin"
 
 [features]
-default = []
+default = ["link"]
 private = []
 mps = []
+link = []
 
 [dependencies]
 core-graphics-types = "0.1"
