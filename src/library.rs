@@ -670,7 +670,6 @@ impl LibraryRef {
                     nsstring_as_str(name).to_string()
                 })
                 .collect();
-            let () = msg_send![names, release];
             ret
         }
     }
