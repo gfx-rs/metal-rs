@@ -98,6 +98,7 @@ impl RenderPipelineColorAttachmentDescriptorRef {
             match msg_send![self, isBlendingEnabled] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -295,6 +296,7 @@ impl MeshRenderPipelineDescriptorRef {
             match msg_send![self, isAlphaToCoverageEnabled] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -309,6 +311,7 @@ impl MeshRenderPipelineDescriptorRef {
             match msg_send![self, isAlphaToOneEnabled] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -323,6 +326,7 @@ impl MeshRenderPipelineDescriptorRef {
             match msg_send![self, isRasterizationEnabled] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -424,6 +428,7 @@ impl MeshRenderPipelineDescriptorRef {
             match msg_send![self, isMeshThreadgroupSizeIsMultipleOfThreadExecutionWidth] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -462,6 +467,7 @@ impl MeshRenderPipelineDescriptorRef {
             ] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -596,6 +602,7 @@ impl RenderPipelineDescriptorRef {
             match msg_send![self, isAlphaToCoverageEnabled] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -610,6 +617,7 @@ impl RenderPipelineDescriptorRef {
             match msg_send![self, isAlphaToOneEnabled] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -624,6 +632,7 @@ impl RenderPipelineDescriptorRef {
             match msg_send![self, isRasterizationEnabled] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -680,6 +689,7 @@ impl RenderPipelineDescriptorRef {
             match msg_send![self, supportIndirectCommandBuffers] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }

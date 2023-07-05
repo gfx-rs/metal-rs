@@ -1584,6 +1584,7 @@ impl DeviceRef {
             match msg_send![self, isLowPower] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1594,6 +1595,7 @@ impl DeviceRef {
             match msg_send![self, isHeadless] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1604,6 +1606,7 @@ impl DeviceRef {
             match msg_send![self, isRemovable] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1615,6 +1618,7 @@ impl DeviceRef {
             match msg_send![self, supportsRaytracing] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1625,6 +1629,7 @@ impl DeviceRef {
             match msg_send![self, hasUnifiedMemory] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1643,6 +1648,7 @@ impl DeviceRef {
             match msg_send![self, supportsFeatureSet: feature] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1653,6 +1659,7 @@ impl DeviceRef {
             match msg_send![self, supportsFamily: family] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1663,6 +1670,7 @@ impl DeviceRef {
             match msg_send![self, supportsVertexAmplificationCount: count] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1673,6 +1681,7 @@ impl DeviceRef {
             match msg_send![self, supportsTextureSampleCount: count] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1683,6 +1692,7 @@ impl DeviceRef {
             match msg_send![self, supportsShaderBarycentricCoordinates] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1693,6 +1703,7 @@ impl DeviceRef {
             match msg_send![self, supportsFunctionPointers] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1704,6 +1715,7 @@ impl DeviceRef {
             match msg_send![self, supportsDynamicLibraries] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1715,6 +1727,7 @@ impl DeviceRef {
             match msg_send![self, supportsCounterSampling: sampling_point] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -1725,6 +1738,7 @@ impl DeviceRef {
             match msg_send![self, isDepth24Stencil8PixelFormatSupported] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -2070,6 +2084,7 @@ impl DeviceRef {
             match msg_send![self, rasterOrderGroupsSupported] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -2081,6 +2096,7 @@ impl DeviceRef {
             match msg_send![self, supports32BitFloatFiltering] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -2092,6 +2108,7 @@ impl DeviceRef {
             match msg_send![self, supports32BitMSAA] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -2103,6 +2120,7 @@ impl DeviceRef {
             match msg_send![self, supportsQueryTextureLOD] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -2114,6 +2132,7 @@ impl DeviceRef {
             match msg_send![self, supportsBCTextureCompression] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -2125,6 +2144,7 @@ impl DeviceRef {
             match msg_send![self, supportsPullModelInterpolation] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }

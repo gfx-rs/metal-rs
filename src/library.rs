@@ -54,6 +54,7 @@ impl VertexAttributeRef {
             match msg_send![self, isActive] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -65,6 +66,7 @@ impl VertexAttributeRef {
             match msg_send![self, isPatchData] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -76,6 +78,7 @@ impl VertexAttributeRef {
             match msg_send![self, isPatchControlPointData] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -113,6 +116,7 @@ impl AttributeRef {
             match msg_send![self, isActive] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -124,6 +128,7 @@ impl AttributeRef {
             match msg_send![self, isPatchData] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -135,6 +140,7 @@ impl AttributeRef {
             match msg_send![self, isPatchControlPointData] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -185,6 +191,7 @@ impl FunctionConstantRef {
             match msg_send![self, required] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -490,6 +497,7 @@ impl CompileOptionsRef {
             match msg_send![self, fastMathEnabled] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -580,6 +588,7 @@ impl CompileOptionsRef {
             match msg_send![self, preserveInvariance] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -795,6 +804,7 @@ impl DynamicLibraryRef {
                 match result {
                     YES => Ok(true),
                     NO => Ok(false),
+                    #[cfg(not(target_arch = "aarch64"))]
                     _ => unreachable!(),
                 }
             }
@@ -877,6 +887,7 @@ impl BinaryArchiveRef {
                 match result {
                     YES => Ok(true),
                     NO => Ok(false),
+                    #[cfg(not(target_arch = "aarch64"))]
                     _ => unreachable!(),
                 }
             }
@@ -901,6 +912,7 @@ impl BinaryArchiveRef {
                 match result {
                     YES => Ok(true),
                     NO => Ok(false),
+                    #[cfg(not(target_arch = "aarch64"))]
                     _ => unreachable!(),
                 }
             }
@@ -926,6 +938,7 @@ impl BinaryArchiveRef {
                 match result {
                     YES => Ok(true),
                     NO => Ok(false),
+                    #[cfg(not(target_arch = "aarch64"))]
                     _ => unreachable!(),
                 }
             }

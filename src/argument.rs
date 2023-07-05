@@ -270,6 +270,7 @@ impl ArgumentRef {
             match msg_send![self, isActive] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }

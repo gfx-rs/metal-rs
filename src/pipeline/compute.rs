@@ -129,6 +129,7 @@ impl ComputePipelineDescriptorRef {
             match msg_send![self, threadGroupSizeIsMultipleOfThreadExecutionWidth] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -162,6 +163,7 @@ impl ComputePipelineDescriptorRef {
             match msg_send![self, supportIndirectCommandBuffers] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -178,6 +180,7 @@ impl ComputePipelineDescriptorRef {
             match msg_send![self, supportAddingBinaryFunctions] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -309,6 +312,7 @@ impl ComputePipelineStateRef {
             match msg_send![self, supportIndirectCommandBuffers] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
