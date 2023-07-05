@@ -36,6 +36,7 @@ impl IndirectCommandBufferDescriptorRef {
             match msg_send![self, inheritBuffers] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
@@ -50,6 +51,7 @@ impl IndirectCommandBufferDescriptorRef {
             match msg_send![self, inheritPipelineState] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }

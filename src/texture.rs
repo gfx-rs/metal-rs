@@ -259,6 +259,7 @@ impl TextureRef {
             match msg_send![self, isFramebufferOnly] {
                 YES => true,
                 NO => false,
+                #[cfg(not(target_arch = "aarch64"))]
                 _ => unreachable!(),
             }
         }
