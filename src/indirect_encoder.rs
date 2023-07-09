@@ -32,14 +32,7 @@ impl IndirectCommandBufferDescriptorRef {
     }
 
     pub fn inherit_buffers(&self) -> bool {
-        unsafe {
-            match msg_send![self, inheritBuffers] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, inheritBuffers] }
     }
 
     pub fn set_inherit_buffers(&self, inherit: bool) {
@@ -47,14 +40,7 @@ impl IndirectCommandBufferDescriptorRef {
     }
 
     pub fn inherit_pipeline_state(&self) -> bool {
-        unsafe {
-            match msg_send![self, inheritPipelineState] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, inheritPipelineState] }
     }
 
     pub fn set_inherit_pipeline_state(&self, inherit: bool) {

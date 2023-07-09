@@ -94,14 +94,7 @@ impl RenderPipelineColorAttachmentDescriptorRef {
     }
 
     pub fn is_blending_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, isBlendingEnabled] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isBlendingEnabled] }
     }
 
     pub fn set_blending_enabled(&self, enabled: bool) {
@@ -292,14 +285,7 @@ impl MeshRenderPipelineDescriptorRef {
     }
 
     pub fn is_alpha_to_coverage_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, isAlphaToCoverageEnabled] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isAlphaToCoverageEnabled] }
     }
 
     pub fn set_alpha_to_coverage_enabled(&self, enabled: bool) {
@@ -307,14 +293,7 @@ impl MeshRenderPipelineDescriptorRef {
     }
 
     pub fn is_alpha_to_one_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, isAlphaToOneEnabled] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isAlphaToOneEnabled] }
     }
 
     pub fn set_alpha_to_one_enabled(&self, enabled: bool) {
@@ -322,14 +301,7 @@ impl MeshRenderPipelineDescriptorRef {
     }
 
     pub fn is_rasterization_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, isRasterizationEnabled] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isRasterizationEnabled] }
     }
 
     pub fn set_rasterization_enabled(&self, enabled: bool) {
@@ -424,14 +396,7 @@ impl MeshRenderPipelineDescriptorRef {
     }
 
     pub fn mesh_threadgroup_size_is_multiple_of_thread_execution_width(&self) -> bool {
-        unsafe {
-            match msg_send![self, isMeshThreadgroupSizeIsMultipleOfThreadExecutionWidth] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isMeshThreadgroupSizeIsMultipleOfThreadExecutionWidth] }
     }
 
     pub fn set_mesh_threadgroup_size_is_multiple_of_thread_execution_width(
@@ -461,15 +426,10 @@ impl MeshRenderPipelineDescriptorRef {
 
     pub fn object_threadgroup_size_is_multiple_of_thread_execution_width(&self) -> bool {
         unsafe {
-            match msg_send![
+            msg_send_bool![
                 self,
                 isObjectThreadgroupSizeIsMultipleOfThreadExecutionWidth
-            ] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
+            ]
         }
     }
 
@@ -598,14 +558,7 @@ impl RenderPipelineDescriptorRef {
     }
 
     pub fn is_alpha_to_coverage_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, isAlphaToCoverageEnabled] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isAlphaToCoverageEnabled] }
     }
 
     pub fn set_alpha_to_coverage_enabled(&self, enabled: bool) {
@@ -613,14 +566,7 @@ impl RenderPipelineDescriptorRef {
     }
 
     pub fn is_alpha_to_one_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, isAlphaToOneEnabled] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isAlphaToOneEnabled] }
     }
 
     pub fn set_alpha_to_one_enabled(&self, enabled: bool) {
@@ -628,14 +574,7 @@ impl RenderPipelineDescriptorRef {
     }
 
     pub fn is_rasterization_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, isRasterizationEnabled] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isRasterizationEnabled] }
     }
 
     pub fn set_rasterization_enabled(&self, enabled: bool) {
@@ -685,14 +624,7 @@ impl RenderPipelineDescriptorRef {
     }
 
     pub fn support_indirect_command_buffers(&self) -> bool {
-        unsafe {
-            match msg_send![self, supportIndirectCommandBuffers] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, supportIndirectCommandBuffers] }
     }
 
     pub fn set_support_indirect_command_buffers(&self, support: bool) {

@@ -130,14 +130,7 @@ impl DepthStencilDescriptorRef {
     }
 
     pub fn depth_write_enabled(&self) -> bool {
-        unsafe {
-            match msg_send![self, isDepthWriteEnabled] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isDepthWriteEnabled] }
     }
 
     pub fn set_depth_write_enabled(&self, enabled: bool) {
