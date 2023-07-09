@@ -255,14 +255,7 @@ impl TextureRef {
 
     /// [framebufferOnly Apple Docs](https://developer.apple.com/documentation/metal/mtltexture/1515749-framebufferonly?language=objc)
     pub fn framebuffer_only(&self) -> bool {
-        unsafe {
-            match msg_send![self, isFramebufferOnly] {
-                YES => true,
-                NO => false,
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
-        }
+        unsafe { msg_send_bool![self, isFramebufferOnly] }
     }
 
     pub fn get_bytes(
