@@ -13,7 +13,13 @@ edition = "2021"
 exclude = ["guide/**/*", "examples/texture/**/*", "tests/**/*", "Cargo.lock", "target/**/*"]
 
 [package.metadata.docs.rs]
-default-target = "x86_64-apple-darwin"
+targets = [
+  "aarch64-apple-darwin", # presented first in Docs.rs, keep this here
+  "aarch64-apple-ios",
+  "aarch64-apple-ios-sim",
+  "x86_64-apple-darwin",
+  "x86_64-apple-ios",
+]
 
 [features]
 default = ["link"]
