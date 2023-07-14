@@ -13,7 +13,7 @@ edition = "2021"
 exclude = ["guide/**/*", "examples/texture/**/*", "tests/**/*", "Cargo.lock", "target/**/*"]
 
 [package.metadata.docs.rs]
-default-target = "x86_64-apple-darwin"
+targets = ["x86_64-apple-darwin"]
 
 [features]
 default = ["link"]
