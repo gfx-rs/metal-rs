@@ -7,7 +7,6 @@
 
 use super::*;
 use block2::{Block, RcBlock};
-use objc2::encode::EncodeArguments;
 use std::mem;
 
 #[cfg(feature = "dispatch_queue")]
@@ -173,7 +172,7 @@ struct BlockBase<A, R> {
 
 type BlockExtraDtor<A, R> = extern "C" fn(*mut BlockBase<A, R>);
 
-unsafe impl<A: EncodeArguments, R: Encode> RefEncode for BlockBase<A, R> {
+unsafe impl RefEncode for BlockBase<(&SharedEventRef, u64), ()> {
     const ENCODING_REF: Encoding = Encoding::Block;
 }
 
