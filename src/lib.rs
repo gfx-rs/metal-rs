@@ -29,8 +29,8 @@ use std::{
 };
 
 use foreign_types::ForeignType;
+pub use icrate::Foundation::{CGFloat, NSInteger, NSRange, NSSize as CGSize, NSUInteger};
 pub(crate) use objc2::encode::{Encode, Encoding, RefEncode};
-pub use objc2::foundation::{CGFloat, NSInteger, NSRange, NSSize as CGSize, NSUInteger};
 use objc2::runtime::{Bool, Object, Protocol};
 
 fn nsstring_as_str(nsstr: &Object) -> &str {

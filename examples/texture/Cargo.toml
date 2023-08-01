@@ -13,4 +13,8 @@ cocoa = "0.24"
 png = "0.17"
 metal = { path = "../../" }
 winit = "0.27"
-objc2 = "=0.3.0-beta.2"
+objc2 = "=0.3.0-beta.4"
+
+[dependencies.icrate]
+version = "0.0.1"
+features = ["Foundation"]
