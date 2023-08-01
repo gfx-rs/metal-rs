@@ -3,7 +3,7 @@ use std::{ffi::c_void, mem::size_of, sync::Arc};
 use glam::{Mat4, Vec3, Vec4};
 use rand::{thread_rng, Rng};
 
-use metal::{Buffer, Device, NSRange};
+use metal::{Buffer, Device};
 
 use super::{camera::Camera, geometry::*};
 
@@ -120,7 +120,7 @@ impl Scene {
             lights.len() * size_of::<AreaLight>(),
             get_managed_buffer_storage_mode(),
         );
-        lights_buffer.did_modify_range(NSRange::new(0, lights_buffer.length()));
+        lights_buffer.did_modify_range(0..lights_buffer.length());
         lights_buffer.set_label("lights buffer");
 
         Self {

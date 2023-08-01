@@ -409,8 +409,9 @@ impl FunctionConstantValuesRef {
         &self,
         values: *const c_void,
         ty: MTLDataType,
-        range: NSRange,
+        range: Range<usize>,
     ) {
+        let range: NSRange = range.into();
         unsafe { msg_send![self, setConstantValues:values type:ty withRange:range] }
     }
 

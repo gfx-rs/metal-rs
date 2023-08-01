@@ -127,7 +127,7 @@ impl Renderer {
             get_managed_buffer_storage_mode(),
         );
         resource_buffer.set_label("resource buffer");
-        resource_buffer.did_modify_range(NSRange::new(0, resource_buffer.length()));
+        resource_buffer.did_modify_range(0..resource_buffer.length());
 
         let mut primitive_acceleration_structures = Vec::new();
         for i in 0..scene.geometries.len() {
@@ -178,7 +178,7 @@ impl Renderer {
             get_managed_buffer_storage_mode(),
         );
         instance_buffer.set_label("instance buffer");
-        instance_buffer.did_modify_range(NSRange::new(0, instance_buffer.length()));
+        instance_buffer.did_modify_range(0..instance_buffer.length());
 
         let accel_descriptor = InstanceAccelerationStructureDescriptor::descriptor();
         accel_descriptor.set_instanced_acceleration_structures(&Array::from_owned_slice(
@@ -348,10 +348,9 @@ impl Renderer {
 
         uniforms.light_count = self.scene.lights.len() as u32;
 
-        self.uniform_buffer.did_modify_range(NSRange {
-            location: self.uniform_buffer_offset,
-            length: ALIGNED_UNIFORMS_SIZE,
-        });
+        self.uniform_buffer.did_modify_range(
+            self.uniform_buffer_offset..(self.uniform_buffer_offset + ALIGNED_UNIFORMS_SIZE),
+        );
 
         self.uniform_buffer_index = (self.uniform_buffer_index + 1) % MAX_FRAMES_IN_FLIGHT;
     }

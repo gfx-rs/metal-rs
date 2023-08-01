@@ -344,9 +344,11 @@ impl TextureRef {
         &self,
         pixel_format: MTLPixelFormat,
         texture_type: MTLTextureType,
-        mipmap_levels: NSRange,
-        slices: NSRange,
+        mipmap_levels: Range<usize>,
+        slices: Range<usize>,
     ) -> Texture {
+        let mipmap_levels: NSRange = mipmap_levels.into();
+        let slices: NSRange = slices.into();
         unsafe {
             msg_send![self, newTextureViewWithPixelFormat:pixel_format
                                                 textureType:texture_type

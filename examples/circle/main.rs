@@ -299,12 +299,7 @@ fn resolve_samples_into_buffer(
     destination_buffer: &BufferRef,
 ) {
     let blit_encoder = command_buffer.new_blit_command_encoder();
-    blit_encoder.resolve_counters(
-        &counter_sample_buffer,
-        NSRange::new(0, 4),
-        &destination_buffer,
-        0,
-    );
+    blit_encoder.resolve_counters(&counter_sample_buffer, 0..4, &destination_buffer, 0);
     blit_encoder.end_encoding();
 }
 

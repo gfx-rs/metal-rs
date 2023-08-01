@@ -235,38 +235,23 @@ impl Geometry for TriangleGeometry {
         self.index_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.index_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.index_buffer.as_ref().unwrap().length());
         self.vertex_position_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.vertex_position_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.vertex_position_buffer.as_ref().unwrap().length());
         self.vertex_normal_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.vertex_normal_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.vertex_normal_buffer.as_ref().unwrap().length());
         self.vertex_colour_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.vertex_colour_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.vertex_colour_buffer.as_ref().unwrap().length());
         self.per_primitive_data_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.per_primitive_data_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.per_primitive_data_buffer.as_ref().unwrap().length());
 
         self.index_buffer
             .as_ref()
@@ -395,17 +380,11 @@ impl Geometry for SphereGeometry {
         self.sphere_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.sphere_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.sphere_buffer.as_ref().unwrap().length());
         self.bounding_box_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.bounding_box_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.bounding_box_buffer.as_ref().unwrap().length());
     }
 
     fn clear(&mut self) {

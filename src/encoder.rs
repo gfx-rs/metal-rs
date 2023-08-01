@@ -1265,9 +1265,10 @@ impl RenderCommandEncoderRef {
     pub fn execute_commands_in_buffer(
         &self,
         buffer: &IndirectCommandBufferRef,
-        with_range: NSRange,
+        range: Range<usize>,
     ) {
-        unsafe { msg_send![self, executeCommandsInBuffer:buffer withRange:with_range] }
+        let range: NSRange = range.into();
+        unsafe { msg_send![self, executeCommandsInBuffer:buffer withRange: range] }
     }
 
     pub fn update_fence(&self, fence: &FenceRef, after_stages: MTLRenderStages) {
@@ -1319,7 +1320,8 @@ impl BlitCommandEncoderRef {
         unsafe { msg_send![self, synchronizeResource: resource] }
     }
 
-    pub fn fill_buffer(&self, destination_buffer: &BufferRef, range: NSRange, value: u8) {
+    pub fn fill_buffer(&self, destination_buffer: &BufferRef, range: Range<usize>, value: u8) {
+        let range: NSRange = range.into();
         unsafe {
             msg_send![self,
                 fillBuffer: destination_buffer
@@ -1487,10 +1489,11 @@ impl BlitCommandEncoderRef {
     pub fn copy_indirect_command_buffer(
         &self,
         source: &IndirectCommandBufferRef,
-        source_range: NSRange,
+        source_range: Range<usize>,
         destination: &IndirectCommandBufferRef,
         destination_index: NSUInteger,
     ) {
+        let source_range: NSRange = source_range.into();
         unsafe {
             msg_send![self,
                 copyIndirectCommandBuffer: source
@@ -1501,7 +1504,8 @@ impl BlitCommandEncoderRef {
         }
     }
 
-    pub fn reset_commands_in_buffer(&self, buffer: &IndirectCommandBufferRef, range: NSRange) {
+    pub fn reset_commands_in_buffer(&self, buffer: &IndirectCommandBufferRef, range: Range<usize>) {
+        let range: NSRange = range.into();
         unsafe {
             msg_send![self,
                 resetCommandsInBuffer: buffer
@@ -1513,8 +1517,9 @@ impl BlitCommandEncoderRef {
     pub fn optimize_indirect_command_buffer(
         &self,
         buffer: &IndirectCommandBufferRef,
-        range: NSRange,
+        range: Range<usize>,
     ) {
+        let range: NSRange = range.into();
         unsafe {
             msg_send![self,
                 optimizeIndirectCommandBuffer: buffer
@@ -1543,10 +1548,11 @@ impl BlitCommandEncoderRef {
     pub fn resolve_counters(
         &self,
         sample_buffer: &CounterSampleBufferRef,
-        range: crate::NSRange,
+        range: Range<usize>,
         destination_buffer: &BufferRef,
         destination_offset: NSUInteger,
     ) {
+        let range: NSRange = range.into();
         unsafe {
             msg_send![self,
                 resolveCounters: sample_buffer

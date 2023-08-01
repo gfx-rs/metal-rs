@@ -24,12 +24,13 @@ use std::{
     borrow::{Borrow, ToOwned},
     marker::PhantomData,
     mem,
-    ops::Deref,
+    ops::{Deref, Range},
     os::raw::c_void,
 };
 
 use foreign_types::ForeignType;
-pub use icrate::Foundation::{CGFloat, NSRange, NSSize as CGSize};
+pub(crate) use icrate::Foundation::NSRange;
+pub use icrate::Foundation::{CGFloat, NSSize as CGSize};
 pub(crate) use objc2::encode::{Encode, Encoding, RefEncode};
 use objc2::runtime::{AnyObject, Bool, Protocol};
 

@@ -25,7 +25,8 @@ impl BufferRef {
         unsafe { msg_send![self, contents] }
     }
 
-    pub fn did_modify_range(&self, range: NSRange) {
+    pub fn did_modify_range(&self, range: Range<usize>) {
+        let range: NSRange = range.into();
         unsafe { msg_send![self, didModifyRange: range] }
     }
 
@@ -54,7 +55,8 @@ impl BufferRef {
         unsafe { msg_send![self, newRemoteBufferViewForDevice: device] }
     }
 
-    pub fn add_debug_marker(&self, name: &str, range: NSRange) {
+    pub fn add_debug_marker(&self, name: &str, range: Range<usize>) {
+        let range: NSRange = range.into();
         unsafe {
             let name = crate::nsstring_from_str(name);
             msg_send![self, addDebugMarker:name range:range]

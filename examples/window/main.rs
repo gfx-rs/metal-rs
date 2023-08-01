@@ -202,10 +202,7 @@ fn main() {
                         );
                     }
 
-                    vbuf.did_modify_range(NSRange::new(
-                        0,
-                        vertex_data.len() * mem::size_of::<f32>(),
-                    ));
+                    vbuf.did_modify_range(0..vertex_data.len() * mem::size_of::<f32>());
 
                     let drawable = match layer.next_drawable() {
                         Some(drawable) => drawable,
