@@ -130,7 +130,7 @@ pub struct MTLSizeAndAlign {
 
 unsafe impl Encode for MTLSizeAndAlign {
     const ENCODING: Encoding = Encoding::Struct(
-        "MTLSizeAndAlign",
+        "?",
         &[NSUInteger::ENCODING, NSUInteger::ENCODING],
     );
 }

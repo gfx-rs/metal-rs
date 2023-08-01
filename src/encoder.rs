@@ -134,7 +134,7 @@ pub struct MTLScissorRect {
 
 unsafe impl Encode for MTLScissorRect {
     const ENCODING: Encoding = Encoding::Struct(
-        "MTLScissorRect",
+        "?",
         &[
             NSUInteger::ENCODING,
             NSUInteger::ENCODING,
@@ -158,7 +158,7 @@ pub struct MTLViewport {
 
 unsafe impl Encode for MTLViewport {
     const ENCODING: Encoding = Encoding::Struct(
-        "MTLViewport",
+        "?",
         &[
             f64::ENCODING,
             f64::ENCODING,
@@ -201,7 +201,7 @@ pub struct VertexAmplificationViewMapping {
 
 unsafe impl Encode for VertexAmplificationViewMapping {
     const ENCODING: Encoding = Encoding::Struct(
-        "VertexAmplificationViewMapping",
+        "?",
         &[u32::ENCODING, u32::ENCODING],
     );
 }
