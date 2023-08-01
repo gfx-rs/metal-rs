@@ -167,10 +167,10 @@ fn get_window_layer(window: &Window, device: &Device) -> MetalLayer {
     // https://developer.apple.com/documentation/quartzcore/cametallayer/1478157-presentswithtransaction
     layer.set_presents_with_transaction(false);
 
-    layer.set_drawable_size(CGSize::new(
+    layer.set_drawable_size(
         window.inner_size().width as f64,
         window.inner_size().height as f64,
-    ));
+    );
 
     unsafe {
         let view = window.ns_view() as cocoa_id;
@@ -214,7 +214,7 @@ fn handle_window_event(
     match event {
         WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
         WindowEvent::Resized(size) => {
-            layer.set_drawable_size(CGSize::new(size.width as f64, size.height as f64));
+            layer.set_drawable_size(size.width as f64, size.height as f64);
 
             update_viewport_size_buffer(viewport_size_buffer, (size.width, size.height));
         }

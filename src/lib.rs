@@ -29,9 +29,8 @@ use std::{
 };
 
 use foreign_types::ForeignType;
-pub use icrate::Foundation::NSSize as CGSize;
-pub(crate) use icrate::Foundation::{CGFloat, NSRange};
-pub(crate) use objc2::encode::{Encode, Encoding, RefEncode};
+use icrate::Foundation::{CGFloat, CGSize, NSRange};
+use objc2::encode::{Encode, Encoding, RefEncode};
 use objc2::runtime::{AnyObject, Bool, Protocol};
 
 // Explicitly doesn't use `icrate::Foundation::NS[U]Integer`, so that the
@@ -449,11 +448,13 @@ impl MetalLayerRef {
         unsafe { msg_send![self, setPixelFormat: pixel_format] }
     }
 
-    pub fn drawable_size(&self) -> CGSize {
-        unsafe { msg_send![self, drawableSize] }
+    pub fn drawable_size(&self) -> (f64, f64) {
+        let res: CGSize = unsafe { msg_send![self, drawableSize] };
+        (res.width as _, res.height as _)
     }
 
-    pub fn set_drawable_size(&self, size: CGSize) {
+    pub fn set_drawable_size(&self, width: f64, height: f64) {
+        let size = CGSize::new(width as _, height as _);
         unsafe { msg_send![self, setDrawableSize: size] }
     }
 

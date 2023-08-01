@@ -106,7 +106,7 @@ fn main() {
     }
 
     let draw_size = window.inner_size();
-    layer.set_drawable_size(CGSize::new(draw_size.width as f64, draw_size.height as f64));
+    layer.set_drawable_size(draw_size.width as f64, draw_size.height as f64);
 
     let library_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("examples/window/shaders.metallib");
@@ -167,7 +167,7 @@ fn main() {
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                     WindowEvent::Resized(size) => {
-                        layer.set_drawable_size(CGSize::new(size.width as f64, size.height as f64));
+                        layer.set_drawable_size(size.width as f64, size.height as f64);
                     }
                     _ => (),
                 },

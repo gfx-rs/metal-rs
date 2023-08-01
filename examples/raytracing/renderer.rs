@@ -64,7 +64,8 @@ pub struct Renderer {
     pub frame_index: usize,
     pub uniform_buffer_index: usize,
     pub uniform_buffer_offset: usize,
-    pub size: CGSize,
+    pub width: usize,
+    pub height: usize,
     semaphore: Semaphore,
     pub queue: CommandQueue,
     instance_buffer: Buffer,
@@ -265,7 +266,8 @@ impl Renderer {
             frame_index: 0,
             uniform_buffer_index: 0,
             uniform_buffer_offset: 0,
-            size: CGSize::new(1024.0, 1024.0),
+            width: 1024,
+            height: 1024,
             semaphore: Semaphore::new((MAX_FRAMES_IN_FLIGHT - 2) as usize),
             instance_buffer,
             queue,
@@ -287,10 +289,10 @@ impl Renderer {
         texture_descriptor
     }
 
-    pub fn window_resized(&mut self, size: CGSize) {
-        self.size = size;
-        let texture_descriptor =
-            Self::create_target_descriptor(size.width as usize, size.height as usize);
+    pub fn window_resized(&mut self, width: usize, height: usize) {
+        self.width = width;
+        self.height = height;
+        let texture_descriptor = Self::create_target_descriptor(width, height);
         self.accumulation_targets[0] = self.device.new_texture(&texture_descriptor);
         self.accumulation_targets[1] = self.device.new_texture(&texture_descriptor);
         texture_descriptor.set_pixel_format(MTLPixelFormat::R32Uint);
@@ -298,15 +300,15 @@ impl Renderer {
         texture_descriptor.set_storage_mode(MTLStorageMode::Managed);
         self.random_texture = self.device.new_texture(&texture_descriptor);
         let mut rng = thread_rng();
-        let mut random_values = vec![0u32; (size.width * size.height) as usize];
+        let mut random_values = vec![0u32; width * height];
         for v in &mut random_values {
             *v = rng.next_u32();
         }
         self.random_texture.replace_region(
-            MTLRegion::new_2d(0, 0, size.width as usize, size.height as usize),
+            MTLRegion::new_2d(0, 0, width, height),
             0,
             random_values.as_ptr() as *const c_void,
-            size_of::<u32>() * size.width as usize,
+            size_of::<u32>() * width,
         );
         self.frame_index = 0;
     }
@@ -333,15 +335,15 @@ impl Renderer {
         uniforms.camera.up = Vec4::from((up, 0.0));
 
         let field_of_view = 45.0 * (std::f32::consts::PI / 180.0);
-        let aspect_ratio = self.size.width as f32 / self.size.height as f32;
+        let aspect_ratio = self.width as f32 / self.height as f32;
         let image_plane_height = f32::tan(field_of_view / 2.0);
         let image_plane_width = aspect_ratio * image_plane_height;
 
         uniforms.camera.right *= image_plane_width;
         uniforms.camera.up *= image_plane_height;
 
-        uniforms.width = self.size.width as u32;
-        uniforms.height = self.size.height as u32;
+        uniforms.width = self.width as u32;
+        uniforms.height = self.height as u32;
 
         uniforms.frame_index = self.frame_index as u32;
         self.frame_index += 1;
@@ -365,12 +367,10 @@ impl Renderer {
         })
         .copy();
         command_buffer.add_completed_handler(&block);
-        let width = self.size.width as usize;
-        let height = self.size.height as usize;
         let threads_per_thread_group = MTLSize::new(8, 8, 1);
         let thread_groups = MTLSize::new(
-            (width + threads_per_thread_group.width - 1) / threads_per_thread_group.width,
-            (height + threads_per_thread_group.height - 1) / threads_per_thread_group.height,
+            (self.width + threads_per_thread_group.width - 1) / threads_per_thread_group.width,
+            (self.height + threads_per_thread_group.height - 1) / threads_per_thread_group.height,
             1,
         );
         let compute_encoder = command_buffer.new_compute_command_encoder();

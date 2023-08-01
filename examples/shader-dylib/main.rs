@@ -48,7 +48,7 @@ impl App {
             view.setLayer(mem::transmute(layer.as_ref()));
         }
         let draw_size = window.inner_size();
-        layer.set_drawable_size(CGSize::new(draw_size.width as f64, draw_size.height as f64));
+        layer.set_drawable_size(draw_size.width as f64, draw_size.height as f64);
 
         // compile dynamic lib shader
         let dylib_src_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -108,8 +108,7 @@ impl App {
     }
 
     fn resize(&mut self, width: u32, height: u32) {
-        self.layer
-            .set_drawable_size(CGSize::new(width as f64, height as f64));
+        self.layer.set_drawable_size(width as f64, height as f64);
         self.width = width;
         self.height = height;
     }

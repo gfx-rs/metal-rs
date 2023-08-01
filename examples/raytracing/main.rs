@@ -51,11 +51,10 @@ fn main() {
     }
 
     let draw_size = window.inner_size();
-    let cg_size = CGSize::new(draw_size.width as f64, draw_size.height as f64);
-    layer.set_drawable_size(cg_size);
+    layer.set_drawable_size(draw_size.width as f64, draw_size.height as f64);
 
     let mut renderer = renderer::Renderer::new(device);
-    renderer.window_resized(cg_size);
+    renderer.window_resized(draw_size.width as usize, draw_size.height as usize);
 
     events_loop.run(move |event, _, control_flow| {
         autoreleasepool(|_| {
@@ -65,9 +64,8 @@ fn main() {
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                     WindowEvent::Resized(size) => {
-                        let size = CGSize::new(size.width as f64, size.height as f64);
-                        layer.set_drawable_size(size);
-                        renderer.window_resized(size);
+                        layer.set_drawable_size(size.width as f64, size.height as f64);
+                        renderer.window_resized(size.width as usize, size.height as usize);
                     }
                     _ => (),
                 },

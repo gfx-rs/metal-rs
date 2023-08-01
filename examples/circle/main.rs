@@ -106,7 +106,7 @@ fn main() {
     }
 
     let draw_size = window.inner_size();
-    layer.set_drawable_size(CGSize::new(draw_size.width as f64, draw_size.height as f64));
+    layer.set_drawable_size(draw_size.width as f64, draw_size.height as f64);
 
     let vbuf = {
         let vertex_data = create_vertex_points_for_circle();
