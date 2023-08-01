@@ -248,10 +248,10 @@ fn handle_render_pass_sample_buffer_attachment(
     let sample_buffer_attachment_descriptor =
         descriptor.sample_buffer_attachments().object_at(0).unwrap();
     sample_buffer_attachment_descriptor.set_sample_buffer(&counter_sample_buffer);
-    sample_buffer_attachment_descriptor.set_start_of_vertex_sample_index(0 as NSUInteger);
-    sample_buffer_attachment_descriptor.set_end_of_vertex_sample_index(1 as NSUInteger);
-    sample_buffer_attachment_descriptor.set_start_of_fragment_sample_index(2 as NSUInteger);
-    sample_buffer_attachment_descriptor.set_end_of_fragment_sample_index(3 as NSUInteger);
+    sample_buffer_attachment_descriptor.set_start_of_vertex_sample_index(0);
+    sample_buffer_attachment_descriptor.set_end_of_vertex_sample_index(1);
+    sample_buffer_attachment_descriptor.set_start_of_fragment_sample_index(2);
+    sample_buffer_attachment_descriptor.set_end_of_fragment_sample_index(3);
 }
 
 fn handle_render_pass_color_attachment(descriptor: &RenderPassDescriptorRef, texture: &TextureRef) {

@@ -7,7 +7,7 @@ const NUM_SAMPLES: usize = 2;
 fn main() {
     let num_elements = std::env::args()
         .nth(1)
-        .map(|s| s.parse::<u32>().unwrap())
+        .map(|s| s.parse::<usize>().unwrap())
         .unwrap_or(64 * 64);
 
     autoreleasepool(|_| {
@@ -46,7 +46,7 @@ fn main() {
         let num_threads = pipeline_state.thread_execution_width();
 
         let thread_group_count = MTLSize {
-            width: ((num_elements as NSUInteger + num_threads) / num_threads),
+            width: (num_elements + num_threads) / num_threads,
             height: 1,
             depth: 1,
         };
@@ -71,9 +71,7 @@ fn main() {
         let ptr = sum.contents() as *mut u32;
         println!("Compute shader sum: {}", unsafe { *ptr });
 
-        unsafe {
-            assert_eq!(num_elements, *ptr);
-        }
+        assert_eq!(num_elements, unsafe { *ptr } as usize);
 
         handle_timestamps(&destination_buffer, cpu_start, cpu_end, gpu_start, gpu_end);
     });
@@ -162,9 +160,9 @@ fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
 
 fn create_input_and_output_buffers(
     device: &Device,
-    num_elements: u32,
+    num_elements: usize,
 ) -> (metal::Buffer, metal::Buffer) {
-    let data = vec![1u32; num_elements as usize];
+    let data = vec![1u32; num_elements];
 
     let buffer = device.new_buffer_with_data(
         unsafe { std::mem::transmute(data.as_ptr()) },

@@ -29,9 +29,14 @@ use std::{
 };
 
 use foreign_types::ForeignType;
-pub use icrate::Foundation::{CGFloat, NSInteger, NSRange, NSSize as CGSize, NSUInteger};
+pub use icrate::Foundation::{CGFloat, NSRange, NSSize as CGSize};
 pub(crate) use objc2::encode::{Encode, Encoding, RefEncode};
 use objc2::runtime::{AnyObject, Bool, Protocol};
+
+// Explicitly doesn't use `icrate::Foundation::NS[U]Integer`, so that the
+// documentation will just show the simple Rust type.
+pub(crate) type NSInteger = isize;
+pub(crate) type NSUInteger = usize;
 
 fn nsstring_as_str(nsstr: &AnyObject) -> &str {
     let bytes = unsafe {

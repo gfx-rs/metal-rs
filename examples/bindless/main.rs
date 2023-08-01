@@ -8,7 +8,7 @@
 use metal::*;
 use objc2::rc::autoreleasepool;
 
-const BINDLESS_TEXTURE_COUNT: NSUInteger = 100_000; // ~25Mb
+const BINDLESS_TEXTURE_COUNT: usize = 100_000; // ~25Mb
 
 /// This example demonstrates:
 /// - How to create a heap
@@ -93,7 +93,7 @@ fn main() {
         // Encode textures to the argument buffer.
         textures.iter().enumerate().for_each(|(index, texture)| {
             // Offset encoder to a proper texture slot
-            let offset = index as NSUInteger * encoder.encoded_length();
+            let offset = index * encoder.encoded_length();
             encoder.set_argument_buffer(&argument_buffer, offset);
             encoder.set_texture(0, texture);
         });
