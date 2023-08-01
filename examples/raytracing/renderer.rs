@@ -265,7 +265,7 @@ impl Renderer {
             frame_index: 0,
             uniform_buffer_index: 0,
             uniform_buffer_offset: 0,
-            size: CGSize::new(1024 as CGFloat, 1024 as CGFloat),
+            size: CGSize::new(1024.0, 1024.0),
             semaphore: Semaphore::new((MAX_FRAMES_IN_FLIGHT - 2) as usize),
             instance_buffer,
             queue,

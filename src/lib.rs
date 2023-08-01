@@ -29,8 +29,8 @@ use std::{
 };
 
 use foreign_types::ForeignType;
-pub(crate) use icrate::Foundation::NSRange;
-pub use icrate::Foundation::{CGFloat, NSSize as CGSize};
+pub use icrate::Foundation::NSSize as CGSize;
+pub(crate) use icrate::Foundation::{CGFloat, NSRange};
 pub(crate) use objc2::encode::{Encode, Encoding, RefEncode};
 use objc2::runtime::{AnyObject, Bool, Protocol};
 
@@ -497,11 +497,13 @@ impl MetalLayerRef {
         unsafe { msg_send![self, nextDrawable] }
     }
 
-    pub fn contents_scale(&self) -> CGFloat {
-        unsafe { msg_send![self, contentsScale] }
+    pub fn contents_scale(&self) -> f64 {
+        let res: CGFloat = unsafe { msg_send![self, contentsScale] };
+        res as f64
     }
 
-    pub fn set_contents_scale(&self, scale: CGFloat) {
+    pub fn set_contents_scale(&self, scale: f64) {
+        let scale = scale as CGFloat;
         unsafe { msg_send![self, setContentsScale: scale] }
     }
 
