@@ -31,9 +31,9 @@ use std::{
 use foreign_types::ForeignType;
 pub use icrate::Foundation::{CGFloat, NSInteger, NSRange, NSSize as CGSize, NSUInteger};
 pub(crate) use objc2::encode::{Encode, Encoding, RefEncode};
-use objc2::runtime::{Bool, Object, Protocol};
+use objc2::runtime::{AnyObject, Bool, Protocol};
 
-fn nsstring_as_str(nsstr: &Object) -> &str {
+fn nsstring_as_str(nsstr: &AnyObject) -> &str {
     let bytes = unsafe {
         let bytes: *const std::os::raw::c_char = msg_send![nsstr, UTF8String];
         bytes as *const u8
@@ -45,20 +45,20 @@ fn nsstring_as_str(nsstr: &Object) -> &str {
     }
 }
 
-fn nsstring_from_str(string: &str) -> *mut Object {
+fn nsstring_from_str(string: &str) -> *mut AnyObject {
     const UTF8_ENCODING: usize = 4;
 
     let cls = class!(NSString);
     let bytes = string.as_ptr() as *const c_void;
     unsafe {
-        let obj: *mut Object = msg_send![cls, alloc];
-        let obj: *mut Object = msg_send![
+        let obj: *mut AnyObject = msg_send![cls, alloc];
+        let obj: *mut AnyObject = msg_send![
             obj,
             initWithBytes:bytes
             length:string.len()
             encoding:UTF8_ENCODING
         ];
-        let _: *mut Object = msg_send![obj, autorelease];
+        let _: *mut AnyObject = msg_send![obj, autorelease];
         obj
     }
 }
@@ -161,7 +161,7 @@ macro_rules! foreign_obj_type {
         impl ::std::fmt::Debug for paste!{[<$owned_ident Ref>]} {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 unsafe {
-                    let string: *mut ::objc2::runtime::Object = msg_send![self, debugDescription];
+                    let string: *mut ::objc2::runtime::AnyObject = msg_send![self, debugDescription];
                     write!(f, "{}", crate::nsstring_as_str(&*string))
                 }
             }
@@ -180,10 +180,10 @@ macro_rules! try_objc {
         $err_name: ident => $body:expr
     } => {
         {
-            let mut $err_name: *mut ::objc2::runtime::Object = ::std::ptr::null_mut();
+            let mut $err_name: *mut ::objc2::runtime::AnyObject = ::std::ptr::null_mut();
             let value = $body;
             if !$err_name.is_null() {
-                let desc: *mut Object = msg_send![$err_name, localizedDescription];
+                let desc: *mut AnyObject = msg_send![$err_name, localizedDescription];
                 let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 return Err(message);
@@ -195,11 +195,11 @@ macro_rules! try_objc {
 
 macro_rules! msg_send_bool_error_check {
     ($obj:expr, $name:ident: $arg:expr) => {{
-        let mut err: *mut Object = ptr::null_mut();
+        let mut err: *mut AnyObject = ptr::null_mut();
         let result: Bool = msg_send![$obj, $name:$arg
                                                     error:&mut err];
         if !err.is_null() {
-            let desc: *mut Object = msg_send![err, localizedDescription];
+            let desc: *mut AnyObject = msg_send![err, localizedDescription];
             let c_msg: *const c_char = msg_send![desc, UTF8String];
             let message = CStr::from_ptr(c_msg).to_string_lossy().into_owned();
             Err(message)
@@ -594,12 +594,12 @@ pub use {
 
 #[inline]
 unsafe fn obj_drop<T>(p: *mut T) {
-    msg_send![p as *mut Object, release]
+    msg_send![p as *mut AnyObject, release]
 }
 
 #[inline]
 unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
-    let p: *mut Object = msg_send![p as *mut Object, retain];
+    let p: *mut AnyObject = msg_send![p as *mut AnyObject, retain];
     p as *mut T
 }
 

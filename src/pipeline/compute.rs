@@ -190,7 +190,7 @@ impl ComputePipelineDescriptorRef {
     /// Marshal to Rust Vec
     pub fn insert_libraries(&self) -> Vec<DynamicLibrary> {
         unsafe {
-            let libraries: *mut Object = msg_send![self, insertLibraries];
+            let libraries: *mut AnyObject = msg_send![self, insertLibraries];
             let count: NSUInteger = msg_send![libraries, count];
             let ret = (0..count)
                 .map(|i| {
@@ -212,7 +212,7 @@ impl ComputePipelineDescriptorRef {
     /// Marshal to Rust Vec
     pub fn binary_archives(&self) -> Vec<BinaryArchive> {
         unsafe {
-            let archives: *mut Object = msg_send![self, binaryArchives];
+            let archives: *mut AnyObject = msg_send![self, binaryArchives];
             let count: NSUInteger = msg_send![archives, count];
             let ret = (0..count)
                 .map(|i| {

@@ -24,14 +24,14 @@ link = []
 [dependencies]
 bitflags = "2"
 log = "0.4"
-block2 = "=0.2.0-alpha.8"
+block2 = "0.3.0"
 foreign-types = "0.5"
 dispatch = { version = "0.2", optional = true }
 paste = "1"
-objc2 = "=0.3.0-beta.5"
+objc2 = "0.4.1"
 
 [dependencies.icrate]
-version = "0.0.2"
+version = "0.0.4"
 features = ["Foundation"]
 
 [dev-dependencies]

@@ -8,7 +8,6 @@
 use super::*;
 
 use foreign_types::ForeignType;
-use objc2::runtime::Object;
 
 use std::ffi::CStr;
 use std::os::raw::{c_char, c_void};
@@ -349,7 +348,7 @@ impl FunctionRef {
         }
     }
 
-    pub fn function_constants_dictionary(&self) -> *mut Object {
+    pub fn function_constants_dictionary(&self) -> *mut AnyObject {
         unsafe { msg_send![self, functionConstantsDictionary] }
     }
 
@@ -455,11 +454,11 @@ impl CompileOptions {
 }
 
 impl CompileOptionsRef {
-    pub unsafe fn preprocessor_macros(&self) -> *mut Object {
+    pub unsafe fn preprocessor_macros(&self) -> *mut AnyObject {
         msg_send![self, preprocessorMacros]
     }
 
-    pub unsafe fn set_preprocessor_macros(&self, defines: *mut Object) {
+    pub unsafe fn set_preprocessor_macros(&self, defines: *mut AnyObject) {
         msg_send![self, setPreprocessorMacros: defines]
     }
 
@@ -512,7 +511,7 @@ impl CompileOptionsRef {
     /// Marshal to Rust Vec
     pub fn libraries(&self) -> Vec<DynamicLibrary> {
         unsafe {
-            let libraries: *mut Object = msg_send![self, libraries];
+            let libraries: *mut AnyObject = msg_send![self, libraries];
             let count: NSUInteger = msg_send![libraries, count];
             let ret = (0..count)
                 .map(|i| {
@@ -632,7 +631,7 @@ impl LibraryRef {
 
     pub fn function_names(&self) -> Vec<String> {
         unsafe {
-            let names: *mut Object = msg_send![self, functionNames];
+            let names: *mut AnyObject = msg_send![self, functionNames];
             let count: NSUInteger = msg_send![names, count];
             let ret = (0..count)
                 .map(|i| {
@@ -652,7 +651,7 @@ impl LibraryRef {
     /// Only available on (macos(11.0), ios(14.0))
     pub fn install_name(&self) -> Option<&str> {
         unsafe {
-            let maybe_name: *mut Object = msg_send![self, installName];
+            let maybe_name: *mut AnyObject = msg_send![self, installName];
             maybe_name.as_ref().map(crate::nsstring_as_str)
         }
     }
@@ -866,7 +865,7 @@ impl LinkedFunctionsRef {
     /// Marshal to Rust Vec
     pub fn functions(&self) -> Vec<Function> {
         unsafe {
-            let functions: *mut Object = msg_send![self, functions];
+            let functions: *mut AnyObject = msg_send![self, functions];
             let count: NSUInteger = msg_send![functions, count];
             let ret = (0..count)
                 .map(|i| {
@@ -887,7 +886,7 @@ impl LinkedFunctionsRef {
     /// Marshal to Rust Vec
     pub fn binary_functions(&self) -> Vec<Function> {
         unsafe {
-            let functions: *mut Object = msg_send![self, binaryFunctions];
+            let functions: *mut AnyObject = msg_send![self, binaryFunctions];
             let count: NSUInteger = msg_send![functions, count];
             let ret = (0..count)
                 .map(|i| {

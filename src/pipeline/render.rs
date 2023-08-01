@@ -192,7 +192,7 @@ impl RenderPipelineReflection {
     ) -> Self {
         let class = class!(MTLRenderPipelineReflection);
         let this: RenderPipelineReflection = msg_send![class, alloc];
-        let this_alias: *mut Object = msg_send![this.as_ref(), initWithVertexData:vertex_data
+        let this_alias: *mut AnyObject = msg_send![this.as_ref(), initWithVertexData:vertex_data
                                                                 fragmentData:fragment_data
                                                 serializedVertexDescriptor:vertex_desc
                                                                     device:device
@@ -627,7 +627,7 @@ impl RenderPipelineDescriptorRef {
     pub unsafe fn serialize_vertex_data(&self) -> *mut std::ffi::c_void {
         use std::ptr;
         let flags = 0;
-        let err: *mut Object = ptr::null_mut();
+        let err: *mut AnyObject = ptr::null_mut();
         msg_send![self, newSerializedVertexDataWithFlags:flags
                                                     error:err]
     }
@@ -659,7 +659,7 @@ impl RenderPipelineDescriptorRef {
     /// Marshal to Rust Vec
     pub fn binary_archives(&self) -> Vec<BinaryArchive> {
         unsafe {
-            let archives: *mut Object = msg_send![self, binaryArchives];
+            let archives: *mut AnyObject = msg_send![self, binaryArchives];
             let count: NSUInteger = msg_send![archives, count];
             let ret = (0..count)
                 .map(|i| {

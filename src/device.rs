@@ -9,7 +9,6 @@ use super::*;
 
 use block2::{Block, ConcreteBlock};
 use foreign_types::ForeignType;
-use objc2::runtime::Object;
 
 use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
 
@@ -1508,13 +1507,13 @@ unsafe impl Encode for MTLAccelerationStructureSizes {
 extern "C" {
     fn MTLCreateSystemDefaultDevice() -> *mut MTLDevice;
     #[cfg(not(target_os = "ios"))]
-    fn MTLCopyAllDevices() -> *mut Object; //TODO: Array
+    fn MTLCopyAllDevices() -> *mut AnyObject; //TODO: Array
 }
 
 #[allow(non_camel_case_types)]
-type dispatch_data_t = *mut Object;
+type dispatch_data_t = *mut AnyObject;
 #[allow(non_camel_case_types)]
-pub type dispatch_queue_t = *mut Object;
+pub type dispatch_queue_t = *mut AnyObject;
 #[allow(non_camel_case_types)]
 type dispatch_block_t = *const Block<(), ()>;
 
@@ -1577,7 +1576,7 @@ impl Device {
                 // The elements of this array are references---we convert them to owned references
                 // (which just means that we increment the reference count here, and it is
                 // decremented in the `Drop` impl for `Device`)
-                .map(|device: *mut Object| msg_send![device, retain])
+                .map(|device: *mut AnyObject| msg_send![device, retain])
                 .collect();
             let () = msg_send![array, release];
             ret
@@ -1718,12 +1717,12 @@ impl DeviceRef {
     ) -> Result<Library, String> {
         let source = nsstring_from_str(src);
         unsafe {
-            let mut err: *mut Object = ptr::null_mut();
+            let mut err: *mut AnyObject = ptr::null_mut();
             let library: *mut MTLLibrary = msg_send![self, newLibraryWithSource:source
                                                                         options:options
                                                                           error:&mut err];
             if !err.is_null() {
-                let desc: *mut Object = msg_send![err, localizedDescription];
+                let desc: *mut AnyObject = msg_send![err, localizedDescription];
                 let compile_error: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 if library.is_null() {
@@ -1771,12 +1770,12 @@ impl DeviceRef {
     /// Only available on (macos(11.0), ios(14.0))
     pub fn new_dynamic_library(&self, library: &LibraryRef) -> Result<DynamicLibrary, String> {
         unsafe {
-            let mut err: *mut Object = ptr::null_mut();
+            let mut err: *mut AnyObject = ptr::null_mut();
             let dynamic_library: *mut MTLDynamicLibrary = msg_send![self, newDynamicLibrary:library
                                                                                       error:&mut err];
             if !err.is_null() {
                 // FIXME: copy pasta
-                let desc: *mut Object = msg_send![err, localizedDescription];
+                let desc: *mut AnyObject = msg_send![err, localizedDescription];
                 let compile_error: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 Err(message)
@@ -1789,12 +1788,12 @@ impl DeviceRef {
     /// Only available on (macos(11.0), ios(14.0))
     pub fn new_dynamic_library_with_url(&self, url: &URLRef) -> Result<DynamicLibrary, String> {
         unsafe {
-            let mut err: *mut Object = ptr::null_mut();
+            let mut err: *mut AnyObject = ptr::null_mut();
             let dynamic_library: *mut MTLDynamicLibrary = msg_send![self, newDynamicLibraryWithURL:url
                                                                                              error:&mut err];
             if !err.is_null() {
                 // FIXME: copy pasta
-                let desc: *mut Object = msg_send![err, localizedDescription];
+                let desc: *mut AnyObject = msg_send![err, localizedDescription];
                 let compile_error: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 Err(message)
@@ -1810,12 +1809,12 @@ impl DeviceRef {
         descriptor: &BinaryArchiveDescriptorRef,
     ) -> Result<BinaryArchive, String> {
         unsafe {
-            let mut err: *mut Object = ptr::null_mut();
+            let mut err: *mut AnyObject = ptr::null_mut();
             let binary_archive: *mut MTLBinaryArchive = msg_send![self, newBinaryArchiveWithDescriptor:descriptor
                                                      error:&mut err];
             if !err.is_null() {
                 // TODO: copy pasta
-                let desc: *mut Object = msg_send![err, localizedDescription];
+                let desc: *mut AnyObject = msg_send![err, localizedDescription];
                 let c_msg: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(c_msg).to_string_lossy().into_owned();
                 Err(message)
@@ -1832,7 +1831,7 @@ impl DeviceRef {
         reflection_options: MTLPipelineOption,
     ) -> Result<(RenderPipelineState, RenderPipelineReflection), String> {
         unsafe {
-            let mut reflection: *mut Object = ptr::null_mut();
+            let mut reflection: *mut AnyObject = ptr::null_mut();
             let pipeline_state: *mut MTLRenderPipelineState = try_objc! { err =>
                 msg_send![self, newRenderPipelineStateWithDescriptor:descriptor
                                                              options:reflection_options
@@ -1870,7 +1869,7 @@ impl DeviceRef {
         reflection_options: MTLPipelineOption,
     ) -> Result<(RenderPipelineState, RenderPipelineReflection), String> {
         unsafe {
-            let mut reflection: *mut Object = ptr::null_mut();
+            let mut reflection: *mut AnyObject = ptr::null_mut();
             let pipeline_state: *mut MTLRenderPipelineState = try_objc! { err =>
                 msg_send![self, newRenderPipelineStateWithMeshDescriptor:descriptor
                                                              options:reflection_options
@@ -1938,7 +1937,7 @@ impl DeviceRef {
         reflection_options: MTLPipelineOption,
     ) -> Result<(ComputePipelineState, ComputePipelineReflection), String> {
         unsafe {
-            let mut reflection: *mut Object = ptr::null_mut();
+            let mut reflection: *mut AnyObject = ptr::null_mut();
             let pipeline_state: *mut MTLComputePipelineState = try_objc! { err =>
                 msg_send![self, newComputePipelineStateWithDescriptor:descriptor
                                                              options:reflection_options
@@ -2150,7 +2149,7 @@ impl DeviceRef {
 
     pub fn counter_sets(&self) -> Vec<CounterSet> {
         unsafe {
-            let counter_sets: *mut Object = msg_send![self, counterSets];
+            let counter_sets: *mut AnyObject = msg_send![self, counterSets];
             let count: NSUInteger = msg_send![counter_sets, count];
             let ret = (0..count)
                 .map(|i| {

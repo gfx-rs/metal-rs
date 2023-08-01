@@ -216,7 +216,7 @@ impl RayIntersector {
     pub fn from_device(device: &DeviceRef) -> Option<Self> {
         unsafe {
             let intersector: RayIntersector = msg_send![class!(MPSRayIntersector), alloc];
-            let ptr: *mut Object = msg_send![intersector.as_ref(), initWithDevice: device];
+            let ptr: *mut AnyObject = msg_send![intersector.as_ref(), initWithDevice: device];
             if ptr.is_null() {
                 None
             } else {
@@ -320,7 +320,7 @@ impl AccelerationStructureGroup {
         unsafe {
             let group: AccelerationStructureGroup =
                 msg_send![class!(MPSAccelerationStructureGroup), alloc];
-            let ptr: *mut Object = msg_send![group.as_ref(), initWithDevice: device];
+            let ptr: *mut AnyObject = msg_send![group.as_ref(), initWithDevice: device];
             if ptr.is_null() {
                 None
             } else {
@@ -431,7 +431,7 @@ impl TriangleAccelerationStructure {
         unsafe {
             let structure: TriangleAccelerationStructure =
                 msg_send![class!(MPSTriangleAccelerationStructure), alloc];
-            let ptr: *mut Object = msg_send![structure.as_ref(), initWithDevice: device];
+            let ptr: *mut AnyObject = msg_send![structure.as_ref(), initWithDevice: device];
             if ptr.is_null() {
                 None
             } else {
@@ -479,7 +479,7 @@ impl InstanceAccelerationStructure {
         unsafe {
             let structure: InstanceAccelerationStructure =
                 msg_send![class!(MPSInstanceAccelerationStructure), alloc];
-            let ptr: *mut Object = msg_send![structure.as_ref(), initWithGroup: group];
+            let ptr: *mut AnyObject = msg_send![structure.as_ref(), initWithGroup: group];
             if ptr.is_null() {
                 None
             } else {
@@ -493,7 +493,7 @@ impl InstanceAccelerationStructureRef {
     /// Marshal to Rust Vec
     pub fn acceleration_structures(&self) -> Vec<PolygonAccelerationStructure> {
         unsafe {
-            let acs: *mut Object = msg_send![self, accelerationStructures];
+            let acs: *mut AnyObject = msg_send![self, accelerationStructures];
             let count: NSUInteger = msg_send![acs, count];
             let ret = (0..count)
                 .map(|i| {
