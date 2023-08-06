@@ -9,6 +9,9 @@ use super::*;
 
 use std::ops::Range;
 
+/// See <https://developer.apple.com/documentation/metal/mtlcounterdontsample>
+pub const COUNTER_DONT_SAMPLE: NSUInteger = NSUInteger::MAX; // #define MTLCounterDontSample ((NSUInteger)-1)
+
 /// See <https://developer.apple.com/documentation/metal/mtlprimitivetype>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
