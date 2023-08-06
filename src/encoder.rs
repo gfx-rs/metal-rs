@@ -1215,6 +1215,22 @@ impl RenderCommandEncoderRef {
             ]
         }
     }
+
+    /// See: <https://developer.apple.com/documentation/metal/mtlrendercommandencoder/3194379-samplecountersinbuffer>
+    pub fn sample_counters_in_buffer(
+        &self,
+        sample_buffer: &CounterSampleBufferRef,
+        sample_index: NSUInteger,
+        with_barrier: bool,
+    ) {
+        unsafe {
+            msg_send![self,
+                sampleCountersInBuffer: sample_buffer
+                atSampleIndex: sample_index
+                withBarrier: with_barrier
+            ]
+        }
+    }
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlblitcommandencoder/>
