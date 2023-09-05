@@ -5,13 +5,12 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-extern crate objc;
-
 use cocoa::{appkit::NSView, base::id as cocoa_id};
 use core_graphics_types::geometry::CGSize;
 
 use metal::*;
-use objc::{rc::autoreleasepool, runtime::YES};
+use objc2::rc::autoreleasepool;
+use objc2::runtime::Bool;
 use std::mem;
 use winit::platform::macos::WindowExtMacOS;
 
@@ -103,7 +102,7 @@ fn main() {
 
     unsafe {
         let view = window.ns_view() as cocoa_id;
-        view.setWantsLayer(YES);
+        view.setWantsLayer(Bool::YES.as_raw());
         view.setLayer(mem::transmute(layer.as_ref()));
     }
 
@@ -162,7 +161,7 @@ fn main() {
     );
 
     events_loop.run(move |event, _, control_flow| {
-        autoreleasepool(|| {
+        autoreleasepool(|_| {
             *control_flow = ControlFlow::Poll;
 
             match event {

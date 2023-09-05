@@ -363,7 +363,7 @@ impl Renderer {
         self.update_uniforms();
         let command_buffer = self.queue.new_command_buffer();
         let sem = self.semaphore.clone();
-        let block = block::ConcreteBlock::new(move |_| {
+        let block = block2::ConcreteBlock::new(move |_| {
             sem.release();
         })
         .copy();

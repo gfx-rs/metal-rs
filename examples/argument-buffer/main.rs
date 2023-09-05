@@ -6,10 +6,10 @@
 // copied, modified, or distributed except according to those terms.
 
 use metal::*;
-use objc::rc::autoreleasepool;
+use objc2::rc::autoreleasepool;
 
 fn main() {
-    autoreleasepool(|| {
+    autoreleasepool(|_| {
         let device = Device::system_default().expect("no device found");
 
         /*

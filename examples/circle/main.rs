@@ -9,7 +9,8 @@ use winit::{
 use cocoa::{appkit::NSView, base::id as cocoa_id};
 use core_graphics_types::geometry::CGSize;
 
-use objc::{rc::autoreleasepool, runtime::YES};
+use objc2::rc::autoreleasepool;
+use objc2::runtime::Bool;
 
 use std::mem;
 
@@ -101,7 +102,7 @@ fn main() {
 
     unsafe {
         let view = window.ns_view() as cocoa_id;
-        view.setWantsLayer(YES);
+        view.setWantsLayer(Bool::YES.as_raw());
         view.setLayer(mem::transmute(layer.as_ref()));
     }
 
@@ -120,7 +121,7 @@ fn main() {
     };
 
     event_loop.run(move |event, _, control_flow| {
-        autoreleasepool(|| {
+        autoreleasepool(|_| {
             // ControlFlow::Wait pauses the event loop if no events are available to process.
             // This is ideal for non-game applications that only update in response to user
             // input, and uses significantly less power/CPU time than ControlFlow::Poll.

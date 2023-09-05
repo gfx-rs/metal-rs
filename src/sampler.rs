@@ -5,7 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use super::{depthstencil::MTLCompareFunction, DeviceRef, NSUInteger};
+use super::{depthstencil::MTLCompareFunction, *};
 
 /// See <https://developer.apple.com/documentation/metal/mtlsamplerminmagfilter>
 #[repr(u64)]
@@ -15,6 +15,10 @@ pub enum MTLSamplerMinMagFilter {
     Linear = 1,
 }
 
+unsafe impl Encode for MTLSamplerMinMagFilter {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlsamplermipfilter>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -22,6 +26,10 @@ pub enum MTLSamplerMipFilter {
     NotMipmapped = 0,
     Nearest = 1,
     Linear = 2,
+}
+
+unsafe impl Encode for MTLSamplerMipFilter {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlsampleraddressmode>
@@ -36,6 +44,10 @@ pub enum MTLSamplerAddressMode {
     ClampToBorderColor = 5,
 }
 
+unsafe impl Encode for MTLSamplerAddressMode {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlsamplerbordercolor>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -43,6 +55,10 @@ pub enum MTLSamplerBorderColor {
     TransparentBlack = 0,
     OpaqueBlack = 1,
     OpaqueWhite = 2,
+}
+
+unsafe impl Encode for MTLSamplerBorderColor {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlsamplerdescriptor>

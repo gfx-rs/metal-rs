@@ -1,5 +1,5 @@
 use metal::*;
-use objc::rc::autoreleasepool;
+use objc2::rc::autoreleasepool;
 use std::path::PathBuf;
 
 const NUM_SAMPLES: u64 = 2;
@@ -10,7 +10,7 @@ fn main() {
         .map(|s| s.parse::<u32>().unwrap())
         .unwrap_or(64 * 64);
 
-    autoreleasepool(|| {
+    autoreleasepool(|_| {
         let device = Device::system_default().expect("No device found");
         let mut cpu_start = 0;
         let mut gpu_start = 0;

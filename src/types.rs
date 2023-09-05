@@ -5,7 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use super::NSUInteger;
+use super::*;
 use std::default::Default;
 
 /// See <https://developer.apple.com/documentation/metal/mtlorigin>
@@ -17,6 +17,17 @@ pub struct MTLOrigin {
     pub z: NSUInteger,
 }
 
+unsafe impl Encode for MTLOrigin {
+    const ENCODING: Encoding = Encoding::Struct(
+        "?",
+        &[
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+        ],
+    );
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlsize>
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
@@ -24,6 +35,17 @@ pub struct MTLSize {
     pub width: NSUInteger,
     pub height: NSUInteger,
     pub depth: NSUInteger,
+}
+
+unsafe impl Encode for MTLSize {
+    const ENCODING: Encoding = Encoding::Struct(
+        "?",
+        &[
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+        ],
+    );
 }
 
 impl MTLSize {
@@ -42,6 +64,11 @@ impl MTLSize {
 pub struct MTLRegion {
     pub origin: MTLOrigin,
     pub size: MTLSize,
+}
+
+unsafe impl Encode for MTLRegion {
+    const ENCODING: Encoding =
+        Encoding::Struct("MTLRegion", &[MTLOrigin::ENCODING, MTLSize::ENCODING]);
 }
 
 impl MTLRegion {
@@ -83,8 +110,17 @@ pub struct MTLSamplePosition {
     pub y: f32,
 }
 
+unsafe impl Encode for MTLSamplePosition {
+    const ENCODING: Encoding =
+        Encoding::Struct("MTLSamplePosition", &[f32::ENCODING, f32::ENCODING]);
+}
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
 pub struct MTLResourceID {
     pub _impl: u64,
+}
+
+unsafe impl Encode for MTLResourceID {
+    const ENCODING: Encoding = Encoding::Struct("MTLResourceID", &[u64::ENCODING]);
 }

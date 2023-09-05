@@ -7,8 +7,6 @@
 
 use super::*;
 
-use objc::runtime::{NO, YES};
-
 /// See <https://developer.apple.com/documentation/metal/mtltexturetype>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -25,12 +23,20 @@ pub enum MTLTextureType {
     D2MultisampleArray = 8,
 }
 
+unsafe impl Encode for MTLTextureType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtltexturecompressiontype>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum MTLTextureCompressionType {
     Lossless = 0,
     Lossy = 1,
+}
+
+unsafe impl Encode for MTLTextureCompressionType {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 bitflags! {
@@ -43,6 +49,10 @@ bitflags! {
         const RenderTarget    = 0x0004;
         const PixelFormatView = 0x0010;
     }
+}
+
+unsafe impl Encode for MTLTextureUsage {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtltexturedescriptor>

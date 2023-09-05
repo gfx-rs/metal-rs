@@ -22,17 +22,15 @@ mps = []
 link = []
 
 [dependencies]
-core-graphics-types = "0.1"
+# Branch: objc2. TODO: Remove this
+core-graphics-types = { git = "https://github.com/madsmtm/core-foundation-rs.git", rev = "7d593d016175755e492a92ef89edca68ac3bd5cd" }
 bitflags = "2"
 log = "0.4"
-block = "0.1.6"
+block2 = "=0.2.0-alpha.6"
 foreign-types = "0.5"
 dispatch = { version = "0.2", optional = true }
 paste = "1"
-
-[dependencies.objc]
-version = "0.2.4"
-features = ["objc_exception"]
+objc2 = "=0.3.0-beta.2"
 
 [dev-dependencies]
 cocoa = "0.24.0"

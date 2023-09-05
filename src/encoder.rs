@@ -23,6 +23,10 @@ pub enum MTLPrimitiveType {
     TriangleStrip = 4,
 }
 
+unsafe impl Encode for MTLPrimitiveType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlindextype>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -30,6 +34,10 @@ pub enum MTLPrimitiveType {
 pub enum MTLIndexType {
     UInt16 = 0,
     UInt32 = 1,
+}
+
+unsafe impl Encode for MTLIndexType {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlvisibilityresultmode>
@@ -41,6 +49,10 @@ pub enum MTLVisibilityResultMode {
     Counting = 2,
 }
 
+unsafe impl Encode for MTLVisibilityResultMode {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlcullmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -48,6 +60,10 @@ pub enum MTLCullMode {
     None = 0,
     Front = 1,
     Back = 2,
+}
+
+unsafe impl Encode for MTLCullMode {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlwinding>
@@ -58,6 +74,10 @@ pub enum MTLWinding {
     CounterClockwise = 1,
 }
 
+unsafe impl Encode for MTLWinding {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtldepthclipmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -66,12 +86,20 @@ pub enum MTLDepthClipMode {
     Clamp = 1,
 }
 
+unsafe impl Encode for MTLDepthClipMode {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtltrianglefillmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLTriangleFillMode {
     Fill = 0,
     Lines = 1,
+}
+
+unsafe impl Encode for MTLTriangleFillMode {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 bitflags! {
@@ -90,6 +118,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLBlitOption {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlscissorrect>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -98,6 +130,18 @@ pub struct MTLScissorRect {
     pub y: NSUInteger,
     pub width: NSUInteger,
     pub height: NSUInteger,
+}
+
+unsafe impl Encode for MTLScissorRect {
+    const ENCODING: Encoding = Encoding::Struct(
+        "MTLScissorRect",
+        &[
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+        ],
+    );
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlviewport>
@@ -110,6 +154,20 @@ pub struct MTLViewport {
     pub height: f64,
     pub znear: f64,
     pub zfar: f64,
+}
+
+unsafe impl Encode for MTLViewport {
+    const ENCODING: Encoding = Encoding::Struct(
+        "MTLViewport",
+        &[
+            f64::ENCODING,
+            f64::ENCODING,
+            f64::ENCODING,
+            f64::ENCODING,
+            f64::ENCODING,
+            f64::ENCODING,
+        ],
+    );
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtldrawprimitivesindirectarguments>
@@ -139,6 +197,17 @@ pub struct MTLDrawIndexedPrimitivesIndirectArguments {
 pub struct VertexAmplificationViewMapping {
     pub renderTargetArrayIndexOffset: u32,
     pub viewportArrayIndexOffset: u32,
+}
+
+unsafe impl Encode for VertexAmplificationViewMapping {
+    const ENCODING: Encoding = Encoding::Struct(
+        "VertexAmplificationViewMapping",
+        &[u32::ENCODING, u32::ENCODING],
+    );
+}
+
+unsafe impl RefEncode for VertexAmplificationViewMapping {
+    const ENCODING_REF: Encoding = Encoding::Pointer(&Self::ENCODING);
 }
 
 #[allow(dead_code)]

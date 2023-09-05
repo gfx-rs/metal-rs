@@ -6,13 +6,13 @@
 // copied, modified, or distributed except according to those terms.
 
 use metal::*;
-use objc::rc::autoreleasepool;
+use objc2::rc::autoreleasepool;
 use std::mem;
 
 static LIBRARY_SRC: &str = include_str!("compute-argument-buffer.metal");
 
 fn main() {
-    autoreleasepool(|| {
+    autoreleasepool(|_| {
         let device = Device::system_default().expect("no device found");
         let command_queue = device.new_command_queue();
 

@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use cocoa::{appkit::NSView, base::id as cocoa_id};
 use core_graphics_types::geometry::CGSize;
-use objc::rc::autoreleasepool;
+use objc2::rc::autoreleasepool;
 use winit::dpi::LogicalSize;
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::platform::macos::WindowExtMacOS;
@@ -58,7 +58,7 @@ fn main() {
     let command_queue = device.new_command_queue();
 
     event_loop.run(move |event, _, control_flow| {
-        autoreleasepool(|| {
+        autoreleasepool(|_| {
             *control_flow = ControlFlow::Poll;
 
             match event {

@@ -7,8 +7,6 @@
 
 use super::*;
 
-use objc::runtime::{NO, YES};
-
 /// See <https://developer.apple.com/documentation/metal/mtlattributeformat>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -68,6 +66,10 @@ pub enum MTLAttributeFormat {
     Half = 53,
 }
 
+unsafe impl Encode for MTLAttributeFormat {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlstepfunction>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -82,6 +84,10 @@ pub enum MTLStepFunction {
     ThreadPositionInGridXIndexed = 6,
     ThreadPositionInGridY = 7,
     ThreadPositionInGridYIndexed = 8,
+}
+
+unsafe impl Encode for MTLStepFunction {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcomputepipelinedescriptor>

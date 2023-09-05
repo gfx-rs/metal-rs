@@ -16,6 +16,10 @@ pub enum MTLLoadAction {
     Clear = 2,
 }
 
+unsafe impl Encode for MTLLoadAction {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlstoreaction>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug)]
@@ -28,6 +32,10 @@ pub enum MTLStoreAction {
     CustomSampleDepthStore = 5,
 }
 
+unsafe impl Encode for MTLStoreAction {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlclearcolor>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -36,6 +44,13 @@ pub struct MTLClearColor {
     pub green: f64,
     pub blue: f64,
     pub alpha: f64,
+}
+
+unsafe impl Encode for MTLClearColor {
+    const ENCODING: Encoding = Encoding::Struct(
+        "MTLClearColor",
+        &[f64::ENCODING, f64::ENCODING, f64::ENCODING, f64::ENCODING],
+    );
 }
 
 impl MTLClearColor {
@@ -56,6 +71,10 @@ impl MTLClearColor {
 pub enum MTLMultisampleStencilResolveFilter {
     Sample0 = 0,
     DepthResolvedSample = 1,
+}
+
+unsafe impl Encode for MTLMultisampleStencilResolveFilter {
+    const ENCODING: Encoding = u32::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlrenderpassattachmentdescriptor>

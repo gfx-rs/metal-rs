@@ -6,7 +6,6 @@
 // copied, modified, or distributed except according to those terms.
 
 use super::*;
-use objc::runtime::{NO, YES};
 
 /// See <https://developer.apple.com/documentation/metal/mtlpurgeablestate>
 #[repr(u64)]
@@ -18,12 +17,20 @@ pub enum MTLPurgeableState {
     Empty = 4,
 }
 
+unsafe impl Encode for MTLPurgeableState {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlcpucachemode>
 #[repr(u64)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLCPUCacheMode {
     DefaultCache = 0,
     WriteCombined = 1,
+}
+
+unsafe impl Encode for MTLCPUCacheMode {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlstoragemode>
@@ -37,6 +44,10 @@ pub enum MTLStorageMode {
     Memoryless = 3,
 }
 
+unsafe impl Encode for MTLStorageMode {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// Only available on macos(10.15), ios(13.0)
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlhazardtrackingmode>
@@ -46,6 +57,10 @@ pub enum MTLHazardTrackingMode {
     Default = 0,
     Untracked = 1,
     Tracked = 2,
+}
+
+unsafe impl Encode for MTLHazardTrackingMode {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 pub const MTLResourceCPUCacheModeShift: NSUInteger = 0;
@@ -77,6 +92,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLResourceOptions {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 bitflags! {
     /// Options that describe how a graphics or compute function uses an argument buffer’s resource.
     ///
@@ -97,12 +116,23 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLResourceUsage {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlsizeandalign>
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 #[repr(C)]
 pub struct MTLSizeAndAlign {
     pub size: NSUInteger,
     pub align: NSUInteger,
+}
+
+unsafe impl Encode for MTLSizeAndAlign {
+    const ENCODING: Encoding = Encoding::Struct(
+        "MTLSizeAndAlign",
+        &[NSUInteger::ENCODING, NSUInteger::ENCODING],
+    );
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlresource>

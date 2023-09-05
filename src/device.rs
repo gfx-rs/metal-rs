@@ -7,9 +7,9 @@
 
 use super::*;
 
-use block::{Block, ConcreteBlock};
+use block2::{Block, ConcreteBlock};
 use foreign_types::ForeignType;
-use objc::runtime::{Object, NO, YES};
+use objc2::runtime::Object;
 
 use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
 
@@ -57,6 +57,10 @@ pub enum MTLFeatureSet {
     macOS_GPUFamily2_v1 = 10005,
 }
 
+unsafe impl Encode for MTLFeatureSet {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// Available on macOS 10.15+, iOS 13.0+
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlgpufamily>
@@ -83,6 +87,10 @@ pub enum MTLGPUFamily {
     Metal3 = 5001,
 }
 
+unsafe impl Encode for MTLGPUFamily {
+    const ENCODING: Encoding = i64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtldevicelocation>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -91,6 +99,10 @@ pub enum MTLDeviceLocation {
     Slot = 1,
     External = 2,
     Unspecified = u64::MAX,
+}
+
+unsafe impl Encode for MTLDeviceLocation {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 bitflags! {
@@ -1398,6 +1410,10 @@ pub enum MTLArgumentBuffersTier {
     Tier2 = 1,
 }
 
+unsafe impl Encode for MTLArgumentBuffersTier {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlreadwritetexturetier>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -1405,6 +1421,10 @@ pub enum MTLReadWriteTextureTier {
     TierNone = 0,
     Tier1 = 1,
     Tier2 = 2,
+}
+
+unsafe impl Encode for MTLReadWriteTextureTier {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// Only available on (macos(11.0), ios(14.0))
@@ -1420,6 +1440,10 @@ pub enum MTLCounterSamplingPoint {
     AtBlitBoundary = 4,
 }
 
+unsafe impl Encode for MTLCounterSamplingPoint {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// Only available on (macos(11.0), macCatalyst(14.0), ios(13.0))
 /// Kinda a long name!
 ///
@@ -1429,6 +1453,10 @@ pub enum MTLCounterSamplingPoint {
 pub enum MTLSparseTextureRegionAlignmentMode {
     Outward = 0,
     Inward = 1,
+}
+
+unsafe impl Encode for MTLSparseTextureRegionAlignmentMode {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 bitflags! {
@@ -1449,6 +1477,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLPipelineOption {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlaccelerationstructuresizes>
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 #[repr(C)]
@@ -1456,6 +1488,17 @@ pub struct MTLAccelerationStructureSizes {
     pub acceleration_structure_size: NSUInteger,
     pub build_scratch_buffer_size: NSUInteger,
     pub refit_scratch_buffer_size: NSUInteger,
+}
+
+unsafe impl Encode for MTLAccelerationStructureSizes {
+    const ENCODING: Encoding = Encoding::Struct(
+        "?",
+        &[
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+        ],
+    );
 }
 
 #[cfg_attr(feature = "link", link(name = "Metal", kind = "framework"))]

@@ -6,7 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 use metal::*;
-use objc::rc::autoreleasepool;
+use objc2::rc::autoreleasepool;
 
 const BINDLESS_TEXTURE_COUNT: NSUInteger = 100_000; // ~25Mb
 
@@ -16,7 +16,7 @@ const BINDLESS_TEXTURE_COUNT: NSUInteger = 100_000; // ~25Mb
 /// - How to create bindless resources via Metal's argument buffers.
 /// - How to bind argument buffer to render encoder
 fn main() {
-    autoreleasepool(|| {
+    autoreleasepool(|_| {
         let device = Device::system_default().expect("no device found");
 
         /*

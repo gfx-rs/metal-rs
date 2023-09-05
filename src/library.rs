@@ -8,7 +8,7 @@
 use super::*;
 
 use foreign_types::ForeignType;
-use objc::runtime::{Object, BOOL, NO, YES};
+use objc2::runtime::Object;
 
 use std::ffi::CStr;
 use std::os::raw::{c_char, c_void};
@@ -23,6 +23,10 @@ pub enum MTLPatchType {
     None = 0,
     Triangle = 1,
     Quad = 2,
+}
+
+unsafe impl Encode for MTLPatchType {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlvertexattribute/>
@@ -118,6 +122,10 @@ pub enum MTLFunctionType {
     Intersection = 6,
 }
 
+unsafe impl Encode for MTLFunctionType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// Only available on (macos(10.12), ios(10.0))
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlfunctionconstant/>
@@ -158,6 +166,10 @@ bitflags! {
         const None = 0;
         const CompileToBinary = 1 << 0;
     }
+}
+
+unsafe impl Encode for MTLFunctionOptions {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
 }
 
 /// Only available on (macos(11.0), ios(14.0))
@@ -363,6 +375,10 @@ pub enum MTLLanguageVersion {
     V2_4 = 0x20004,
 }
 
+unsafe impl Encode for MTLLanguageVersion {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlfunctionconstantvalues/>
 pub enum MTLFunctionConstantValues {}
 
@@ -415,6 +431,10 @@ impl FunctionConstantValuesRef {
 pub enum MTLLibraryType {
     Executable = 0,
     Dynamic = 1,
+}
+
+unsafe impl Encode for MTLLibraryType {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcompileoptions/>
@@ -549,6 +569,10 @@ pub enum MTLLibraryError {
     FunctionNotFound = 5,
     /// Only available on (macos(10.12), ios(10.0))
     FileNotFound = 6,
+}
+
+unsafe impl Encode for MTLLibraryError {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtllibrary/>
@@ -692,6 +716,10 @@ pub enum MTLDynamicLibraryError {
     Unsupported = 5,
 }
 
+unsafe impl Encode for MTLDynamicLibraryError {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtldynamiclibrary/>
 pub enum MTLDynamicLibrary {}
 
@@ -811,25 +839,7 @@ impl BinaryArchiveRef {
     // error:(NSError * _Nullable *)error;
 
     pub fn serialize_to_url(&self, url: &URLRef) -> Result<bool, String> {
-        unsafe {
-            let mut err: *mut Object = ptr::null_mut();
-            let result: BOOL = msg_send![self, serializeToURL:url
-                                                        error:&mut err];
-            if !err.is_null() {
-                // FIXME: copy pasta
-                let desc: *mut Object = msg_send![err, localizedDescription];
-                let c_msg: *const c_char = msg_send![desc, UTF8String];
-                let message = CStr::from_ptr(c_msg).to_string_lossy().into_owned();
-                Err(message)
-            } else {
-                match result {
-                    YES => Ok(true),
-                    NO => Ok(false),
-                    #[cfg(not(target_arch = "aarch64"))]
-                    _ => unreachable!(),
-                }
-            }
-        }
+        unsafe { msg_send_bool_error_check![self, serializeToURL: url] }
     }
 }
 

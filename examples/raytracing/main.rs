@@ -1,9 +1,7 @@
-extern crate objc;
-
 use cocoa::{appkit::NSView, base::id as cocoa_id};
 use core_graphics_types::geometry::CGSize;
 use metal::*;
-use objc::{rc::autoreleasepool, runtime::YES};
+use objc2::{rc::autoreleasepool, runtime::Bool};
 use std::mem;
 use winit::{
     event::{Event, WindowEvent},
@@ -49,7 +47,7 @@ fn main() {
 
     unsafe {
         let view = window.ns_view() as cocoa_id;
-        view.setWantsLayer(YES);
+        view.setWantsLayer(Bool::YES.as_raw());
         view.setLayer(mem::transmute(layer.as_ref()));
     }
 
@@ -61,7 +59,7 @@ fn main() {
     renderer.window_resized(cg_size);
 
     events_loop.run(move |event, _, control_flow| {
-        autoreleasepool(|| {
+        autoreleasepool(|_| {
             *control_flow = ControlFlow::Poll;
 
             match event {

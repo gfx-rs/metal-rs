@@ -6,7 +6,8 @@
 // copied, modified, or distributed except according to those terms.
 
 use super::*;
-use block::{Block, RcBlock};
+use block2::{Block, RcBlock};
+use objc2::encode::EncodeArguments;
 use std::mem;
 
 #[cfg(feature = "dispatch_queue")]
@@ -154,6 +155,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLRenderStages {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 const BLOCK_HAS_COPY_DISPOSE: i32 = 0x02000000;
 const BLOCK_HAS_SIGNATURE: i32 = 0x40000000;
 
@@ -167,6 +172,10 @@ struct BlockBase<A, R> {
 }
 
 type BlockExtraDtor<A, R> = extern "C" fn(*mut BlockBase<A, R>);
+
+unsafe impl<A: EncodeArguments, R: Encode> RefEncode for BlockBase<A, R> {
+    const ENCODING_REF: Encoding = Encoding::Block;
+}
 
 #[repr(C)]
 struct BlockExtra<A, R> {

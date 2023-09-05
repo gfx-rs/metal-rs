@@ -14,6 +14,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLIndirectCommandType {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlindirectcommandbufferdescriptor/>
 pub enum MTLIndirectCommandBufferDescriptor {}
 
