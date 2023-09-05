@@ -321,12 +321,12 @@ impl FunctionRef {
     }
 
     /// Only available on (macos(10.12), ios(10.0))
-    pub fn vertex_attributes(&self) -> &Array<VertexAttribute> {
+    pub fn vertex_attributes(&self) -> &ArrayRef<VertexAttribute> {
         unsafe { msg_send![self, vertexAttributes] }
     }
 
     /// Only available on (macos(10.12), ios(10.0))
-    pub fn stage_input_attributes(&self) -> &Array<Attribute> {
+    pub fn stage_input_attributes(&self) -> &ArrayRef<Attribute> {
         unsafe { msg_send![self, stageInputAttributes] }
     }
 

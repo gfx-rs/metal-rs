@@ -158,11 +158,11 @@ impl StructMemberRef {
         unsafe { msg_send![self, dataType] }
     }
 
-    pub fn struct_type(&self) -> MTLStructType {
+    pub fn struct_type(&self) -> &StructTypeRef {
         unsafe { msg_send![self, structType] }
     }
 
-    pub fn array_type(&self) -> MTLArrayType {
+    pub fn array_type(&self) -> &ArrayTypeRef {
         unsafe { msg_send![self, arrayType] }
     }
 }
@@ -225,11 +225,11 @@ impl ArrayTypeRef {
         unsafe { msg_send![self, elementType] }
     }
 
-    pub fn element_struct_type(&self) -> MTLStructType {
+    pub fn element_struct_type(&self) -> &StructTypeRef {
         unsafe { msg_send![self, elementStructType] }
     }
 
-    pub fn element_array_type(&self) -> MTLArrayType {
+    pub fn element_array_type(&self) -> &ArrayTypeRef {
         unsafe { msg_send![self, elementArrayType] }
     }
 }

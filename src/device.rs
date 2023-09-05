@@ -1796,7 +1796,7 @@ impl DeviceRef {
 
             let state = RenderPipelineState::from_ptr(pipeline_state);
 
-            let () = msg_send![reflection, retain];
+            let reflection: *mut AnyObject = msg_send![reflection, retain];
             let reflection = RenderPipelineReflection::from_ptr(reflection as _);
 
             Ok((state, reflection))
@@ -1834,7 +1834,7 @@ impl DeviceRef {
 
             let state = RenderPipelineState::from_ptr(pipeline_state);
 
-            let () = msg_send![reflection, retain];
+            let reflection: *mut AnyObject = msg_send![reflection, retain];
             let reflection = RenderPipelineReflection::from_ptr(reflection as _);
 
             Ok((state, reflection))
@@ -1902,7 +1902,7 @@ impl DeviceRef {
 
             let state = ComputePipelineState::from_ptr(pipeline_state);
 
-            let () = msg_send![reflection, retain];
+            let reflection: *mut AnyObject = msg_send![reflection, retain];
             let reflection = ComputePipelineReflection::from_ptr(reflection as _);
 
             Ok((state, reflection))
@@ -2109,7 +2109,7 @@ impl DeviceRef {
             let ret = (0..count)
                 .map(|i| {
                     let csp: *mut MTLCounterSet = msg_send![counter_sets, objectAtIndex: i];
-                    let () = msg_send![csp, retain];
+                    let csp: *mut MTLCounterSet = msg_send![csp, retain];
                     CounterSet::from_ptr(csp)
                 })
                 .collect();
