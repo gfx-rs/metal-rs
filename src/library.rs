@@ -426,7 +426,7 @@ impl FunctionConstantValuesRef {
 /// Only available on (macos(11.0), ios(14.0))
 ///
 /// See <https://developer.apple.com/documentation/metal/mtllibrarytype/>
-#[repr(u64)]
+#[repr(isize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLLibraryType {
     Executable = 0,
@@ -434,7 +434,7 @@ pub enum MTLLibraryType {
 }
 
 unsafe impl Encode for MTLLibraryType {
-    const ENCODING: Encoding = u64::ENCODING;
+    const ENCODING: Encoding = isize::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcompileoptions/>
