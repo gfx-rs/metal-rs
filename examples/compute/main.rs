@@ -2,7 +2,7 @@ use metal::*;
 use objc2::rc::autoreleasepool;
 use std::path::PathBuf;
 
-const NUM_SAMPLES: u64 = 2;
+const NUM_SAMPLES: usize = 2;
 
 fn main() {
     let num_elements = std::env::args()
@@ -18,7 +18,7 @@ fn main() {
 
         let counter_sample_buffer = create_counter_sample_buffer(&device);
         let destination_buffer = device.new_buffer(
-            (std::mem::size_of::<u64>() * NUM_SAMPLES as usize) as u64,
+            std::mem::size_of::<u64>() * NUM_SAMPLES,
             MTLResourceOptions::StorageModeShared,
         );
 
@@ -117,9 +117,9 @@ fn resolve_samples_into_buffer(
     let blit_encoder = command_buffer.new_blit_command_encoder();
     blit_encoder.resolve_counters(
         counter_sample_buffer,
-        crate::NSRange::new(0_u64, NUM_SAMPLES),
+        crate::NSRange::new(0, NUM_SAMPLES),
         destination_buffer,
-        0_u64,
+        0,
     );
     blit_encoder.end_encoding();
 }
@@ -132,10 +132,7 @@ fn handle_timestamps(
     gpu_end: u64,
 ) {
     let samples = unsafe {
-        std::slice::from_raw_parts(
-            resolved_sample_buffer.contents() as *const u64,
-            NUM_SAMPLES as usize,
-        )
+        std::slice::from_raw_parts(resolved_sample_buffer.contents() as *const u64, NUM_SAMPLES)
     };
     let pass_start = samples[0];
     let pass_end = samples[1];
@@ -150,7 +147,7 @@ fn handle_timestamps(
 fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
     let counter_sample_buffer_desc = metal::CounterSampleBufferDescriptor::new();
     counter_sample_buffer_desc.set_storage_mode(metal::MTLStorageMode::Shared);
-    counter_sample_buffer_desc.set_sample_count(NUM_SAMPLES);
+    counter_sample_buffer_desc.set_sample_count(NUM_SAMPLES as u64);
     let counter_sets = device.counter_sets();
 
     let timestamp_counter = counter_sets.iter().find(|cs| cs.name() == "timestamp");
@@ -171,7 +168,7 @@ fn create_input_and_output_buffers(
 
     let buffer = device.new_buffer_with_data(
         unsafe { std::mem::transmute(data.as_ptr()) },
-        (data.len() * std::mem::size_of::<u32>()) as u64,
+        data.len() * std::mem::size_of::<u32>(),
         MTLResourceOptions::CPUCacheModeDefaultCache,
     );
 
@@ -179,7 +176,7 @@ fn create_input_and_output_buffers(
         let data = [0u32];
         device.new_buffer_with_data(
             unsafe { std::mem::transmute(data.as_ptr()) },
-            (data.len() * std::mem::size_of::<u32>()) as u64,
+            data.len() * std::mem::size_of::<u32>(),
             MTLResourceOptions::CPUCacheModeDefaultCache,
         )
     };

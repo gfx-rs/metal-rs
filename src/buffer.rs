@@ -17,7 +17,7 @@ foreign_obj_type! {
 }
 
 impl BufferRef {
-    pub fn length(&self) -> u64 {
+    pub fn length(&self) -> usize {
         unsafe { msg_send![self, length] }
     }
 
@@ -25,15 +25,15 @@ impl BufferRef {
         unsafe { msg_send![self, contents] }
     }
 
-    pub fn did_modify_range(&self, range: crate::NSRange) {
+    pub fn did_modify_range(&self, range: NSRange) {
         unsafe { msg_send![self, didModifyRange: range] }
     }
 
     pub fn new_texture_with_descriptor(
         &self,
         descriptor: &TextureDescriptorRef,
-        offset: u64,
-        bytes_per_row: u64,
+        offset: usize,
+        bytes_per_row: usize,
     ) -> Texture {
         unsafe {
             msg_send![self,
@@ -54,7 +54,7 @@ impl BufferRef {
         unsafe { msg_send![self, newRemoteBufferViewForDevice: device] }
     }
 
-    pub fn add_debug_marker(&self, name: &str, range: crate::NSRange) {
+    pub fn add_debug_marker(&self, name: &str, range: NSRange) {
         unsafe {
             let name = crate::nsstring_from_str(name);
             msg_send![self, addDebugMarker:name range:range]

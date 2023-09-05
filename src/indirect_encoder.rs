@@ -108,7 +108,7 @@ impl IndirectCommandBufferRef {
         unsafe { msg_send![self, indirectComputeCommandAtIndex: index] }
     }
 
-    pub fn reset_with_range(&self, range: crate::NSRange) {
+    pub fn reset_with_range(&self, range: NSRange) {
         unsafe { msg_send![self, resetWithRange: range] }
     }
 }

@@ -28,46 +28,10 @@ use std::{
     os::raw::c_void,
 };
 
-use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use foreign_types::ForeignType;
 pub(crate) use objc2::encode::{Encode, Encoding, RefEncode};
+pub use objc2::foundation::{CGFloat, NSInteger, NSRange, NSSize as CGSize, NSUInteger};
 use objc2::runtime::{Bool, Object, Protocol};
-
-/// See <https://developer.apple.com/documentation/objectivec/nsinteger>
-#[cfg(target_pointer_width = "64")]
-pub type NSInteger = i64;
-
-/// See <https://developer.apple.com/documentation/objectivec/nsinteger>
-#[cfg(not(target_pointer_width = "64"))]
-pub type NSInteger = i32;
-
-/// See <https://developer.apple.com/documentation/objectivec/nsuinteger>
-#[cfg(target_pointer_width = "64")]
-pub type NSUInteger = u64;
-
-/// See <https://developer.apple.com/documentation/objectivec/nsuinteger>
-#[cfg(target_pointer_width = "32")]
-pub type NSUInteger = u32;
-
-/// See <https://developer.apple.com/documentation/foundation/nsrange>
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct NSRange {
-    pub location: NSUInteger,
-    pub length: NSUInteger,
-}
-
-unsafe impl objc2::Encode for NSRange {
-    const ENCODING: objc2::Encoding =
-        objc2::Encoding::Struct("_NSRange", &[NSUInteger::ENCODING, NSUInteger::ENCODING]);
-}
-
-impl NSRange {
-    #[inline]
-    pub fn new(location: NSUInteger, length: NSUInteger) -> NSRange {
-        NSRange { location, length }
-    }
-}
 
 fn nsstring_as_str(nsstr: &Object) -> &str {
     let bytes = unsafe {
@@ -76,7 +40,7 @@ fn nsstring_as_str(nsstr: &Object) -> &str {
     };
     let len: NSUInteger = unsafe { msg_send![nsstr, length] };
     unsafe {
-        let bytes = std::slice::from_raw_parts(bytes, len as usize);
+        let bytes = std::slice::from_raw_parts(bytes, len);
         std::str::from_utf8(bytes).unwrap()
     }
 }

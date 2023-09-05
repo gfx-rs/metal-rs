@@ -127,7 +127,7 @@ impl TextureDescriptorRef {
             height,
             depth,
         } = size;
-        let count = (width.max(height).max(depth) as f64).log2().ceil() as u64;
+        let count = (width.max(height).max(depth) as f64).log2().ceil() as NSUInteger;
         self.set_mipmap_level_count(count);
     }
 
@@ -344,8 +344,8 @@ impl TextureRef {
         &self,
         pixel_format: MTLPixelFormat,
         texture_type: MTLTextureType,
-        mipmap_levels: crate::NSRange,
-        slices: crate::NSRange,
+        mipmap_levels: NSRange,
+        slices: NSRange,
     ) -> Texture {
         unsafe {
             msg_send![self, newTextureViewWithPixelFormat:pixel_format

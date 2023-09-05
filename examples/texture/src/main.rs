@@ -4,7 +4,6 @@
 use std::path::PathBuf;
 
 use cocoa::{appkit::NSView, base::id as cocoa_id};
-use core_graphics_types::geometry::CGSize;
 use objc2::rc::autoreleasepool;
 use winit::dpi::LogicalSize;
 use winit::event_loop::{ControlFlow, EventLoop};
@@ -40,7 +39,7 @@ fn main() {
     let vertex_data = vertices();
     let vertex_buffer = device.new_buffer_with_data(
         vertex_data.as_ptr() as *const _,
-        (vertex_data.len() * std::mem::size_of::<TexturedVertex>()) as u64,
+        vertex_data.len() * std::mem::size_of::<TexturedVertex>(),
         MTLResourceOptions::CPUCacheModeDefaultCache | MTLResourceOptions::StorageModeManaged,
     );
 
@@ -113,7 +112,7 @@ fn create_texture_to_display(device: &Device) -> Texture {
     let mut reader = decoder.read_info().unwrap();
 
     let info = reader.info();
-    let (width, height) = (info.width as u64, info.height as u64);
+    let (width, height) = (info.width as usize, info.height as usize);
 
     let mut buf = vec![0; reader.output_buffer_size()];
     reader.next_frame(&mut buf).unwrap();
@@ -226,12 +225,12 @@ fn handle_window_event(
 fn update_viewport_size_buffer(viewport_size_buffer: &Buffer, size: (u32, u32)) {
     let contents = viewport_size_buffer.contents();
     let viewport_size: [u32; 2] = [size.0, size.1];
-    let byte_count = (viewport_size.len() * std::mem::size_of::<u32>()) as usize;
+    let byte_count = viewport_size.len() * std::mem::size_of::<u32>();
 
     unsafe {
         std::ptr::copy(viewport_size.as_ptr(), contents as *mut u32, byte_count);
     }
-    viewport_size_buffer.did_modify_range(metal::NSRange::new(0, byte_count as u64));
+    viewport_size_buffer.did_modify_range(NSRange::new(0, byte_count));
 }
 
 fn redraw(
@@ -255,9 +254,13 @@ fn redraw(
     let encoder = command_buffer.new_render_command_encoder(&render_pass_descriptor);
     encoder.set_render_pipeline_state(&pipeline_state);
 
-    encoder.set_vertex_buffer(VerticesBufferIdx as u64, Some(vertex_buffer), 0);
-    encoder.set_vertex_buffer(ViewportSizeBufferIdx as u64, Some(viewport_size_buffer), 0);
-    encoder.set_fragment_texture(TextureBaseColorIdx as u64, Some(texture_to_render));
+    encoder.set_vertex_buffer(VerticesBufferIdx as usize, Some(vertex_buffer), 0);
+    encoder.set_vertex_buffer(
+        ViewportSizeBufferIdx as usize,
+        Some(viewport_size_buffer),
+        0,
+    );
+    encoder.set_fragment_texture(TextureBaseColorIdx as usize, Some(texture_to_render));
 
     encoder.draw_primitives(MTLPrimitiveType::Triangle, 0, 6);
     encoder.end_encoding();

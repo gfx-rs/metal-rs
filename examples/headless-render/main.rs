@@ -12,9 +12,9 @@ use metal::{
 };
 use png::ColorType;
 
-const VIEW_WIDTH: u64 = 512;
-const VIEW_HEIGHT: u64 = 512;
-const TOTAL_BYTES: usize = (VIEW_WIDTH * VIEW_HEIGHT * 4) as usize;
+const VIEW_WIDTH: usize = 512;
+const VIEW_HEIGHT: usize = 512;
+const TOTAL_BYTES: usize = VIEW_WIDTH * VIEW_HEIGHT * 4;
 
 const VERTEX_SHADER: &'static str = "triangle_vertex";
 const FRAGMENT_SHADER: &'static str = "triangle_fragment";
@@ -144,7 +144,7 @@ fn prepare_pipeline_state(device: &DeviceRef, library: &LibraryRef) -> RenderPip
 fn create_vertex_buffer(device: &DeviceRef) -> Buffer {
     device.new_buffer_with_data(
         VERTEX_ATTRIBS.as_ptr() as *const _,
-        (VERTEX_ATTRIBS.len() * mem::size_of::<f32>()) as u64,
+        VERTEX_ATTRIBS.len() * mem::size_of::<f32>(),
         MTLResourceOptions::CPUCacheModeDefaultCache | MTLResourceOptions::StorageModeManaged,
     )
 }

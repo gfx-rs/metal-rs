@@ -1501,6 +1501,9 @@ unsafe impl Encode for MTLAccelerationStructureSizes {
     );
 }
 
+// Note: For some reason it is required by `MTLCreateSystemDefaultDevice`
+// that we link to `CoreGraphics`?
+#[cfg_attr(feature = "link", link(name = "CoreGraphics", kind = "framework"))]
 #[cfg_attr(feature = "link", link(name = "Metal", kind = "framework"))]
 extern "C" {
     fn MTLCreateSystemDefaultDevice() -> *mut MTLDevice;
@@ -1952,7 +1955,7 @@ impl DeviceRef {
         }
     }
 
-    pub fn new_buffer(&self, length: u64, options: MTLResourceOptions) -> Buffer {
+    pub fn new_buffer(&self, length: NSUInteger, options: MTLResourceOptions) -> Buffer {
         unsafe {
             msg_send![self, newBufferWithLength:length
                                         options:options]
