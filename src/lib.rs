@@ -20,6 +20,8 @@ pub extern crate foreign_types;
 #[macro_use]
 pub extern crate paste;
 
+pub extern crate half;
+
 use std::{
     borrow::{Borrow, ToOwned},
     marker::PhantomData,
