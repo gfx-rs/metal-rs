@@ -77,7 +77,13 @@ name = "compute"
 path = "examples/compute/main.rs"
 
 [[example]]
-name = "mps"
+name = "mps-matrix-multiplication"
+path = "examples/mps/matrix-multiplication/main.rs"
+required-features = ["mps"]
+
+[[example]]
+name = "mps-ray-intersection"
+path = "examples/mps/ray-intersection/main.rs"
 required-features = ["mps"]
 
 [[example]]

@@ -1,4 +1,3 @@
-use metal::mps::*;
 use metal::*;
 use std::ffi::c_void;
 use std::mem;
@@ -15,8 +14,8 @@ type Intersection = mps::MPSIntersectionDistancePrimitiveIndexCoordinates;
 fn main() {
     let device = Device::system_default().expect("No device found");
 
-    let library_path =
-        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("examples/mps/shaders.metallib");
+    let library_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("examples/mps/ray-intersection/shaders.metallib");
     let library = device
         .new_library_with_file(library_path)
         .expect("Failed to load shader library");
