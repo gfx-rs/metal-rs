@@ -1,8 +1,8 @@
 use cocoa::{appkit::NSView, base::id as cocoa_id};
-use core_graphics_types::geometry::CGSize;
 
 use metal::*;
-use objc::{rc::autoreleasepool, runtime::YES};
+use objc2::rc::autoreleasepool;
+use objc2::runtime::Bool;
 
 use winit::{
     event::{Event, WindowEvent},
@@ -44,11 +44,11 @@ impl App {
         layer.set_framebuffer_only(false);
         unsafe {
             let view = window.ns_view() as cocoa_id;
-            view.setWantsLayer(YES);
+            view.setWantsLayer(Bool::YES.as_raw());
             view.setLayer(mem::transmute(layer.as_ref()));
         }
         let draw_size = window.inner_size();
-        layer.set_drawable_size(CGSize::new(draw_size.width as f64, draw_size.height as f64));
+        layer.set_drawable_size(draw_size.width as f64, draw_size.height as f64);
 
         // compile dynamic lib shader
         let dylib_src_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -108,8 +108,7 @@ impl App {
     }
 
     fn resize(&mut self, width: u32, height: u32) {
-        self.layer
-            .set_drawable_size(CGSize::new(width as f64, height as f64));
+        self.layer.set_drawable_size(width as f64, height as f64);
         self.width = width;
         self.height = height;
     }
@@ -153,7 +152,7 @@ fn main() {
     let mut app = App::new(&window);
 
     events_loop.run(move |event, _, control_flow| {
-        autoreleasepool(|| {
+        autoreleasepool(|_| {
             *control_flow = ControlFlow::Poll;
 
             match event {

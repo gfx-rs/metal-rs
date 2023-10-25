@@ -7,8 +7,6 @@
 
 use super::*;
 
-use objc::runtime::{NO, YES};
-
 /// See <https://developer.apple.com/documentation/metal/mtlblendfactor>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -35,6 +33,10 @@ pub enum MTLBlendFactor {
     OneMinusSource1Alpha = 18,
 }
 
+unsafe impl Encode for MTLBlendFactor {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlblendoperation>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -45,6 +47,10 @@ pub enum MTLBlendOperation {
     ReverseSubtract = 2,
     Min = 3,
     Max = 4,
+}
+
+unsafe impl Encode for MTLBlendOperation {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 bitflags! {
@@ -60,6 +66,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLColorWriteMask {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlprimitivetopologyclass>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -69,6 +79,10 @@ pub enum MTLPrimitiveTopologyClass {
     Point = 1,
     Line = 2,
     Triangle = 3,
+}
+
+unsafe impl Encode for MTLPrimitiveTopologyClass {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 // TODO: MTLTessellationPartitionMode
@@ -178,7 +192,7 @@ impl RenderPipelineReflection {
     ) -> Self {
         let class = class!(MTLRenderPipelineReflection);
         let this: RenderPipelineReflection = msg_send![class, alloc];
-        let this_alias: *mut Object = msg_send![this.as_ref(), initWithVertexData:vertex_data
+        let this_alias: *mut AnyObject = msg_send![this.as_ref(), initWithVertexData:vertex_data
                                                                 fragmentData:fragment_data
                                                 serializedVertexDescriptor:vertex_desc
                                                                     device:device
@@ -613,7 +627,7 @@ impl RenderPipelineDescriptorRef {
     pub unsafe fn serialize_vertex_data(&self) -> *mut std::ffi::c_void {
         use std::ptr;
         let flags = 0;
-        let err: *mut Object = ptr::null_mut();
+        let err: *mut AnyObject = ptr::null_mut();
         msg_send![self, newSerializedVertexDataWithFlags:flags
                                                     error:err]
     }
@@ -645,7 +659,7 @@ impl RenderPipelineDescriptorRef {
     /// Marshal to Rust Vec
     pub fn binary_archives(&self) -> Vec<BinaryArchive> {
         unsafe {
-            let archives: *mut Object = msg_send![self, binaryArchives];
+            let archives: *mut AnyObject = msg_send![self, binaryArchives];
             let count: NSUInteger = msg_send![archives, count];
             let ret = (0..count)
                 .map(|i| {

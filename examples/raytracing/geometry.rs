@@ -200,73 +200,58 @@ impl Geometry for TriangleGeometry {
         self.index_buffer = Some(unsafe {
             self.device.new_buffer_with_data(
                 transmute(self.indices.as_ptr()),
-                (self.indices.len() * size_of::<u16>()) as NSUInteger,
+                self.indices.len() * size_of::<u16>(),
                 get_managed_buffer_storage_mode(),
             )
         });
         self.vertex_position_buffer = Some(unsafe {
             self.device.new_buffer_with_data(
                 transmute(self.vertices.as_ptr()),
-                (self.vertices.len() * size_of::<Vec4>()) as NSUInteger,
+                self.vertices.len() * size_of::<Vec4>(),
                 get_managed_buffer_storage_mode(),
             )
         });
         self.vertex_normal_buffer = Some(unsafe {
             self.device.new_buffer_with_data(
                 transmute(self.normals.as_ptr()),
-                (self.normals.len() * size_of::<Vec4>()) as NSUInteger,
+                self.normals.len() * size_of::<Vec4>(),
                 get_managed_buffer_storage_mode(),
             )
         });
         self.vertex_colour_buffer = Some(unsafe {
             self.device.new_buffer_with_data(
                 transmute(self.colours.as_ptr()),
-                (self.colours.len() * size_of::<Vec4>()) as NSUInteger,
+                self.colours.len() * size_of::<Vec4>(),
                 get_managed_buffer_storage_mode(),
             )
         });
         self.per_primitive_data_buffer = Some(unsafe {
             self.device.new_buffer_with_data(
                 transmute(self.triangles.as_ptr()),
-                (self.triangles.len() * size_of::<Triangle>()) as NSUInteger,
+                self.triangles.len() * size_of::<Triangle>(),
                 get_managed_buffer_storage_mode(),
             )
         });
         self.index_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.index_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.index_buffer.as_ref().unwrap().length());
         self.vertex_position_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.vertex_position_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.vertex_position_buffer.as_ref().unwrap().length());
         self.vertex_normal_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.vertex_normal_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.vertex_normal_buffer.as_ref().unwrap().length());
         self.vertex_colour_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.vertex_colour_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.vertex_colour_buffer.as_ref().unwrap().length());
         self.per_primitive_data_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.per_primitive_data_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.per_primitive_data_buffer.as_ref().unwrap().length());
 
         self.index_buffer
             .as_ref()
@@ -304,12 +289,12 @@ impl Geometry for TriangleGeometry {
         descriptor.set_index_buffer(Some(self.index_buffer.as_ref().unwrap()));
         descriptor.set_index_type(MTLIndexType::UInt16);
         descriptor.set_vertex_buffer(Some(self.vertex_position_buffer.as_ref().unwrap()));
-        descriptor.set_vertex_stride(size_of::<Vec4>() as NSUInteger);
-        descriptor.set_triangle_count((self.indices.len() / 3) as NSUInteger);
+        descriptor.set_vertex_stride(size_of::<Vec4>());
+        descriptor.set_triangle_count(self.indices.len() / 3);
         descriptor
             .set_primitive_data_buffer(Some(self.per_primitive_data_buffer.as_ref().unwrap()));
-        descriptor.set_primitive_data_stride(size_of::<Triangle>() as NSUInteger);
-        descriptor.set_primitive_data_element_size(size_of::<Triangle>() as NSUInteger);
+        descriptor.set_primitive_data_stride(size_of::<Triangle>());
+        descriptor.set_primitive_data_element_size(size_of::<Triangle>());
         From::from(descriptor)
     }
 
@@ -366,7 +351,7 @@ impl Geometry for SphereGeometry {
         self.sphere_buffer = Some(unsafe {
             self.device.new_buffer_with_data(
                 transmute(self.spheres.as_ptr()),
-                (self.spheres.len() * size_of::<Sphere>()) as NSUInteger,
+                self.spheres.len() * size_of::<Sphere>(),
                 get_managed_buffer_storage_mode(),
             )
         });
@@ -384,7 +369,7 @@ impl Geometry for SphereGeometry {
         self.bounding_box_buffer = Some(unsafe {
             self.device.new_buffer_with_data(
                 transmute(bounding_boxes.as_ptr()),
-                (bounding_boxes.len() * size_of::<BoundingBox>()) as NSUInteger,
+                bounding_boxes.len() * size_of::<BoundingBox>(),
                 get_managed_buffer_storage_mode(),
             )
         });
@@ -395,17 +380,11 @@ impl Geometry for SphereGeometry {
         self.sphere_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.sphere_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.sphere_buffer.as_ref().unwrap().length());
         self.bounding_box_buffer
             .as_ref()
             .unwrap()
-            .did_modify_range(NSRange::new(
-                0,
-                self.bounding_box_buffer.as_ref().unwrap().length(),
-            ));
+            .did_modify_range(0..self.bounding_box_buffer.as_ref().unwrap().length());
     }
 
     fn clear(&mut self) {
@@ -415,10 +394,10 @@ impl Geometry for SphereGeometry {
     fn get_geometry_descriptor(&self) -> AccelerationStructureGeometryDescriptor {
         let descriptor = AccelerationStructureBoundingBoxGeometryDescriptor::descriptor();
         descriptor.set_bounding_box_buffer(Some(self.bounding_box_buffer.as_ref().unwrap()));
-        descriptor.set_bounding_box_count(self.spheres.len() as NSUInteger);
+        descriptor.set_bounding_box_count(self.spheres.len());
         descriptor.set_primitive_data_buffer(Some(&self.sphere_buffer.as_ref().unwrap()));
-        descriptor.set_primitive_data_stride(size_of::<Sphere>() as NSUInteger);
-        descriptor.set_primitive_data_element_size(size_of::<Sphere>() as NSUInteger);
+        descriptor.set_primitive_data_stride(size_of::<Sphere>());
+        descriptor.set_primitive_data_element_size(size_of::<Sphere>());
         From::from(descriptor)
     }
 
@@ -435,7 +414,7 @@ pub struct GeometryInstance {
     pub geometry: Arc<dyn Geometry>,
     pub transform: Mat4,
     pub mask: u32,
-    pub index_in_scene: NSUInteger,
+    pub index_in_scene: usize,
 }
 
 #[repr(C)]

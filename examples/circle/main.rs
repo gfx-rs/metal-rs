@@ -7,9 +7,9 @@ use winit::{
 };
 
 use cocoa::{appkit::NSView, base::id as cocoa_id};
-use core_graphics_types::geometry::CGSize;
 
-use objc::{rc::autoreleasepool, runtime::YES};
+use objc2::rc::autoreleasepool;
+use objc2::runtime::Bool;
 
 use std::mem;
 
@@ -52,7 +52,7 @@ fn main() {
     device.sample_timestamps(&mut cpu_start, &mut gpu_start);
     let counter_sample_buffer = create_counter_sample_buffer(&device);
     let destination_buffer = device.new_buffer(
-        (std::mem::size_of::<u64>() * 4 as usize) as u64,
+        std::mem::size_of::<u64>() * 4,
         MTLResourceOptions::StorageModeShared,
     );
     let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
@@ -101,12 +101,12 @@ fn main() {
 
     unsafe {
         let view = window.ns_view() as cocoa_id;
-        view.setWantsLayer(YES);
+        view.setWantsLayer(Bool::YES.as_raw());
         view.setLayer(mem::transmute(layer.as_ref()));
     }
 
     let draw_size = window.inner_size();
-    layer.set_drawable_size(CGSize::new(draw_size.width as f64, draw_size.height as f64));
+    layer.set_drawable_size(draw_size.width as f64, draw_size.height as f64);
 
     let vbuf = {
         let vertex_data = create_vertex_points_for_circle();
@@ -114,13 +114,13 @@ fn main() {
 
         device.new_buffer_with_data(
             vertex_data.as_ptr() as *const _,
-            (vertex_data.len() * mem::size_of::<AAPLVertex>()) as u64,
+            vertex_data.len() * mem::size_of::<AAPLVertex>(),
             MTLResourceOptions::CPUCacheModeDefaultCache | MTLResourceOptions::StorageModeManaged,
         )
     };
 
     event_loop.run(move |event, _, control_flow| {
-        autoreleasepool(|| {
+        autoreleasepool(|_| {
             // ControlFlow::Wait pauses the event loop if no events are available to process.
             // This is ideal for non-game applications that only update in response to user
             // input, and uses significantly less power/CPU time than ControlFlow::Poll.
@@ -248,10 +248,10 @@ fn handle_render_pass_sample_buffer_attachment(
     let sample_buffer_attachment_descriptor =
         descriptor.sample_buffer_attachments().object_at(0).unwrap();
     sample_buffer_attachment_descriptor.set_sample_buffer(&counter_sample_buffer);
-    sample_buffer_attachment_descriptor.set_start_of_vertex_sample_index(0 as NSUInteger);
-    sample_buffer_attachment_descriptor.set_end_of_vertex_sample_index(1 as NSUInteger);
-    sample_buffer_attachment_descriptor.set_start_of_fragment_sample_index(2 as NSUInteger);
-    sample_buffer_attachment_descriptor.set_end_of_fragment_sample_index(3 as NSUInteger);
+    sample_buffer_attachment_descriptor.set_start_of_vertex_sample_index(0);
+    sample_buffer_attachment_descriptor.set_end_of_vertex_sample_index(1);
+    sample_buffer_attachment_descriptor.set_start_of_fragment_sample_index(2);
+    sample_buffer_attachment_descriptor.set_end_of_fragment_sample_index(3);
 }
 
 fn handle_render_pass_color_attachment(descriptor: &RenderPassDescriptorRef, texture: &TextureRef) {
@@ -299,12 +299,7 @@ fn resolve_samples_into_buffer(
     destination_buffer: &BufferRef,
 ) {
     let blit_encoder = command_buffer.new_blit_command_encoder();
-    blit_encoder.resolve_counters(
-        &counter_sample_buffer,
-        crate::NSRange::new(0_u64, 4),
-        &destination_buffer,
-        0_u64,
-    );
+    blit_encoder.resolve_counters(&counter_sample_buffer, 0..4, &destination_buffer, 0);
     blit_encoder.end_encoding();
 }
 

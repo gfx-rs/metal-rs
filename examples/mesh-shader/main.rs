@@ -1,10 +1,7 @@
-extern crate objc;
-
 use cocoa::{appkit::NSView, base::id as cocoa_id};
-use core_graphics_types::geometry::CGSize;
 
 use metal::*;
-use objc::{rc::autoreleasepool, runtime::YES};
+use objc2::{rc::autoreleasepool, runtime::Bool};
 use std::mem;
 use winit::platform::macos::WindowExtMacOS;
 
@@ -41,12 +38,12 @@ fn main() {
 
     unsafe {
         let view = window.ns_view() as cocoa_id;
-        view.setWantsLayer(YES);
+        view.setWantsLayer(Bool::YES.as_raw());
         view.setLayer(mem::transmute(layer.as_ref()));
     }
 
     let draw_size = window.inner_size();
-    layer.set_drawable_size(CGSize::new(draw_size.width as f64, draw_size.height as f64));
+    layer.set_drawable_size(draw_size.width as f64, draw_size.height as f64);
 
     let library_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("examples/mesh-shader/shaders.metallib");
@@ -71,14 +68,14 @@ fn main() {
     let command_queue = device.new_command_queue();
 
     events_loop.run(move |event, _, control_flow| {
-        autoreleasepool(|| {
+        autoreleasepool(|_| {
             *control_flow = ControlFlow::Poll;
 
             match event {
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                     WindowEvent::Resized(size) => {
-                        layer.set_drawable_size(CGSize::new(size.width as f64, size.height as f64));
+                        layer.set_drawable_size(size.width as f64, size.height as f64);
                     }
                     _ => (),
                 },

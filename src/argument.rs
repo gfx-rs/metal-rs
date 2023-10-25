@@ -5,8 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use super::{MTLTextureType, NSUInteger};
-use objc::runtime::{NO, YES};
+use super::*;
 
 /// See <https://developer.apple.com/documentation/metal/mtldatatype>
 #[repr(u64)]
@@ -108,6 +107,10 @@ pub enum MTLDataType {
     RGB9E5Float = 77,
 }
 
+unsafe impl Encode for MTLDataType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlargumenttype>
 #[repr(u64)]
 #[deprecated(
@@ -124,6 +127,10 @@ pub enum MTLArgumentType {
     Imageblock = 17,
 }
 
+unsafe impl Encode for MTLArgumentType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlargumentaccess>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -132,6 +139,10 @@ pub enum MTLArgumentAccess {
     ReadOnly = 0,
     ReadWrite = 1,
     WriteOnly = 2,
+}
+
+unsafe impl Encode for MTLArgumentAccess {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlstructmember>
@@ -158,11 +169,11 @@ impl StructMemberRef {
         unsafe { msg_send![self, dataType] }
     }
 
-    pub fn struct_type(&self) -> MTLStructType {
+    pub fn struct_type(&self) -> &StructTypeRef {
         unsafe { msg_send![self, structType] }
     }
 
-    pub fn array_type(&self) -> MTLArrayType {
+    pub fn array_type(&self) -> &ArrayTypeRef {
         unsafe { msg_send![self, arrayType] }
     }
 }
@@ -225,11 +236,11 @@ impl ArrayTypeRef {
         unsafe { msg_send![self, elementType] }
     }
 
-    pub fn element_struct_type(&self) -> MTLStructType {
+    pub fn element_struct_type(&self) -> &StructTypeRef {
         unsafe { msg_send![self, elementStructType] }
     }
 
-    pub fn element_array_type(&self) -> MTLArrayType {
+    pub fn element_array_type(&self) -> &ArrayTypeRef {
         unsafe { msg_send![self, elementArrayType] }
     }
 }

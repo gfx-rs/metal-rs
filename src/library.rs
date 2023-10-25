@@ -8,7 +8,6 @@
 use super::*;
 
 use foreign_types::ForeignType;
-use objc::runtime::{Object, BOOL, NO, YES};
 
 use std::ffi::CStr;
 use std::os::raw::{c_char, c_void};
@@ -23,6 +22,10 @@ pub enum MTLPatchType {
     None = 0,
     Triangle = 1,
     Quad = 2,
+}
+
+unsafe impl Encode for MTLPatchType {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlvertexattribute/>
@@ -118,6 +121,10 @@ pub enum MTLFunctionType {
     Intersection = 6,
 }
 
+unsafe impl Encode for MTLFunctionType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// Only available on (macos(10.12), ios(10.0))
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlfunctionconstant/>
@@ -158,6 +165,10 @@ bitflags! {
         const None = 0;
         const CompileToBinary = 1 << 0;
     }
+}
+
+unsafe impl Encode for MTLFunctionOptions {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
 }
 
 /// Only available on (macos(11.0), ios(14.0))
@@ -321,12 +332,12 @@ impl FunctionRef {
     }
 
     /// Only available on (macos(10.12), ios(10.0))
-    pub fn vertex_attributes(&self) -> &Array<VertexAttribute> {
+    pub fn vertex_attributes(&self) -> &ArrayRef<VertexAttribute> {
         unsafe { msg_send![self, vertexAttributes] }
     }
 
     /// Only available on (macos(10.12), ios(10.0))
-    pub fn stage_input_attributes(&self) -> &Array<Attribute> {
+    pub fn stage_input_attributes(&self) -> &ArrayRef<Attribute> {
         unsafe { msg_send![self, stageInputAttributes] }
     }
 
@@ -337,7 +348,7 @@ impl FunctionRef {
         }
     }
 
-    pub fn function_constants_dictionary(&self) -> *mut Object {
+    pub fn function_constants_dictionary(&self) -> *mut AnyObject {
         unsafe { msg_send![self, functionConstantsDictionary] }
     }
 
@@ -361,6 +372,10 @@ pub enum MTLLanguageVersion {
     V2_3 = 0x20003,
     /// available on macOS 12.0+, iOS 15.0+
     V2_4 = 0x20004,
+}
+
+unsafe impl Encode for MTLLanguageVersion {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlfunctionconstantvalues/>
@@ -394,8 +409,9 @@ impl FunctionConstantValuesRef {
         &self,
         values: *const c_void,
         ty: MTLDataType,
-        range: NSRange,
+        range: Range<usize>,
     ) {
+        let range: NSRange = range.into();
         unsafe { msg_send![self, setConstantValues:values type:ty withRange:range] }
     }
 
@@ -410,11 +426,15 @@ impl FunctionConstantValuesRef {
 /// Only available on (macos(11.0), ios(14.0))
 ///
 /// See <https://developer.apple.com/documentation/metal/mtllibrarytype/>
-#[repr(u64)]
+#[repr(isize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLLibraryType {
     Executable = 0,
     Dynamic = 1,
+}
+
+unsafe impl Encode for MTLLibraryType {
+    const ENCODING: Encoding = isize::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcompileoptions/>
@@ -435,11 +455,11 @@ impl CompileOptions {
 }
 
 impl CompileOptionsRef {
-    pub unsafe fn preprocessor_macros(&self) -> *mut Object {
+    pub unsafe fn preprocessor_macros(&self) -> *mut AnyObject {
         msg_send![self, preprocessorMacros]
     }
 
-    pub unsafe fn set_preprocessor_macros(&self, defines: *mut Object) {
+    pub unsafe fn set_preprocessor_macros(&self, defines: *mut AnyObject) {
         msg_send![self, setPreprocessorMacros: defines]
     }
 
@@ -492,7 +512,7 @@ impl CompileOptionsRef {
     /// Marshal to Rust Vec
     pub fn libraries(&self) -> Vec<DynamicLibrary> {
         unsafe {
-            let libraries: *mut Object = msg_send![self, libraries];
+            let libraries: *mut AnyObject = msg_send![self, libraries];
             let count: NSUInteger = msg_send![libraries, count];
             let ret = (0..count)
                 .map(|i| {
@@ -549,6 +569,10 @@ pub enum MTLLibraryError {
     FunctionNotFound = 5,
     /// Only available on (macos(10.12), ios(10.0))
     FileNotFound = 6,
+}
+
+unsafe impl Encode for MTLLibraryError {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtllibrary/>
@@ -608,7 +632,7 @@ impl LibraryRef {
 
     pub fn function_names(&self) -> Vec<String> {
         unsafe {
-            let names: *mut Object = msg_send![self, functionNames];
+            let names: *mut AnyObject = msg_send![self, functionNames];
             let count: NSUInteger = msg_send![names, count];
             let ret = (0..count)
                 .map(|i| {
@@ -628,7 +652,7 @@ impl LibraryRef {
     /// Only available on (macos(11.0), ios(14.0))
     pub fn install_name(&self) -> Option<&str> {
         unsafe {
-            let maybe_name: *mut Object = msg_send![self, installName];
+            let maybe_name: *mut AnyObject = msg_send![self, installName];
             maybe_name.as_ref().map(crate::nsstring_as_str)
         }
     }
@@ -690,6 +714,10 @@ pub enum MTLDynamicLibraryError {
     UnresolvedInstallName = 3,
     DependencyLoadFailure = 4,
     Unsupported = 5,
+}
+
+unsafe impl Encode for MTLDynamicLibraryError {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtldynamiclibrary/>
@@ -811,25 +839,7 @@ impl BinaryArchiveRef {
     // error:(NSError * _Nullable *)error;
 
     pub fn serialize_to_url(&self, url: &URLRef) -> Result<bool, String> {
-        unsafe {
-            let mut err: *mut Object = ptr::null_mut();
-            let result: BOOL = msg_send![self, serializeToURL:url
-                                                        error:&mut err];
-            if !err.is_null() {
-                // FIXME: copy pasta
-                let desc: *mut Object = msg_send![err, localizedDescription];
-                let c_msg: *const c_char = msg_send![desc, UTF8String];
-                let message = CStr::from_ptr(c_msg).to_string_lossy().into_owned();
-                Err(message)
-            } else {
-                match result {
-                    YES => Ok(true),
-                    NO => Ok(false),
-                    #[cfg(not(target_arch = "aarch64"))]
-                    _ => unreachable!(),
-                }
-            }
-        }
+        unsafe { msg_send_bool_error_check![self, serializeToURL: url] }
     }
 }
 
@@ -856,7 +866,7 @@ impl LinkedFunctionsRef {
     /// Marshal to Rust Vec
     pub fn functions(&self) -> Vec<Function> {
         unsafe {
-            let functions: *mut Object = msg_send![self, functions];
+            let functions: *mut AnyObject = msg_send![self, functions];
             let count: NSUInteger = msg_send![functions, count];
             let ret = (0..count)
                 .map(|i| {
@@ -877,7 +887,7 @@ impl LinkedFunctionsRef {
     /// Marshal to Rust Vec
     pub fn binary_functions(&self) -> Vec<Function> {
         unsafe {
-            let functions: *mut Object = msg_send![self, binaryFunctions];
+            let functions: *mut AnyObject = msg_send![self, binaryFunctions];
             let count: NSUInteger = msg_send![functions, count];
             let ret = (0..count)
                 .map(|i| {

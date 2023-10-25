@@ -22,17 +22,17 @@ mps = []
 link = []
 
 [dependencies]
-core-graphics-types = "0.1"
 bitflags = "2"
 log = "0.4"
-block = "0.1.6"
+block2 = "0.3.0"
 foreign-types = "0.5"
 dispatch = { version = "0.2", optional = true }
 paste = "1"
+objc2 = "0.4.1"
 
-[dependencies.objc]
-version = "0.2.4"
-features = ["objc_exception"]
+[dependencies.icrate]
+version = "0.0.4"
+features = ["Foundation"]
 
 [dev-dependencies]
 cocoa = "0.24.0"

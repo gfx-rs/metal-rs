@@ -6,13 +6,13 @@
 // copied, modified, or distributed except according to those terms.
 
 use metal::*;
-use objc::rc::autoreleasepool;
+use objc2::rc::autoreleasepool;
 use std::mem;
 
 static LIBRARY_SRC: &str = include_str!("compute-argument-buffer.metal");
 
 fn main() {
-    autoreleasepool(|| {
+    autoreleasepool(|_| {
         let device = Device::system_default().expect("no device found");
         let command_queue = device.new_command_queue();
 
@@ -23,7 +23,7 @@ fn main() {
 
         let buffer = device.new_buffer_with_data(
             unsafe { mem::transmute(data.as_ptr()) },
-            (data.len() * mem::size_of::<u32>()) as u64,
+            data.len() * mem::size_of::<u32>(),
             MTLResourceOptions::CPUCacheModeDefaultCache,
         );
 
@@ -31,7 +31,7 @@ fn main() {
             let data = [0u32];
             device.new_buffer_with_data(
                 unsafe { mem::transmute(data.as_ptr()) },
-                (data.len() * mem::size_of::<u32>()) as u64,
+                data.len() * mem::size_of::<u32>(),
                 MTLResourceOptions::CPUCacheModeDefaultCache,
             )
         };
@@ -77,7 +77,7 @@ fn main() {
         };
 
         let thread_group_size = MTLSize {
-            width: (data.len() as u64 + width) / width,
+            width: (data.len() + width) / width,
             height: 1,
             depth: 1,
         };

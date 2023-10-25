@@ -7,8 +7,6 @@
 
 use super::*;
 
-use objc::runtime::{NO, YES};
-
 /// See <https://developer.apple.com/documentation/metal/mtlattributeformat>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -68,6 +66,10 @@ pub enum MTLAttributeFormat {
     Half = 53,
 }
 
+unsafe impl Encode for MTLAttributeFormat {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlstepfunction>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -82,6 +84,10 @@ pub enum MTLStepFunction {
     ThreadPositionInGridXIndexed = 6,
     ThreadPositionInGridY = 7,
     ThreadPositionInGridYIndexed = 8,
+}
+
+unsafe impl Encode for MTLStepFunction {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcomputepipelinedescriptor>
@@ -184,7 +190,7 @@ impl ComputePipelineDescriptorRef {
     /// Marshal to Rust Vec
     pub fn insert_libraries(&self) -> Vec<DynamicLibrary> {
         unsafe {
-            let libraries: *mut Object = msg_send![self, insertLibraries];
+            let libraries: *mut AnyObject = msg_send![self, insertLibraries];
             let count: NSUInteger = msg_send![libraries, count];
             let ret = (0..count)
                 .map(|i| {
@@ -206,7 +212,7 @@ impl ComputePipelineDescriptorRef {
     /// Marshal to Rust Vec
     pub fn binary_archives(&self) -> Vec<BinaryArchive> {
         unsafe {
-            let archives: *mut Object = msg_send![self, binaryArchives];
+            let archives: *mut AnyObject = msg_send![self, binaryArchives];
             let count: NSUInteger = msg_send![archives, count];
             let ret = (0..count)
                 .map(|i| {

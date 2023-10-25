@@ -5,6 +5,8 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use super::*;
+
 /// See <https://developer.apple.com/documentation/metal/mtlpixelformat>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -149,4 +151,8 @@ pub enum MTLPixelFormat {
     BGRA10_XR_SRGB = 553,
     BGR10_XR = 554,
     BGR10_XR_SRGB = 555,
+}
+
+unsafe impl Encode for MTLPixelFormat {
+    const ENCODING: Encoding = u64::ENCODING;
 }

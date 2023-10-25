@@ -14,6 +14,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLIndirectCommandType {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlindirectcommandbufferdescriptor/>
 pub enum MTLIndirectCommandBufferDescriptor {}
 
@@ -104,7 +108,8 @@ impl IndirectCommandBufferRef {
         unsafe { msg_send![self, indirectComputeCommandAtIndex: index] }
     }
 
-    pub fn reset_with_range(&self, range: crate::NSRange) {
+    pub fn reset_with_range(&self, range: Range<usize>) {
+        let range: NSRange = range.into();
         unsafe { msg_send![self, resetWithRange: range] }
     }
 }

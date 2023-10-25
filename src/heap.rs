@@ -19,6 +19,10 @@ pub enum MTLHeapType {
     Sparse = 2,
 }
 
+unsafe impl Encode for MTLHeapType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlheap/>
 pub enum MTLHeap {}
 

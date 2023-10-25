@@ -7,7 +7,7 @@
 
 use super::*;
 
-use block::Block;
+use block2::Block;
 
 /// See <https://developer.apple.com/documentation/metal/mtlcommandbufferstatus>
 #[repr(u32)]
@@ -20,6 +20,10 @@ pub enum MTLCommandBufferStatus {
     Scheduled = 3,
     Completed = 4,
     Error = 5,
+}
+
+unsafe impl Encode for MTLCommandBufferStatus {
+    const ENCODING: Encoding = u32::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcommandbuffererror>
@@ -39,6 +43,10 @@ pub enum MTLCommandBufferError {
     DeviceRemoved = 11,
 }
 
+unsafe impl Encode for MTLCommandBufferError {
+    const ENCODING: Encoding = u32::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtldispatchtype>
 #[repr(u32)]
 #[allow(non_camel_case_types)]
@@ -46,6 +54,10 @@ pub enum MTLCommandBufferError {
 pub enum MTLDispatchType {
     Serial = 0,
     Concurrent = 1,
+}
+
+unsafe impl Encode for MTLDispatchType {
+    const ENCODING: Encoding = u32::ENCODING;
 }
 
 type CommandBufferHandler<'a> = Block<(&'a CommandBufferRef,), ()>;
@@ -56,6 +68,10 @@ pub enum MTLCommandBuffer {}
 foreign_obj_type! {
     type CType = MTLCommandBuffer;
     pub struct CommandBuffer;
+}
+
+unsafe impl Encode for CommandBufferRef {
+    const ENCODING: Encoding = Encoding::Unknown; // TODO
 }
 
 impl CommandBufferRef {

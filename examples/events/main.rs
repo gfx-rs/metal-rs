@@ -30,7 +30,7 @@ fn main() {
     let shared_event_listener = SharedEventListener::from_queue(&my_queue);
 
     // Register CPU work
-    let notify_block = block::ConcreteBlock::new(move |evt: &SharedEventRef, val: u64| {
+    let notify_block = block2::ConcreteBlock::new(move |evt: &SharedEventRef, val: u64| {
         println!("Got notification from GPU: {}", val);
         evt.set_signaled_value(3);
     });

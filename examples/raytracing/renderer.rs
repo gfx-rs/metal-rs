@@ -1,4 +1,3 @@
-use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use std::{
     collections::BTreeMap,
     ffi::c_void,
@@ -23,9 +22,9 @@ struct Uniforms {
     pub camera: Camera,
 }
 
-pub const MAX_FRAMES_IN_FLIGHT: NSUInteger = 3;
-pub const ALIGNED_UNIFORMS_SIZE: NSUInteger = (size_of::<Uniforms>() as NSUInteger + 255) & !255;
-pub const UNIFORM_BUFFER_SIZE: NSUInteger = MAX_FRAMES_IN_FLIGHT * ALIGNED_UNIFORMS_SIZE;
+pub const MAX_FRAMES_IN_FLIGHT: usize = 3;
+pub const ALIGNED_UNIFORMS_SIZE: usize = (size_of::<Uniforms>() + 255) & !255;
+pub const UNIFORM_BUFFER_SIZE: usize = MAX_FRAMES_IN_FLIGHT * ALIGNED_UNIFORMS_SIZE;
 
 #[derive(Clone)]
 struct Semaphore {
@@ -62,10 +61,11 @@ pub struct Renderer {
     pub instance_acceleration_structure: AccelerationStructure,
     pub accumulation_targets: [Texture; 2],
     pub random_texture: Texture,
-    pub frame_index: NSUInteger,
-    pub uniform_buffer_index: NSUInteger,
-    pub uniform_buffer_offset: NSUInteger,
-    pub size: CGSize,
+    pub frame_index: usize,
+    pub uniform_buffer_index: usize,
+    pub uniform_buffer_offset: usize,
+    pub width: usize,
+    pub height: usize,
     semaphore: Semaphore,
     pub queue: CommandQueue,
     instance_buffer: Buffer,
@@ -124,17 +124,17 @@ impl Renderer {
         }
         let resource_buffer = device.new_buffer_with_data(
             resource_buffer_data.as_ptr() as *const c_void,
-            (resource_buffer_data.len() * size_of::<u64>()) as NSUInteger,
+            resource_buffer_data.len() * size_of::<u64>(),
             get_managed_buffer_storage_mode(),
         );
         resource_buffer.set_label("resource buffer");
-        resource_buffer.did_modify_range(NSRange::new(0, resource_buffer.length()));
+        resource_buffer.did_modify_range(0..resource_buffer.length());
 
         let mut primitive_acceleration_structures = Vec::new();
         for i in 0..scene.geometries.len() {
             let mesh = scene.geometries[i].as_ref();
             let geometry_descriptor = mesh.get_geometry_descriptor();
-            geometry_descriptor.set_intersection_function_table_offset(i as NSUInteger);
+            geometry_descriptor.set_intersection_function_table_offset(i);
             let geometry_descriptors = Array::from_owned_slice(&[geometry_descriptor]);
             let accel_descriptor = PrimitiveAccelerationStructureDescriptor::descriptor();
             accel_descriptor.set_geometry_descriptors(&geometry_descriptors);
@@ -174,18 +174,18 @@ impl Renderer {
         }
         let instance_buffer = device.new_buffer_with_data(
             instance_descriptors.as_ptr() as *const c_void,
-            (size_of::<MTLAccelerationStructureInstanceDescriptor>()
-                * scene.geometry_instances.len()) as NSUInteger,
+            size_of::<MTLAccelerationStructureInstanceDescriptor>()
+                * scene.geometry_instances.len(),
             get_managed_buffer_storage_mode(),
         );
         instance_buffer.set_label("instance buffer");
-        instance_buffer.did_modify_range(NSRange::new(0, instance_buffer.length()));
+        instance_buffer.did_modify_range(0..instance_buffer.length());
 
         let accel_descriptor = InstanceAccelerationStructureDescriptor::descriptor();
         accel_descriptor.set_instanced_acceleration_structures(&Array::from_owned_slice(
             &primitive_acceleration_structures,
         ));
-        accel_descriptor.set_instance_count(scene.geometry_instances.len() as NSUInteger);
+        accel_descriptor.set_instance_count(scene.geometry_instances.len());
         accel_descriptor.set_instance_descriptor_buffer(&instance_buffer);
         let accel_descriptor: AccelerationStructureDescriptor = From::from(accel_descriptor);
         let instance_acceleration_structure =
@@ -219,8 +219,7 @@ impl Renderer {
             &intersection_function_array,
         );
         let intersection_function_table_descriptor = IntersectionFunctionTableDescriptor::new();
-        intersection_function_table_descriptor
-            .set_function_count(scene.geometries.len() as NSUInteger);
+        intersection_function_table_descriptor.set_function_count(scene.geometries.len());
         let intersection_function_table = raytracing_pipeline
             .new_intersection_function_table_with_descriptor(
                 &intersection_function_table_descriptor,
@@ -232,7 +231,7 @@ impl Renderer {
                 let handle = raytracing_pipeline
                     .function_handle_with_function(intersection_function)
                     .unwrap();
-                intersection_function_table.set_function(handle, geometry_index as NSUInteger);
+                intersection_function_table.set_function(handle, geometry_index);
             }
         }
         let render_descriptor = RenderPipelineDescriptor::new();
@@ -267,7 +266,8 @@ impl Renderer {
             frame_index: 0,
             uniform_buffer_index: 0,
             uniform_buffer_offset: 0,
-            size: CGSize::new(1024 as CGFloat, 1024 as CGFloat),
+            width: 1024,
+            height: 1024,
             semaphore: Semaphore::new((MAX_FRAMES_IN_FLIGHT - 2) as usize),
             instance_buffer,
             queue,
@@ -278,7 +278,7 @@ impl Renderer {
         }
     }
 
-    fn create_target_descriptor(width: NSUInteger, height: NSUInteger) -> TextureDescriptor {
+    fn create_target_descriptor(width: usize, height: usize) -> TextureDescriptor {
         let texture_descriptor = TextureDescriptor::new();
         texture_descriptor.set_pixel_format(MTLPixelFormat::RGBA32Float);
         texture_descriptor.set_texture_type(MTLTextureType::D2);
@@ -289,10 +289,10 @@ impl Renderer {
         texture_descriptor
     }
 
-    pub fn window_resized(&mut self, size: CGSize) {
-        self.size = size;
-        let texture_descriptor =
-            Self::create_target_descriptor(size.width as NSUInteger, size.height as NSUInteger);
+    pub fn window_resized(&mut self, width: usize, height: usize) {
+        self.width = width;
+        self.height = height;
+        let texture_descriptor = Self::create_target_descriptor(width, height);
         self.accumulation_targets[0] = self.device.new_texture(&texture_descriptor);
         self.accumulation_targets[1] = self.device.new_texture(&texture_descriptor);
         texture_descriptor.set_pixel_format(MTLPixelFormat::R32Uint);
@@ -300,15 +300,15 @@ impl Renderer {
         texture_descriptor.set_storage_mode(MTLStorageMode::Managed);
         self.random_texture = self.device.new_texture(&texture_descriptor);
         let mut rng = thread_rng();
-        let mut random_values = vec![0u32; (size.width * size.height) as usize];
+        let mut random_values = vec![0u32; width * height];
         for v in &mut random_values {
             *v = rng.next_u32();
         }
         self.random_texture.replace_region(
-            MTLRegion::new_2d(0, 0, size.width as NSUInteger, size.height as NSUInteger),
+            MTLRegion::new_2d(0, 0, width, height),
             0,
             random_values.as_ptr() as *const c_void,
-            size_of::<u32>() as NSUInteger * size.width as NSUInteger,
+            size_of::<u32>() * width,
         );
         self.frame_index = 0;
     }
@@ -335,25 +335,24 @@ impl Renderer {
         uniforms.camera.up = Vec4::from((up, 0.0));
 
         let field_of_view = 45.0 * (std::f32::consts::PI / 180.0);
-        let aspect_ratio = self.size.width as f32 / self.size.height as f32;
+        let aspect_ratio = self.width as f32 / self.height as f32;
         let image_plane_height = f32::tan(field_of_view / 2.0);
         let image_plane_width = aspect_ratio * image_plane_height;
 
         uniforms.camera.right *= image_plane_width;
         uniforms.camera.up *= image_plane_height;
 
-        uniforms.width = self.size.width as u32;
-        uniforms.height = self.size.height as u32;
+        uniforms.width = self.width as u32;
+        uniforms.height = self.height as u32;
 
         uniforms.frame_index = self.frame_index as u32;
         self.frame_index += 1;
 
         uniforms.light_count = self.scene.lights.len() as u32;
 
-        self.uniform_buffer.did_modify_range(NSRange {
-            location: self.uniform_buffer_offset,
-            length: ALIGNED_UNIFORMS_SIZE,
-        });
+        self.uniform_buffer.did_modify_range(
+            self.uniform_buffer_offset..(self.uniform_buffer_offset + ALIGNED_UNIFORMS_SIZE),
+        );
 
         self.uniform_buffer_index = (self.uniform_buffer_index + 1) % MAX_FRAMES_IN_FLIGHT;
     }
@@ -363,17 +362,15 @@ impl Renderer {
         self.update_uniforms();
         let command_buffer = self.queue.new_command_buffer();
         let sem = self.semaphore.clone();
-        let block = block::ConcreteBlock::new(move |_| {
+        let block = block2::ConcreteBlock::new(move |_| {
             sem.release();
         })
         .copy();
         command_buffer.add_completed_handler(&block);
-        let width = self.size.width as NSUInteger;
-        let height = self.size.height as NSUInteger;
         let threads_per_thread_group = MTLSize::new(8, 8, 1);
         let thread_groups = MTLSize::new(
-            (width + threads_per_thread_group.width - 1) / threads_per_thread_group.width,
-            (height + threads_per_thread_group.height - 1) / threads_per_thread_group.height,
+            (self.width + threads_per_thread_group.width - 1) / threads_per_thread_group.width,
+            (self.height + threads_per_thread_group.height - 1) / threads_per_thread_group.height,
             1,
         );
         let compute_encoder = command_buffer.new_compute_command_encoder();
@@ -435,7 +432,7 @@ impl Renderer {
         let command_buffer = queue.new_command_buffer();
         let command_encoder = command_buffer.new_acceleration_structure_command_encoder();
         let compacted_size_buffer = device.new_buffer(
-            size_of::<u32>() as NSUInteger,
+            size_of::<u32>() as usize,
             MTLResourceOptions::StorageModeShared,
         );
         command_encoder.build_acceleration_structure(
@@ -453,7 +450,7 @@ impl Renderer {
         command_buffer.commit();
         command_buffer.wait_until_completed();
         let compacted_size: *const u32 = unsafe { transmute(compacted_size_buffer.contents()) };
-        let compacted_size = unsafe { *compacted_size } as NSUInteger;
+        let compacted_size = unsafe { *compacted_size } as usize;
         let compacted_acceleration_structure =
             device.new_acceleration_structure_with_size(compacted_size);
         let command_buffer = queue.new_command_buffer();

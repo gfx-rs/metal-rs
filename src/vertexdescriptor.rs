@@ -5,7 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use super::NSUInteger;
+use super::*;
 
 /// See <https://developer.apple.com/documentation/metal/mtlvertexformat>
 #[repr(u64)]
@@ -66,6 +66,10 @@ pub enum MTLVertexFormat {
     Half = 53,
 }
 
+unsafe impl Encode for MTLVertexFormat {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlvertexstepfunction>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -75,6 +79,10 @@ pub enum MTLVertexStepFunction {
     PerInstance = 2,
     PerPatch = 3,
     PerPatchControlPoint = 4,
+}
+
+unsafe impl Encode for MTLVertexStepFunction {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlvertexbufferlayoutdescriptor>

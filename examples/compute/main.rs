@@ -1,16 +1,16 @@
 use metal::*;
-use objc::rc::autoreleasepool;
+use objc2::rc::autoreleasepool;
 use std::path::PathBuf;
 
-const NUM_SAMPLES: u64 = 2;
+const NUM_SAMPLES: usize = 2;
 
 fn main() {
     let num_elements = std::env::args()
         .nth(1)
-        .map(|s| s.parse::<u32>().unwrap())
+        .map(|s| s.parse::<usize>().unwrap())
         .unwrap_or(64 * 64);
 
-    autoreleasepool(|| {
+    autoreleasepool(|_| {
         let device = Device::system_default().expect("No device found");
         let mut cpu_start = 0;
         let mut gpu_start = 0;
@@ -18,7 +18,7 @@ fn main() {
 
         let counter_sample_buffer = create_counter_sample_buffer(&device);
         let destination_buffer = device.new_buffer(
-            (std::mem::size_of::<u64>() * NUM_SAMPLES as usize) as u64,
+            std::mem::size_of::<u64>() * NUM_SAMPLES,
             MTLResourceOptions::StorageModeShared,
         );
 
@@ -46,7 +46,7 @@ fn main() {
         let num_threads = pipeline_state.thread_execution_width();
 
         let thread_group_count = MTLSize {
-            width: ((num_elements as NSUInteger + num_threads) / num_threads),
+            width: (num_elements + num_threads) / num_threads,
             height: 1,
             depth: 1,
         };
@@ -71,9 +71,7 @@ fn main() {
         let ptr = sum.contents() as *mut u32;
         println!("Compute shader sum: {}", unsafe { *ptr });
 
-        unsafe {
-            assert_eq!(num_elements, *ptr);
-        }
+        assert_eq!(num_elements, unsafe { *ptr } as usize);
 
         handle_timestamps(&destination_buffer, cpu_start, cpu_end, gpu_start, gpu_end);
     });
@@ -115,12 +113,7 @@ fn resolve_samples_into_buffer(
     destination_buffer: &BufferRef,
 ) {
     let blit_encoder = command_buffer.new_blit_command_encoder();
-    blit_encoder.resolve_counters(
-        counter_sample_buffer,
-        crate::NSRange::new(0_u64, NUM_SAMPLES),
-        destination_buffer,
-        0_u64,
-    );
+    blit_encoder.resolve_counters(counter_sample_buffer, 0..NUM_SAMPLES, destination_buffer, 0);
     blit_encoder.end_encoding();
 }
 
@@ -132,10 +125,7 @@ fn handle_timestamps(
     gpu_end: u64,
 ) {
     let samples = unsafe {
-        std::slice::from_raw_parts(
-            resolved_sample_buffer.contents() as *const u64,
-            NUM_SAMPLES as usize,
-        )
+        std::slice::from_raw_parts(resolved_sample_buffer.contents() as *const u64, NUM_SAMPLES)
     };
     let pass_start = samples[0];
     let pass_end = samples[1];
@@ -150,7 +140,7 @@ fn handle_timestamps(
 fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
     let counter_sample_buffer_desc = metal::CounterSampleBufferDescriptor::new();
     counter_sample_buffer_desc.set_storage_mode(metal::MTLStorageMode::Shared);
-    counter_sample_buffer_desc.set_sample_count(NUM_SAMPLES);
+    counter_sample_buffer_desc.set_sample_count(NUM_SAMPLES as u64);
     let counter_sets = device.counter_sets();
 
     let timestamp_counter = counter_sets.iter().find(|cs| cs.name() == "timestamp");
@@ -165,13 +155,13 @@ fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
 
 fn create_input_and_output_buffers(
     device: &Device,
-    num_elements: u32,
+    num_elements: usize,
 ) -> (metal::Buffer, metal::Buffer) {
-    let data = vec![1u32; num_elements as usize];
+    let data = vec![1u32; num_elements];
 
     let buffer = device.new_buffer_with_data(
         unsafe { std::mem::transmute(data.as_ptr()) },
-        (data.len() * std::mem::size_of::<u32>()) as u64,
+        data.len() * std::mem::size_of::<u32>(),
         MTLResourceOptions::CPUCacheModeDefaultCache,
     );
 
@@ -179,7 +169,7 @@ fn create_input_and_output_buffers(
         let data = [0u32];
         device.new_buffer_with_data(
             unsafe { std::mem::transmute(data.as_ptr()) },
-            (data.len() * std::mem::size_of::<u32>()) as u64,
+            data.len() * std::mem::size_of::<u32>(),
             MTLResourceOptions::CPUCacheModeDefaultCache,
         )
     };

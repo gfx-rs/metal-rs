@@ -6,7 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 use super::*;
-use block::{Block, RcBlock};
+use block2::{Block, RcBlock};
 use std::mem;
 
 #[cfg(feature = "dispatch_queue")]
@@ -92,7 +92,7 @@ foreign_obj_type! {
 impl SharedEventListener {
     pub unsafe fn from_queue_handle(queue: dispatch_queue_t) -> Self {
         let listener: SharedEventListener = msg_send![class!(MTLSharedEventListener), alloc];
-        let ptr: *mut Object = msg_send![listener.as_ref(), initWithDispatchQueue: queue];
+        let ptr: *mut AnyObject = msg_send![listener.as_ref(), initWithDispatchQueue: queue];
         if ptr.is_null() {
             panic!("[MTLSharedEventListener alloc] initWithDispatchQueue failed");
         }
@@ -154,6 +154,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLRenderStages {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 const BLOCK_HAS_COPY_DISPOSE: i32 = 0x02000000;
 const BLOCK_HAS_SIGNATURE: i32 = 0x40000000;
 
@@ -167,6 +171,10 @@ struct BlockBase<A, R> {
 }
 
 type BlockExtraDtor<A, R> = extern "C" fn(*mut BlockBase<A, R>);
+
+unsafe impl RefEncode for BlockBase<(&SharedEventRef, u64), ()> {
+    const ENCODING_REF: Encoding = Encoding::Block;
+}
 
 #[repr(C)]
 struct BlockExtra<A, R> {

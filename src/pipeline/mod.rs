@@ -23,6 +23,10 @@ pub enum MTLMutability {
     Immutable = 2,
 }
 
+unsafe impl Encode for MTLMutability {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 impl Default for MTLMutability {
     #[inline]
     fn default() -> Self {

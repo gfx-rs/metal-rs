@@ -7,8 +7,6 @@
 
 use super::*;
 
-use objc::runtime::{NO, YES};
-
 /// See <https://developer.apple.com/documentation/metal/mtltexturetype>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -25,12 +23,20 @@ pub enum MTLTextureType {
     D2MultisampleArray = 8,
 }
 
+unsafe impl Encode for MTLTextureType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtltexturecompressiontype>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum MTLTextureCompressionType {
     Lossless = 0,
     Lossy = 1,
+}
+
+unsafe impl Encode for MTLTextureCompressionType {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 bitflags! {
@@ -43,6 +49,10 @@ bitflags! {
         const RenderTarget    = 0x0004;
         const PixelFormatView = 0x0010;
     }
+}
+
+unsafe impl Encode for MTLTextureUsage {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtltexturedescriptor>
@@ -117,7 +127,7 @@ impl TextureDescriptorRef {
             height,
             depth,
         } = size;
-        let count = (width.max(height).max(depth) as f64).log2().ceil() as u64;
+        let count = (width.max(height).max(depth) as f64).log2().ceil() as NSUInteger;
         self.set_mipmap_level_count(count);
     }
 
@@ -334,9 +344,11 @@ impl TextureRef {
         &self,
         pixel_format: MTLPixelFormat,
         texture_type: MTLTextureType,
-        mipmap_levels: crate::NSRange,
-        slices: crate::NSRange,
+        mipmap_levels: Range<usize>,
+        slices: Range<usize>,
     ) -> Texture {
+        let mipmap_levels: NSRange = mipmap_levels.into();
+        let slices: NSRange = slices.into();
         unsafe {
             msg_send![self, newTextureViewWithPixelFormat:pixel_format
                                                 textureType:texture_type

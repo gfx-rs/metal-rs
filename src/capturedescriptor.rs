@@ -18,6 +18,10 @@ pub enum MTLCaptureDestination {
     GpuTraceDocument = 2,
 }
 
+unsafe impl Encode for MTLCaptureDestination {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor>
 pub enum MTLCaptureDescriptor {}
 

@@ -23,6 +23,10 @@ pub enum MTLPrimitiveType {
     TriangleStrip = 4,
 }
 
+unsafe impl Encode for MTLPrimitiveType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlindextype>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -30,6 +34,10 @@ pub enum MTLPrimitiveType {
 pub enum MTLIndexType {
     UInt16 = 0,
     UInt32 = 1,
+}
+
+unsafe impl Encode for MTLIndexType {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlvisibilityresultmode>
@@ -41,6 +49,10 @@ pub enum MTLVisibilityResultMode {
     Counting = 2,
 }
 
+unsafe impl Encode for MTLVisibilityResultMode {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlcullmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -48,6 +60,10 @@ pub enum MTLCullMode {
     None = 0,
     Front = 1,
     Back = 2,
+}
+
+unsafe impl Encode for MTLCullMode {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlwinding>
@@ -58,6 +74,10 @@ pub enum MTLWinding {
     CounterClockwise = 1,
 }
 
+unsafe impl Encode for MTLWinding {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtldepthclipmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -66,12 +86,20 @@ pub enum MTLDepthClipMode {
     Clamp = 1,
 }
 
+unsafe impl Encode for MTLDepthClipMode {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtltrianglefillmode>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLTriangleFillMode {
     Fill = 0,
     Lines = 1,
+}
+
+unsafe impl Encode for MTLTriangleFillMode {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 bitflags! {
@@ -90,6 +118,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLBlitOption {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlscissorrect>
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -98,6 +130,18 @@ pub struct MTLScissorRect {
     pub y: NSUInteger,
     pub width: NSUInteger,
     pub height: NSUInteger,
+}
+
+unsafe impl Encode for MTLScissorRect {
+    const ENCODING: Encoding = Encoding::Struct(
+        "?",
+        &[
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+            NSUInteger::ENCODING,
+        ],
+    );
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlviewport>
@@ -110,6 +154,20 @@ pub struct MTLViewport {
     pub height: f64,
     pub znear: f64,
     pub zfar: f64,
+}
+
+unsafe impl Encode for MTLViewport {
+    const ENCODING: Encoding = Encoding::Struct(
+        "?",
+        &[
+            f64::ENCODING,
+            f64::ENCODING,
+            f64::ENCODING,
+            f64::ENCODING,
+            f64::ENCODING,
+            f64::ENCODING,
+        ],
+    );
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtldrawprimitivesindirectarguments>
@@ -139,6 +197,17 @@ pub struct MTLDrawIndexedPrimitivesIndirectArguments {
 pub struct VertexAmplificationViewMapping {
     pub renderTargetArrayIndexOffset: u32,
     pub viewportArrayIndexOffset: u32,
+}
+
+unsafe impl Encode for VertexAmplificationViewMapping {
+    const ENCODING: Encoding = Encoding::Struct(
+        "?",
+        &[u32::ENCODING, u32::ENCODING],
+    );
+}
+
+unsafe impl RefEncode for VertexAmplificationViewMapping {
+    const ENCODING_REF: Encoding = Encoding::Pointer(&Self::ENCODING);
 }
 
 #[allow(dead_code)]
@@ -1196,9 +1265,10 @@ impl RenderCommandEncoderRef {
     pub fn execute_commands_in_buffer(
         &self,
         buffer: &IndirectCommandBufferRef,
-        with_range: NSRange,
+        range: Range<usize>,
     ) {
-        unsafe { msg_send![self, executeCommandsInBuffer:buffer withRange:with_range] }
+        let range: NSRange = range.into();
+        unsafe { msg_send![self, executeCommandsInBuffer:buffer withRange: range] }
     }
 
     pub fn update_fence(&self, fence: &FenceRef, after_stages: MTLRenderStages) {
@@ -1250,7 +1320,8 @@ impl BlitCommandEncoderRef {
         unsafe { msg_send![self, synchronizeResource: resource] }
     }
 
-    pub fn fill_buffer(&self, destination_buffer: &BufferRef, range: crate::NSRange, value: u8) {
+    pub fn fill_buffer(&self, destination_buffer: &BufferRef, range: Range<usize>, value: u8) {
+        let range: NSRange = range.into();
         unsafe {
             msg_send![self,
                 fillBuffer: destination_buffer
@@ -1418,10 +1489,11 @@ impl BlitCommandEncoderRef {
     pub fn copy_indirect_command_buffer(
         &self,
         source: &IndirectCommandBufferRef,
-        source_range: NSRange,
+        source_range: Range<usize>,
         destination: &IndirectCommandBufferRef,
         destination_index: NSUInteger,
     ) {
+        let source_range: NSRange = source_range.into();
         unsafe {
             msg_send![self,
                 copyIndirectCommandBuffer: source
@@ -1432,7 +1504,8 @@ impl BlitCommandEncoderRef {
         }
     }
 
-    pub fn reset_commands_in_buffer(&self, buffer: &IndirectCommandBufferRef, range: NSRange) {
+    pub fn reset_commands_in_buffer(&self, buffer: &IndirectCommandBufferRef, range: Range<usize>) {
+        let range: NSRange = range.into();
         unsafe {
             msg_send![self,
                 resetCommandsInBuffer: buffer
@@ -1444,8 +1517,9 @@ impl BlitCommandEncoderRef {
     pub fn optimize_indirect_command_buffer(
         &self,
         buffer: &IndirectCommandBufferRef,
-        range: NSRange,
+        range: Range<usize>,
     ) {
+        let range: NSRange = range.into();
         unsafe {
             msg_send![self,
                 optimizeIndirectCommandBuffer: buffer
@@ -1474,10 +1548,11 @@ impl BlitCommandEncoderRef {
     pub fn resolve_counters(
         &self,
         sample_buffer: &CounterSampleBufferRef,
-        range: crate::NSRange,
+        range: Range<usize>,
         destination_buffer: &BufferRef,
         destination_offset: NSUInteger,
     ) {
+        let range: NSRange = range.into();
         unsafe {
             msg_send![self,
                 resolveCounters: sample_buffer

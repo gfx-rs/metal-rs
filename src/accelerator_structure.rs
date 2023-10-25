@@ -5,6 +5,8 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use std::os::raw::c_float;
+
 use super::*;
 
 bitflags! {
@@ -18,6 +20,10 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MTLAccelerationStructureInstanceOptions {
+    const ENCODING: Encoding = u32::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlaccelerationstructureinstancedescriptortype>
 #[repr(u64)]
 #[allow(non_camel_case_types)]
@@ -26,6 +32,10 @@ pub enum MTLAccelerationStructureInstanceDescriptorType {
     Default = 0,
     UserID = 1,
     Motion = 2,
+}
+
+unsafe impl Encode for MTLAccelerationStructureInstanceDescriptorType {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
@@ -38,6 +48,39 @@ pub struct MTLAccelerationStructureInstanceDescriptor {
     pub acceleration_structure_index: u32,
 }
 
+const PACKED_FLOAT_4_3_ENCODING: Encoding = Encoding::Struct(
+    "_MTLPackedFloat4x3",
+    &[Encoding::Array(
+        4,
+        &Encoding::Struct(
+            "_MTLPackedFloat3",
+            &[Encoding::Union(
+                "?",
+                &[
+                    Encoding::Struct(
+                        "?",
+                        &[c_float::ENCODING, c_float::ENCODING, c_float::ENCODING],
+                    ),
+                    Encoding::Array(3, &c_float::ENCODING),
+                ],
+            )],
+        ),
+    )],
+);
+
+unsafe impl Encode for MTLAccelerationStructureInstanceDescriptor {
+    const ENCODING: Encoding = Encoding::Struct(
+        "?",
+        &[
+            PACKED_FLOAT_4_3_ENCODING,
+            MTLAccelerationStructureInstanceOptions::ENCODING,
+            u32::ENCODING,
+            u32::ENCODING,
+            u32::ENCODING,
+        ],
+    );
+}
+
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(C)]
 pub struct MTLAccelerationStructureUserIDInstanceDescriptor {
@@ -47,6 +90,20 @@ pub struct MTLAccelerationStructureUserIDInstanceDescriptor {
     pub intersection_function_table_offset: u32,
     pub acceleration_structure_index: u32,
     pub user_id: u32,
+}
+
+unsafe impl Encode for MTLAccelerationStructureUserIDInstanceDescriptor {
+    const ENCODING: Encoding = Encoding::Struct(
+        "?",
+        &[
+            PACKED_FLOAT_4_3_ENCODING,
+            MTLAccelerationStructureInstanceOptions::ENCODING,
+            u32::ENCODING,
+            u32::ENCODING,
+            u32::ENCODING,
+            u32::ENCODING,
+        ],
+    );
 }
 
 pub enum MTLAccelerationStructureDescriptor {}

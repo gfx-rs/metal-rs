@@ -14,7 +14,7 @@ pub extern crate bitflags;
 #[macro_use]
 pub extern crate log;
 #[macro_use]
-pub extern crate objc;
+pub extern crate objc2;
 #[macro_use]
 pub extern crate foreign_types;
 #[macro_use]
@@ -24,71 +24,46 @@ use std::{
     borrow::{Borrow, ToOwned},
     marker::PhantomData,
     mem,
-    ops::Deref,
+    ops::{Deref, Range},
     os::raw::c_void,
 };
 
-use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use foreign_types::ForeignType;
-use objc::runtime::{Object, NO, YES};
+use icrate::Foundation::{CGFloat, CGSize, NSRange};
+use objc2::encode::{Encode, Encoding, RefEncode};
+use objc2::runtime::{AnyObject, Bool, Protocol};
 
-/// See <https://developer.apple.com/documentation/objectivec/nsinteger>
-#[cfg(target_pointer_width = "64")]
-pub type NSInteger = i64;
+// Explicitly doesn't use `icrate::Foundation::NS[U]Integer`, so that the
+// documentation will just show the simple Rust type.
+pub(crate) type NSInteger = isize;
+pub(crate) type NSUInteger = usize;
 
-/// See <https://developer.apple.com/documentation/objectivec/nsinteger>
-#[cfg(not(target_pointer_width = "64"))]
-pub type NSInteger = i32;
-
-/// See <https://developer.apple.com/documentation/objectivec/nsuinteger>
-#[cfg(target_pointer_width = "64")]
-pub type NSUInteger = u64;
-
-/// See <https://developer.apple.com/documentation/objectivec/nsuinteger>
-#[cfg(target_pointer_width = "32")]
-pub type NSUInteger = u32;
-
-/// See <https://developer.apple.com/documentation/foundation/nsrange>
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct NSRange {
-    pub location: NSUInteger,
-    pub length: NSUInteger,
-}
-
-impl NSRange {
-    #[inline]
-    pub fn new(location: NSUInteger, length: NSUInteger) -> NSRange {
-        NSRange { location, length }
-    }
-}
-
-fn nsstring_as_str(nsstr: &objc::runtime::Object) -> &str {
+fn nsstring_as_str(nsstr: &AnyObject) -> &str {
     let bytes = unsafe {
         let bytes: *const std::os::raw::c_char = msg_send![nsstr, UTF8String];
         bytes as *const u8
     };
     let len: NSUInteger = unsafe { msg_send![nsstr, length] };
     unsafe {
-        let bytes = std::slice::from_raw_parts(bytes, len as usize);
+        let bytes = std::slice::from_raw_parts(bytes, len);
         std::str::from_utf8(bytes).unwrap()
     }
 }
 
-fn nsstring_from_str(string: &str) -> *mut objc::runtime::Object {
+fn nsstring_from_str(string: &str) -> *mut AnyObject {
     const UTF8_ENCODING: usize = 4;
 
     let cls = class!(NSString);
     let bytes = string.as_ptr() as *const c_void;
     unsafe {
-        let obj: *mut objc::runtime::Object = msg_send![cls, alloc];
-        let obj: *mut objc::runtime::Object = msg_send![
+        let obj: *mut AnyObject = msg_send![cls, alloc];
+        let obj: *mut AnyObject = msg_send![
             obj,
             initWithBytes:bytes
             length:string.len()
             encoding:UTF8_ENCODING
         ];
-        let _: *mut c_void = msg_send![obj, autorelease];
+        let _: *mut AnyObject = msg_send![obj, autorelease];
         obj
     }
 }
@@ -174,15 +149,24 @@ macro_rules! foreign_obj_type {
             }
         }
 
-        unsafe impl ::objc::Message for $raw_ident {
+        unsafe impl ::objc2::encode::Encode for $owned_ident {
+            const ENCODING: ::objc2::Encoding = ::objc2::Encoding::Object;
         }
-        unsafe impl ::objc::Message for paste!{[<$owned_ident Ref>]} {
+        unsafe impl ::objc2::encode::RefEncode for $raw_ident {
+            const ENCODING_REF: ::objc2::Encoding = ::objc2::Encoding::Object;
+        }
+        unsafe impl ::objc2::encode::RefEncode for paste!{[<$owned_ident Ref>]} {
+            const ENCODING_REF: ::objc2::Encoding = ::objc2::Encoding::Object;
+        }
+        unsafe impl ::objc2::Message for $raw_ident {
+        }
+        unsafe impl ::objc2::Message for paste!{[<$owned_ident Ref>]} {
         }
 
         impl ::std::fmt::Debug for paste!{[<$owned_ident Ref>]} {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 unsafe {
-                    let string: *mut ::objc::runtime::Object = msg_send![self, debugDescription];
+                    let string: *mut ::objc2::runtime::AnyObject = msg_send![self, debugDescription];
                     write!(f, "{}", crate::nsstring_as_str(&*string))
                 }
             }
@@ -201,10 +185,10 @@ macro_rules! try_objc {
         $err_name: ident => $body:expr
     } => {
         {
-            let mut $err_name: *mut Object = ::std::ptr::null_mut();
+            let mut $err_name: *mut ::objc2::runtime::AnyObject = ::std::ptr::null_mut();
             let value = $body;
             if !$err_name.is_null() {
-                let desc: *mut Object = msg_send![$err_name, localizedDescription];
+                let desc: *mut AnyObject = msg_send![$err_name, localizedDescription];
                 let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 return Err(message);
@@ -214,42 +198,18 @@ macro_rules! try_objc {
     };
 }
 
-macro_rules! msg_send_bool {
-    ($obj:expr, $name:ident) => {{
-        match msg_send![$obj, $name] {
-            YES => true,
-            NO => false,
-            #[cfg(not(target_arch = "aarch64"))]
-            _ => unreachable!(),
-        }
-    }};
-    ($obj:expr, $name:ident : $arg:expr) => {{
-        match msg_send![$obj, $name: $arg] {
-            YES => true,
-            NO => false,
-            #[cfg(not(target_arch = "aarch64"))]
-            _ => unreachable!(),
-        }
-    }};
-}
-
 macro_rules! msg_send_bool_error_check {
     ($obj:expr, $name:ident: $arg:expr) => {{
-        let mut err: *mut Object = ptr::null_mut();
-        let result: BOOL = msg_send![$obj, $name:$arg
+        let mut err: *mut AnyObject = ptr::null_mut();
+        let result: Bool = msg_send![$obj, $name:$arg
                                                     error:&mut err];
         if !err.is_null() {
-            let desc: *mut Object = msg_send![err, localizedDescription];
+            let desc: *mut AnyObject = msg_send![err, localizedDescription];
             let c_msg: *const c_char = msg_send![desc, UTF8String];
             let message = CStr::from_ptr(c_msg).to_string_lossy().into_owned();
             Err(message)
         } else {
-            match result {
-                YES => Ok(true),
-                NO => Ok(false),
-                #[cfg(not(target_arch = "aarch64"))]
-                _ => unreachable!(),
-            }
+            Ok(result.as_bool())
         }
     }};
 }
@@ -262,17 +222,17 @@ pub struct NSArray<T> {
 pub struct Array<T>(*mut NSArray<T>)
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static;
+    T::Ref: objc2::Message + 'static;
 
 pub struct ArrayRef<T>(foreign_types::Opaque, PhantomData<T>)
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static;
+    T::Ref: objc2::Message + 'static;
 
 impl<T> Drop for Array<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
     fn drop(&mut self) {
         unsafe {
@@ -284,31 +244,55 @@ where
 impl<T> Clone for Array<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
     fn clone(&self) -> Self {
         unsafe { Array(msg_send![self.0, retain]) }
     }
 }
 
-unsafe impl<T> objc::Message for NSArray<T>
+unsafe impl<T> RefEncode for NSArray<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
+{
+    const ENCODING_REF: Encoding = Encoding::Object;
+}
+
+unsafe impl<T> objc2::Message for NSArray<T>
+where
+    T: ForeignType + 'static,
+    T::Ref: objc2::Message + 'static,
 {
 }
 
-unsafe impl<T> objc::Message for ArrayRef<T>
+unsafe impl<T> RefEncode for ArrayRef<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
+    const ENCODING_REF: Encoding = Encoding::Object;
+}
+
+unsafe impl<T> objc2::Message for ArrayRef<T>
+where
+    T: ForeignType + 'static,
+    T::Ref: objc2::Message + 'static,
+{
+}
+
+unsafe impl<T> Encode for Array<T>
+where
+    T: ForeignType + 'static,
+    T::Ref: objc2::Message + 'static,
+{
+    const ENCODING: ::objc2::Encoding = Encoding::Object;
 }
 
 impl<T> Array<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
     pub fn from_slice<'a>(s: &[&T::Ref]) -> &'a ArrayRef<T> {
         unsafe {
@@ -316,11 +300,19 @@ where
             msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
         }
     }
+}
 
+impl<T> Array<T>
+where
+    T: ForeignType + objc2::Encode + 'static,
+    T::Ref: objc2::Message + 'static,
+{
     pub fn from_owned_slice<'a>(s: &[T]) -> &'a ArrayRef<T> {
         unsafe {
             let class = class!(NSArray);
-            msg_send![class, arrayWithObjects: s.as_ptr() count: s.len()]
+            let ptr: *const T = s.as_ptr();
+            let ptr: *const *const T::Ref = ptr.cast();
+            msg_send![class, arrayWithObjects: ptr count: s.len()]
         }
     }
 }
@@ -328,7 +320,7 @@ where
 unsafe impl<T> foreign_types::ForeignType for Array<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
     type CType = NSArray<T>;
     type Ref = ArrayRef<T>;
@@ -345,7 +337,7 @@ where
 unsafe impl<T> foreign_types::ForeignTypeRef for ArrayRef<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
     type CType = NSArray<T>;
 }
@@ -353,7 +345,7 @@ where
 impl<T> Deref for Array<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
     type Target = ArrayRef<T>;
 
@@ -366,7 +358,7 @@ where
 impl<T> Borrow<ArrayRef<T>> for Array<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
     fn borrow(&self) -> &ArrayRef<T> {
         unsafe { mem::transmute(self.as_ptr()) }
@@ -376,7 +368,7 @@ where
 impl<T> ToOwned for ArrayRef<T>
 where
     T: ForeignType + 'static,
-    T::Ref: objc::Message + 'static,
+    T::Ref: objc2::Message + 'static,
 {
     type Owned = Array<T>;
 
@@ -411,7 +403,7 @@ impl NsObjectRef {
     pub fn conforms_to_protocol<T>(&self) -> Result<bool, String> {
         let name = ::std::any::type_name::<T>();
         if let Some(name) = name.split("::").last() {
-            if let Some(protocol) = objc::runtime::Protocol::get(name) {
+            if let Some(protocol) = Protocol::get(name) {
                 Ok(unsafe { msg_send![self, conformsToProtocol: protocol] })
             } else {
                 Err(format!("Can not find the protocol for type: {}.", name))
@@ -456,11 +448,13 @@ impl MetalLayerRef {
         unsafe { msg_send![self, setPixelFormat: pixel_format] }
     }
 
-    pub fn drawable_size(&self) -> CGSize {
-        unsafe { msg_send![self, drawableSize] }
+    pub fn drawable_size(&self) -> (f64, f64) {
+        let res: CGSize = unsafe { msg_send![self, drawableSize] };
+        (res.width as _, res.height as _)
     }
 
-    pub fn set_drawable_size(&self, size: CGSize) {
+    pub fn set_drawable_size(&self, width: f64, height: f64) {
+        let size = CGSize::new(width as _, height as _);
         unsafe { msg_send![self, setDrawableSize: size] }
     }
 
@@ -504,11 +498,13 @@ impl MetalLayerRef {
         unsafe { msg_send![self, nextDrawable] }
     }
 
-    pub fn contents_scale(&self) -> CGFloat {
-        unsafe { msg_send![self, contentsScale] }
+    pub fn contents_scale(&self) -> f64 {
+        let res: CGFloat = unsafe { msg_send![self, contentsScale] };
+        res as f64
     }
 
-    pub fn set_contents_scale(&self, scale: CGFloat) {
+    pub fn set_contents_scale(&self, scale: f64) {
+        let scale = scale as CGFloat;
         unsafe { msg_send![self, setContentsScale: scale] }
     }
 
@@ -607,12 +603,13 @@ pub use {
 
 #[inline]
 unsafe fn obj_drop<T>(p: *mut T) {
-    msg_send![(p as *mut Object), release]
+    msg_send![p as *mut AnyObject, release]
 }
 
 #[inline]
 unsafe fn obj_clone<T: 'static>(p: *mut T) -> *mut T {
-    msg_send![(p as *mut Object), retain]
+    let p: *mut AnyObject = msg_send![p as *mut AnyObject, retain];
+    p as *mut T
 }
 
 #[allow(non_camel_case_types)]

@@ -5,13 +5,11 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-extern crate objc;
-
 use cocoa::{appkit::NSView, base::id as cocoa_id};
-use core_graphics_types::geometry::CGSize;
 
 use metal::*;
-use objc::{rc::autoreleasepool, runtime::YES};
+use objc2::rc::autoreleasepool;
+use objc2::runtime::Bool;
 use std::mem;
 use winit::platform::macos::WindowExtMacOS;
 
@@ -103,12 +101,12 @@ fn main() {
 
     unsafe {
         let view = window.ns_view() as cocoa_id;
-        view.setWantsLayer(YES);
+        view.setWantsLayer(Bool::YES.as_raw());
         view.setLayer(mem::transmute(layer.as_ref()));
     }
 
     let draw_size = window.inner_size();
-    layer.set_drawable_size(CGSize::new(draw_size.width as f64, draw_size.height as f64));
+    layer.set_drawable_size(draw_size.width as f64, draw_size.height as f64);
 
     let library_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("examples/window/shaders.metallib");
@@ -133,7 +131,7 @@ fn main() {
 
         device.new_buffer_with_data(
             vertex_data.as_ptr() as *const _,
-            (vertex_data.len() * mem::size_of::<f32>()) as u64,
+            vertex_data.len() * mem::size_of::<f32>(),
             MTLResourceOptions::CPUCacheModeDefaultCache | MTLResourceOptions::StorageModeManaged,
         )
     };
@@ -157,19 +155,19 @@ fn main() {
 
     let clear_rect_buffer = device.new_buffer_with_data(
         clear_rect.as_ptr() as *const _,
-        mem::size_of::<ClearRect>() as u64,
+        mem::size_of::<ClearRect>(),
         MTLResourceOptions::CPUCacheModeDefaultCache | MTLResourceOptions::StorageModeManaged,
     );
 
     events_loop.run(move |event, _, control_flow| {
-        autoreleasepool(|| {
+        autoreleasepool(|_| {
             *control_flow = ControlFlow::Poll;
 
             match event {
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                     WindowEvent::Resized(size) => {
-                        layer.set_drawable_size(CGSize::new(size.width as f64, size.height as f64));
+                        layer.set_drawable_size(size.width as f64, size.height as f64);
                     }
                     _ => (),
                 },
@@ -200,14 +198,11 @@ fn main() {
                         std::ptr::copy(
                             vertex_data.as_ptr(),
                             p as *mut f32,
-                            (vertex_data.len() * mem::size_of::<f32>()) as usize,
+                            vertex_data.len() * mem::size_of::<f32>(),
                         );
                     }
 
-                    vbuf.did_modify_range(crate::NSRange::new(
-                        0 as u64,
-                        (vertex_data.len() * mem::size_of::<f32>()) as u64,
-                    ));
+                    vbuf.did_modify_range(0..vertex_data.len() * mem::size_of::<f32>());
 
                     let drawable = match layer.next_drawable() {
                         Some(drawable) => drawable,

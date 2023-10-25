@@ -5,8 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use crate::DeviceRef;
-use objc::runtime::{NO, YES};
+use super::*;
 
 /// See <https://developer.apple.com/documentation/metal/mtlcomparefunction>
 #[repr(u64)]
@@ -22,6 +21,10 @@ pub enum MTLCompareFunction {
     Always = 7,
 }
 
+unsafe impl Encode for MTLCompareFunction {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metal/mtlstenciloperation>
 #[repr(u64)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -34,6 +37,10 @@ pub enum MTLStencilOperation {
     Invert = 5,
     IncrementWrap = 6,
     DecrementWrap = 7,
+}
+
+unsafe impl Encode for MTLStencilOperation {
+    const ENCODING: Encoding = u64::ENCODING;
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlstencildescriptor>

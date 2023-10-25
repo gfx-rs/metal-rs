@@ -7,19 +7,21 @@
 
 use super::*;
 
-use objc::runtime::{BOOL, YES};
+use objc2::runtime::Bool;
 
-#[cfg_attr(feature = "link", link(name = "MetalPerformanceShaders", kind = "framework"))]
+#[cfg_attr(
+    feature = "link",
+    link(name = "MetalPerformanceShaders", kind = "framework")
+)]
 extern "C" {
-    fn MPSSupportsMTLDevice(device: *const std::ffi::c_void) -> BOOL;
+    fn MPSSupportsMTLDevice(device: *const std::ffi::c_void) -> Bool;
 }
 
 pub fn mps_supports_device(device: &DeviceRef) -> bool {
-    let b: BOOL = unsafe {
+    unsafe {
         let ptr: *const DeviceRef = device;
-        MPSSupportsMTLDevice(ptr as _)
-    };
-    b == YES
+        MPSSupportsMTLDevice(ptr as _).as_bool()
+    }
 }
 
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpskernel>
@@ -31,10 +33,15 @@ foreign_obj_type! {
 }
 
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsraydatatype>
+#[repr(usize)] // NSUInteger
 pub enum MPSRayDataType {
     OriginDirection = 0,
     OriginMinDistanceDirectionMaxDistance = 1,
     OriginMaskDirectionMaxDistance = 2,
+}
+
+unsafe impl Encode for MPSRayDataType {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
 }
 
 bitflags! {
@@ -49,9 +56,14 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MPSRayMaskOptions {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// Options that determine the data contained in an intersection result.
 ///
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsintersectiondatatype>
+#[repr(usize)] // NSUInteger
 pub enum MPSIntersectionDataType {
     Distance = 0,
     DistancePrimitiveIndex = 1,
@@ -60,7 +72,12 @@ pub enum MPSIntersectionDataType {
     DistancePrimitiveIndexInstanceIndexCoordinates = 4,
 }
 
+unsafe impl Encode for MPSIntersectionDataType {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsintersectiontype>
+#[repr(usize)] // NSUInteger
 pub enum MPSIntersectionType {
     /// Find the closest intersection to the ray's origin along the ray direction.
     /// This is potentially slower than `Any` but is well suited to primary visibility rays.
@@ -70,7 +87,12 @@ pub enum MPSIntersectionType {
     Any = 1,
 }
 
+unsafe impl Encode for MPSIntersectionType {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsraymaskoperator>
+#[repr(usize)] // NSUInteger
 pub enum MPSRayMaskOperator {
     /// Accept the intersection if `(primitive mask & ray mask) != 0`.
     And = 0,
@@ -96,7 +118,12 @@ pub enum MPSRayMaskOperator {
     GreaterThanOrEqualTo = 9,
 }
 
+unsafe impl Encode for MPSRayMaskOperator {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpstriangleintersectiontesttype>
+#[repr(usize)] // NSUInteger
 pub enum MPSTriangleIntersectionTestType {
     /// Use the default ray/triangle intersection test
     Default = 0,
@@ -106,11 +133,20 @@ pub enum MPSTriangleIntersectionTestType {
     Watertight = 1,
 }
 
+unsafe impl Encode for MPSTriangleIntersectionTestType {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsaccelerationstructurestatus>
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[repr(usize)] // NSUInteger
 pub enum MPSAccelerationStructureStatus {
     Unbuilt = 0,
     Built = 1,
+}
+
+unsafe impl Encode for MPSAccelerationStructureStatus {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
 }
 
 bitflags! {
@@ -129,12 +165,17 @@ bitflags! {
     }
 }
 
+unsafe impl Encode for MPSAccelerationStructureUsage {
+    const ENCODING: Encoding = NSUInteger::ENCODING;
+}
+
 /// A common bit for all floating point data types.
-const MPSDataTypeFloatBit: isize = 0x10000000;
-const MPSDataTypeSignedBit: isize = 0x20000000;
-const MPSDataTypeNormalizedBit: isize = 0x40000000;
+const MPSDataTypeFloatBit: u32 = 0x10000000;
+const MPSDataTypeSignedBit: u32 = 0x20000000;
+const MPSDataTypeNormalizedBit: u32 = 0x40000000;
 
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsdatatype>
+#[repr(u32)] // uint32_t
 pub enum MPSDataType {
     Invalid = 0,
 
@@ -156,6 +197,10 @@ pub enum MPSDataType {
     Unorm8 = MPSDataTypeNormalizedBit | 8,
 }
 
+unsafe impl Encode for MPSDataType {
+    const ENCODING: Encoding = u32::ENCODING;
+}
+
 /// A kernel that performs intersection tests between rays and geometry.
 ///
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsrayintersector>
@@ -171,7 +216,7 @@ impl RayIntersector {
     pub fn from_device(device: &DeviceRef) -> Option<Self> {
         unsafe {
             let intersector: RayIntersector = msg_send![class!(MPSRayIntersector), alloc];
-            let ptr: *mut Object = msg_send![intersector.as_ref(), initWithDevice: device];
+            let ptr: *mut AnyObject = msg_send![intersector.as_ref(), initWithDevice: device];
             if ptr.is_null() {
                 None
             } else {
@@ -275,7 +320,7 @@ impl AccelerationStructureGroup {
         unsafe {
             let group: AccelerationStructureGroup =
                 msg_send![class!(MPSAccelerationStructureGroup), alloc];
-            let ptr: *mut Object = msg_send![group.as_ref(), initWithDevice: device];
+            let ptr: *mut AnyObject = msg_send![group.as_ref(), initWithDevice: device];
             if ptr.is_null() {
                 None
             } else {
@@ -386,7 +431,7 @@ impl TriangleAccelerationStructure {
         unsafe {
             let structure: TriangleAccelerationStructure =
                 msg_send![class!(MPSTriangleAccelerationStructure), alloc];
-            let ptr: *mut Object = msg_send![structure.as_ref(), initWithDevice: device];
+            let ptr: *mut AnyObject = msg_send![structure.as_ref(), initWithDevice: device];
             if ptr.is_null() {
                 None
             } else {
@@ -414,6 +459,10 @@ pub enum MPSTransformType {
     Identity = 1,
 }
 
+unsafe impl Encode for MPSTransformType {
+    const ENCODING: Encoding = u64::ENCODING;
+}
+
 /// An acceleration structure built over instances of other acceleration structures
 ///
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsinstanceaccelerationstructure>
@@ -430,7 +479,7 @@ impl InstanceAccelerationStructure {
         unsafe {
             let structure: InstanceAccelerationStructure =
                 msg_send![class!(MPSInstanceAccelerationStructure), alloc];
-            let ptr: *mut Object = msg_send![structure.as_ref(), initWithGroup: group];
+            let ptr: *mut AnyObject = msg_send![structure.as_ref(), initWithGroup: group];
             if ptr.is_null() {
                 None
             } else {
@@ -444,7 +493,7 @@ impl InstanceAccelerationStructureRef {
     /// Marshal to Rust Vec
     pub fn acceleration_structures(&self) -> Vec<PolygonAccelerationStructure> {
         unsafe {
-            let acs: *mut Object = msg_send![self, accelerationStructures];
+            let acs: *mut AnyObject = msg_send![self, accelerationStructures];
             let count: NSUInteger = msg_send![acs, count];
             let ret = (0..count)
                 .map(|i| {
