@@ -68,4 +68,14 @@ impl BufferRef {
     pub fn gpu_address(&self) -> u64 {
         unsafe { msg_send![self, gpuAddress] }
     }
+
+    pub fn read_to_slice<T>(&self, len: usize) -> &[T] {
+        let contents_ptr = self.contents() as *const T;
+        assert!(!contents_ptr.is_null());
+        unsafe { std::slice::from_raw_parts(contents_ptr, len) }
+    }
+
+    pub fn read_to_vec<T: Clone>(&self, len: usize) -> Vec<T> {
+        self.read_to_slice(len).to_vec()
+    }
 }

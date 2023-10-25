@@ -8,7 +8,7 @@
 use super::*;
 use half::{bf16, f16};
 use objc::runtime::{BOOL, YES};
-use std::fmt::Debug;
+use std::fmt::{Debug, Display, Formatter};
 use std::hash::Hash;
 
 #[cfg_attr(
@@ -324,7 +324,7 @@ impl PolygonAccelerationStructureRef {
     }
 
     pub fn set_index_type<T: MPSDataType>(&self, _data_type: T) {
-        unsafe { msg_send![self, setIndexType: T::CODE] }
+        unsafe { msg_send![self, setIndexType: T::TYPE_ID] }
     }
 
     pub fn set_mask_buffer(&self, buffer: Option<&BufferRef>) {
@@ -554,10 +554,10 @@ pub struct MPSIntersectionDistancePrimitiveIndexCoordinates {
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsdatatype?language=objc>.
 pub trait MPSDataType: Clone + Copy + PartialEq + Eq + Debug + Hash {
     type Type: Default + Clone + Copy + PartialEq + Debug + Sized;
-    const CODE: u32;
+    const TYPE_ID: NSUInteger;
 
     /// See <https://developer.apple.com/documentation/metalperformanceshaders/4092019-mpssizeofmpsdatatype?language=objc>.
-    const SIZE: u32 = ((Self::CODE & 0xFFFF) >> 3);
+    const SIZE: NSUInteger = ((Self::TYPE_ID & 0xFFFF) >> 3) as NSUInteger;
 
     fn from_f64(v: f64) -> Self::Type;
 
@@ -565,24 +565,24 @@ pub trait MPSDataType: Clone + Copy + PartialEq + Eq + Debug + Hash {
 }
 
 /// A common bit for all floating point data types. Zero for integer types
-const MPS_FLOATBIT_ENCODING: u32 = 0x10000000;
+const MPS_FLOATBIT_ENCODING: NSUInteger = 0x10000000;
 /// A common bit for all complex point data types. Zero for integer types
-const MPS_COMPLEXBIT_ENCODING: u32 = MPS_FLOATBIT_ENCODING | 0x01000000;
+const MPS_COMPLEXBIT_ENCODING: NSUInteger = MPS_FLOATBIT_ENCODING | 0x01000000;
 /// A common bit for all signed data types
-const MPS_SIGNEDBIT_ENCODING: u32 = 0x20000000;
+const MPS_SIGNEDBIT_ENCODING: NSUInteger = 0x20000000;
 /// A common bit for all alternate encoding data types
-const MPS_ALTERNATE_ENCODING: u32 = 0x80000000;
+const MPS_ALTERNATE_ENCODING: NSUInteger = 0x80000000;
 /// A common bit for all normalized data types.
 /// If set, the value of the shall be interpreted as value / UNORM_TYPE_MAX
 /// Normalized values have range [0, 1.0] if unsigned and [-1,1] if signed.
 /// SNORM_TYPE_MIN is interpreted as SNORM_TYPE_MIN+1 per standard Metal rules.
-const MPS_NORMALIZEDBIT_ENCODING: u32 = 0x40000000;
+const MPS_NORMALIZEDBIT_ENCODING: NSUInteger = 0x40000000;
 
 macro_rules! mps_datatype_impl {
-    ($dt:ident, $dt_ty:ty, $code:expr, $from_f64:expr, $to_f64:expr) => {
+    ($dt:ident, $dt_ty:ty, $type_id:expr, $from_f64:expr, $to_f64:expr) => {
         impl MPSDataType for $dt {
             type Type = $dt_ty;
-            const CODE: u32 = $code;
+            const TYPE_ID: NSUInteger = $type_id;
 
             fn from_f64(v: f64) -> Self::Type {
                 $from_f64(v)
@@ -595,18 +595,18 @@ macro_rules! mps_datatype_impl {
     };
 }
 macro_rules! mps_datatype {
-    ($dt:ident, $dt_ty:ty, $code:expr, $from_f64:expr, $to_f64:expr, $comment:expr) => {
+    ($dt:ident, $dt_ty:ty, $type_id:expr, $from_f64:expr, $to_f64:expr, $comment:expr) => {
         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
         #[doc=$comment]
         pub struct $dt;
 
-        mps_datatype_impl!($dt, $dt_ty, $code, $from_f64, $to_f64);
+        mps_datatype_impl!($dt, $dt_ty, $type_id, $from_f64, $to_f64);
     };
-    ($dt:ident, $dt_ty:ty, $code:expr, $from_f64:expr, $to_f64:expr) => {
+    ($dt:ident, $dt_ty:ty, $type_id:expr, $from_f64:expr, $to_f64:expr) => {
         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
         pub struct $dt;
 
-        mps_datatype_impl!($dt, $dt_ty, $code, $from_f64, $to_f64);
+        mps_datatype_impl!($dt, $dt_ty, $type_id, $from_f64, $to_f64);
     };
 }
 mps_datatype!(Invalid, (), 0, |_: f64| (), |_: ()| 0.0);
@@ -773,54 +773,54 @@ mps_datatype!(
 pub trait Valid {}
 
 /// Helper struct used to indicate a valid matrix multiplication input type.
-pub struct MatMulInput<T: MPSDataType> {
+pub struct GEMMInput<T: MPSDataType> {
     _marker: PhantomData<T>,
 }
 
 /// Input data type must be one of MPSDataTypeFloat32, MPSDataTypeFloat16, MPSDataTypeInt8,
 /// or MPSDataTypeInt16
-impl Valid for MatMulInput<Float16> {}
-impl Valid for MatMulInput<Float32> {}
-impl Valid for MatMulInput<Int8> {}
-impl Valid for MatMulInput<Int16> {}
+impl Valid for GEMMInput<Float16> {}
+impl Valid for GEMMInput<Float32> {}
+impl Valid for GEMMInput<Int8> {}
+impl Valid for GEMMInput<Int16> {}
 
 /// Helper struct used to indicate a valid matrix multiplication result type.
-pub struct MatMulResult<T: MPSDataType> {
+pub struct GEMMResult<T: MPSDataType> {
     _marker: PhantomData<T>,
 }
 
 /// Only MPSDataTypeFloat16 and MPSDataTypeFloat32 are supported for the result matrix.
-impl Valid for MatMulResult<Float16> {}
-impl Valid for MatMulResult<Float32> {}
+impl Valid for GEMMResult<Float16> {}
+impl Valid for GEMMResult<Float32> {}
 
 /// Helper struct used to indicate valid matrix multiplication types.
-pub struct MatMulSpecification<A, B, C>
+pub struct GEMMSpecification<A, B, C>
 where
     A: MPSDataType,
     B: MPSDataType,
     C: MPSDataType,
-    MatMulInput<A>: Valid,
-    MatMulInput<B>: Valid,
-    MatMulResult<C>: Valid,
+    GEMMInput<A>: Valid,
+    GEMMInput<B>: Valid,
+    GEMMResult<C>: Valid,
 {
     _marker: PhantomData<(A, B, C)>,
 }
 
 /// Mixed input matrix multiplication is only for <MPSDataTypeFloat32, MPSDataTypeFloat16, MPSDataTypeFloat32>
-impl Valid for MatMulSpecification<Float32, Float16, Float32> {}
+impl Valid for GEMMSpecification<Float32, Float16, Float32> {}
 
 /// All valid input types can produce a MPSDataTypeFloat32 result.
-impl<T> Valid for MatMulSpecification<T, T, Float32>
+impl<T> Valid for GEMMSpecification<T, T, Float32>
 where
     T: MPSDataType,
-    MatMulInput<T>: Valid,
+    GEMMInput<T>: Valid,
 {
 }
 
 /// These input types can produce a MPSDataTypeFloat16 result.
-impl Valid for MatMulSpecification<Int8, Int8, Float16> {}
-impl Valid for MatMulSpecification<Int16, Int16, Float16> {}
-impl Valid for MatMulSpecification<Float16, Float16, Float16> {}
+impl Valid for GEMMSpecification<Int8, Int8, Float16> {}
+impl Valid for GEMMSpecification<Int16, Int16, Float16> {}
+impl Valid for GEMMSpecification<Float16, Float16, Float16> {}
 
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsmatrixdescriptor?language=objc>
 pub enum MPSMatrixDescriptor {}
@@ -836,7 +836,7 @@ impl MatrixDescriptor {
         rows: NSUInteger,
         columns: NSUInteger,
         row_bytes: NSUInteger,
-        data_type: u32,
+        data_type: NSUInteger,
     ) -> Self {
         unsafe {
             msg_send![
@@ -870,7 +870,7 @@ impl MatrixDescriptor {
         }
     }
 
-    fn row_bytes_for_columns(columns: NSUInteger, data_type: u32) -> NSUInteger {
+    fn row_bytes_for_columns(columns: NSUInteger, data_type: NSUInteger) -> NSUInteger {
         unsafe {
             msg_send![
                 class!(MPSMatrixDescriptor),
@@ -883,7 +883,7 @@ impl MatrixDescriptor {
 
 impl<T: MPSDataType> From<&Matrix<T>> for MatrixDescriptor {
     fn from(matrix: &Matrix<T>) -> Self {
-        let data_type = T::CODE;
+        let data_type = T::TYPE_ID;
         // The number of bytes between starting elements of consecutive rows.
         let row_bytes = MatrixDescriptor::row_bytes_for_columns(matrix.columns, data_type);
         Self::init_single(matrix.rows, matrix.columns, row_bytes, data_type)
@@ -902,9 +902,55 @@ foreign_obj_type! {
 /// Generic matrix for MPSDataTypes.
 #[derive(Debug)]
 pub struct Matrix<T: MPSDataType> {
-    pub entries: Vec<T::Type>, // row-major order
-    pub rows: NSUInteger,
-    pub columns: NSUInteger,
+    entries: Vec<T::Type>, // row-major order
+    rows: NSUInteger,
+    columns: NSUInteger,
+}
+
+impl<T: MPSDataType> Matrix<T> {
+    pub fn new(entries: Vec<T::Type>, rows: NSUInteger, columns: NSUInteger) -> Self {
+        assert_eq!(entries.len(), rows as usize * columns as usize);
+        Self {
+            entries,
+            rows,
+            columns,
+        }
+    }
+    pub fn entries(&self) -> Vec<T::Type> {
+        self.entries.clone()
+    }
+}
+
+impl<T: MPSDataType> From<MatrixBuffer<T>> for Matrix<T> {
+    fn from(buffer: MatrixBuffer<T>) -> Self {
+        Self::new(buffer.contents(), buffer.rows, buffer.columns)
+    }
+}
+
+impl<T: MPSDataType> Display for Matrix<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        assert_eq!(
+            self.entries.len(),
+            self.rows as usize * self.columns as usize
+        );
+        let mut col = 0;
+        for i in 0..(self.rows * self.columns) as usize {
+            if col == 0 {
+                write!(f, "|")?;
+            }
+
+            write!(f, "{:?}", self.entries.get(i).ok_or(std::fmt::Error)?)?;
+
+            if col < self.columns as usize - 1 {
+                write!(f, ", ")?;
+                col += 1;
+            } else {
+                writeln!(f, "|")?;
+                col = 0;
+            }
+        }
+        Ok(())
+    }
 }
 
 impl MatrixObject {
@@ -1092,9 +1138,8 @@ impl MatrixMultiplicationRef {
     }
 }
 
-#[derive(Debug)]
 pub struct MatrixBuffer<T> {
-    buffer: Buffer,
+    pub buffer: Buffer,
     rows: NSUInteger,
     columns: NSUInteger,
     _marker: PhantomData<T>,
@@ -1117,37 +1162,16 @@ impl<T: MPSDataType> MatrixBuffer<T> {
         }
     }
 
-    pub fn new_with_data(
-        device: &DeviceRef,
-        matrix: &Matrix<T>,
-        length: NSUInteger,
-        options: MTLResourceOptions,
-    ) -> Self {
-        let buffer = device.new_buffer_with_data(matrix.entries.as_ptr().cast(), length, options);
-        MatrixBuffer {
-            buffer,
-            rows: matrix.rows,
-            columns: matrix.columns,
-            _marker: PhantomData,
-        }
+    pub fn count(&self) -> usize {
+        (self.rows * self.columns) as usize
     }
 
     pub fn contents(&self) -> Vec<T::Type> {
-        let contents = self.buffer.contents() as *const T::Type;
-        let sl: &[T::Type] =
-            unsafe { std::slice::from_raw_parts(contents, (self.rows * self.columns) as usize) };
-        sl.to_vec()
-    }
-    pub fn read_to_vec(&self) -> Vec<T::Type> {
-        read_buffer_to_vec(&self.buffer, (self.rows * self.columns) as usize)
+        self.buffer.read_to_vec(self.count())
     }
 }
 
-pub fn read_buffer_to_vec<T: Clone>(buffer: &BufferRef, len: usize) -> Vec<T> {
-    Vec::from(unsafe { std::slice::from_raw_parts(buffer.contents() as *const T, len) })
-}
-
-pub fn apply_gemm<A, B, C>(
+pub fn encode_gemm<A, B, C>(
     device: &DeviceRef,
     command_buffer: &CommandBufferRef,
     transpose_left: bool,
@@ -1161,10 +1185,10 @@ where
     A: MPSDataType,
     B: MPSDataType,
     C: MPSDataType,
-    MatMulInput<A>: Valid,
-    MatMulInput<B>: Valid,
-    MatMulResult<C>: Valid,
-    MatMulSpecification<A, B, C>: Valid,
+    GEMMInput<A>: Valid,
+    GEMMInput<B>: Valid,
+    GEMMResult<C>: Valid,
+    GEMMSpecification<A, B, C>: Valid,
 {
     let M = if transpose_left {
         left.columns
@@ -1182,16 +1206,12 @@ where
         left.columns
     };
 
-    validate_matrix_multiplication(left, right, M, N, K);
+    validate_shapes(M, N, K);
 
     // Create descriptors for the matrices.
-    let left_row_bytes = MatrixDescriptor::row_bytes_for_columns(K, A::CODE);
-    let right_row_bytes = MatrixDescriptor::row_bytes_for_columns(N, B::CODE);
-    let result_row_bytes = MatrixDescriptor::row_bytes_for_columns(N, C::CODE);
-
-    let left_descriptor = MatrixDescriptor::init_single(M, K, left_row_bytes, A::CODE);
-    let right_descriptor = MatrixDescriptor::init_single(K, N, right_row_bytes, B::CODE);
-    let result_descriptor = MatrixDescriptor::init_single(M, N, result_row_bytes, C::CODE);
+    let left_row_bytes = MatrixDescriptor::row_bytes_for_columns(K, A::TYPE_ID);
+    let right_row_bytes = MatrixDescriptor::row_bytes_for_columns(N, B::TYPE_ID);
+    let result_row_bytes = MatrixDescriptor::row_bytes_for_columns(N, C::TYPE_ID);
 
     // Create buffers
     let options = MTLResourceOptions::StorageModeShared;
@@ -1202,9 +1222,15 @@ where
 
     let result_buffer = MatrixBuffer::new(device, M, N, M * result_row_bytes, options);
 
+    // Create descriptors
+    let left_descriptor = MatrixDescriptor::init_single(M, K, K * A::SIZE, A::TYPE_ID);
+    let right_descriptor = MatrixDescriptor::init_single(K, N, N * B::SIZE, B::TYPE_ID);
+    let result_descriptor = MatrixDescriptor::init_single(M, N, N * C::SIZE, C::TYPE_ID);
+
     // Create matrix objects
     let left_matrix =
         MatrixObject::init_with_buffer_descriptor(&left_buffer, &left_descriptor).unwrap();
+
     let right_matrix =
         MatrixObject::init_with_buffer_descriptor(&right_buffer, &right_descriptor).unwrap();
     let result_matrix =
@@ -1236,50 +1262,18 @@ where
     result_buffer
 }
 
-fn validate_matrix_multiplication<A, B, C>(
-    left: &Matrix<A>,
-    right: &Matrix<B>,
-    M: NSUInteger,
-    N: NSUInteger,
-    K: NSUInteger,
-) where
-    A: MPSDataType,
-    B: MPSDataType,
-    C: MPSDataType,
-    MatMulInput<A>: Valid,
-    MatMulInput<B>: Valid,
-    MatMulResult<C>: Valid,
-    MatMulSpecification<A, B, C>: Valid,
-{
-
-    // TODO ...
-
-    // For matrix multiplication, the number of columns in the first matrix must be equal to
-    // the number of rows in the second matrix.
-    // The result matrix has the number of rows of the first and the number of columns of the
-    // second matrix.
-    // If only one matrix is transposed then the result matrix has the number of rows of the
-    // transposed matrix and the number of columns of the non-transposed matrix.
-
+fn validate_shapes(M: NSUInteger, N: NSUInteger, K: NSUInteger) {
     // Certain constraints apply to the sizes of the matrices depending on the transposition
     // operations and sizes requested at initialization time as well as the origins at the time
     // this routine is called:
-    //
-    // The left input matrix must be large enough to hold an array of size resultRows x interiorColumns
-    // elements beginning at leftMatrixOrigin.
-    // assert!(left_matrix.rows * left_matrix.columns >= self.result_rows * self.interior_columns);
-    // The right input matrix must be large enough to hold an array of size
-    // interiorColumns x resultColumns elements beginning at rightMatrixOrigin.
-    // assert!(
-    //     right_matrix.rows * right_matrix.columns >= self.interior_columns * self.result_columns
-    // );
-    // The result matrix must be large enough to hold an array of size resultRows x resultColumns
-    // elements beginning at resultMatrixOrigin.
-    // assert!(
-    //     result_matrix.rows * result_matrix.columns >= self.result_rows * self.result_columns
-    // );
+    assert!(M > 0);
+    assert!(N > 0);
+    assert!(K > 0);
+    // Left column size must equal right row size.
+    assert_eq!(K, N);
 
-    // Each matrix within the range specified by batchStart and batchSize, which also specifies
-    // a valid set of matrices within leftMatrix, rightMatrix, and resultMatrix, will
-    // be processed.
+    // The left matrix must be larger or equal to result rows * interior columns
+    assert!(M * K >= M * N);
+    // The right matrix must be larger or equal to result columns * interior columns
+    assert!(K * N >= M * N);
 }
