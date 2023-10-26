@@ -908,7 +908,12 @@ pub struct Matrix<T: MPSDataType> {
 }
 
 impl<T: MPSDataType> Matrix<T> {
-    pub fn new(entries: Vec<T::Type>, rows: NSUInteger, columns: NSUInteger) -> Self {
+    pub fn new<E: IntoIterator<Item = T::Type>>(
+        entries: E,
+        rows: NSUInteger,
+        columns: NSUInteger,
+    ) -> Matrix<T> {
+        let entries: Vec<T::Type> = entries.into_iter().collect();
         assert_eq!(entries.len(), rows as usize * columns as usize);
         Self {
             entries,
@@ -916,8 +921,22 @@ impl<T: MPSDataType> Matrix<T> {
             columns,
         }
     }
-    pub fn entries(&self) -> Vec<T::Type> {
-        self.entries.clone()
+    pub fn entries(&self) -> &[T::Type] {
+        &self.entries
+    }
+
+    pub fn entry(&self, row: usize, column: usize) -> T::Type {
+        assert!(row < self.rows as usize);
+        assert!(column < self.columns as usize);
+        self.entries[row * self.columns as usize + column]
+    }
+
+    pub fn rows(&self) -> NSUInteger {
+        self.rows
+    }
+
+    pub fn columns(&self) -> NSUInteger {
+        self.columns
     }
 }
 
