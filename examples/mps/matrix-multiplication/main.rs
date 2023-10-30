@@ -1,9 +1,11 @@
-use metal::mps::*;
-use metal::*;
-use rand::{thread_rng, Rng};
+use std::io;
 use std::io::Write;
 use std::ops::{AddAssign, Mul};
-use std::{array, io};
+
+use rand::{thread_rng, Rng};
+
+use metal::mps::*;
+use metal::*;
 
 fn main() {
     correctness();
