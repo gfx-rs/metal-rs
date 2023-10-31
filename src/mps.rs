@@ -1165,7 +1165,8 @@ pub fn encode_gemm<A, B, C>(
     c: &mut MatrixBuffer<C>,
     alpha: f64,
     beta: f64,
-) where
+) -> Result<(), String>
+where
     A: MPSDataType,
     B: MPSDataType,
     C: MPSDataType,
@@ -1193,9 +1194,12 @@ pub fn encode_gemm<A, B, C>(
     let result_descriptor = MatrixDescriptor::init_single(M, N, N * C::SIZE, C::TYPE_ID);
 
     // Create matrix objects
-    let left_matrix = Matrix::init_with_buffer_descriptor(&a.buffer, &left_descriptor).unwrap();
-    let right_matrix = Matrix::init_with_buffer_descriptor(&b.buffer, &right_descriptor).unwrap();
-    let result_matrix = Matrix::init_with_buffer_descriptor(&c.buffer, &result_descriptor).unwrap();
+    let left_matrix = Matrix::init_with_buffer_descriptor(&a.buffer, &left_descriptor)
+        .ok_or_else(|| "Failed to create left matrix")?;
+    let right_matrix = Matrix::init_with_buffer_descriptor(&b.buffer, &right_descriptor)
+        .ok_or_else(|| "Failed to create right matrix")?;
+    let result_matrix = Matrix::init_with_buffer_descriptor(&c.buffer, &result_descriptor)
+        .ok_or_else(|| "Failed to create result matrix")?;
 
     // Create kernel
     let matrix_multiplication = MatrixMultiplication::init(
@@ -1208,7 +1212,7 @@ pub fn encode_gemm<A, B, C>(
         alpha,
         beta,
     )
-    .unwrap();
+    .ok_or_else(|| "Failed to create matrix multiplication kernel")?;
 
     // Encode kernel to command buffer
     matrix_multiplication.encode_to_command_buffer(
@@ -1217,6 +1221,8 @@ pub fn encode_gemm<A, B, C>(
         &right_matrix,
         &result_matrix,
     );
+
+    Ok(())
 }
 
 fn validate_shapes(M: NSUInteger, N: NSUInteger, K: NSUInteger, B_K: NSUInteger) {

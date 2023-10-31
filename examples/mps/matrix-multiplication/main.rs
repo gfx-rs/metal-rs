@@ -53,7 +53,8 @@ fn correctness() {
             &mut c,
             1.0,
             0.0,
-        );
+        )
+        .expect("Encoding failed");
         command_buffer.commit();
         command_buffer.wait_until_completed();
 
@@ -127,7 +128,8 @@ fn performance() {
                 &mut c,
                 alpha,
                 beta,
-            );
+            )
+            .expect("Encoding failed");
         }
         command_buffer.commit();
         command_buffer.wait_until_completed();
