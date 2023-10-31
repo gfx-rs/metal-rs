@@ -676,7 +676,7 @@ unsafe fn obj_drop<T>(p: *mut T) {
 }
 
 #[inline]
-unsafe fn obj_nodrop<T>(p: *mut T) {
+unsafe fn obj_nodrop<T>(_p: *mut T) {
     // msg_send![(p as *mut Object), release]
 }
 

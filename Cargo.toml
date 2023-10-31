@@ -82,6 +82,11 @@ path = "examples/mps/matrix-multiplication/main.rs"
 required-features = ["mps"]
 
 [[example]]
+name = "custom-kernels"
+path = "examples/mps/custom-kernels/main.rs"
+required-features = ["mps"]
+
+[[example]]
 name = "mps-ray-intersection"
 path = "examples/mps/ray-intersection/main.rs"
 required-features = ["mps"]
