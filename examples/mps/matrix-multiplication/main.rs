@@ -1,3 +1,4 @@
+use std::any::type_name;
 use std::io;
 use std::io::Write;
 use std::ops::{AddAssign, Mul};
@@ -58,22 +59,35 @@ fn correctness() {
     println!(" ✅\n");
 }
 
+fn short_type_name<T>() -> String {
+    let name = type_name::<T>();
+    let mut parts = name.split("::");
+    parts.last().unwrap().to_string()
+}
+
 fn performance() {
     const M: u64 = 4096;
     const N: u64 = 4096;
     const K: u64 = 4096;
 
+    type A = Float32;
+    type B = Float16;
+    type C = Float32;
     const ITERATIONS: usize = 50;
 
     println!("Performance: ");
-    println!("Generating input matrices: (f32 {M}x{K} and f16 {K}x{N})");
+
+    let a = short_type_name::<A>();
+    let b = short_type_name::<B>();
+    let c = short_type_name::<C>();
+    println!("{M}x{K}x{a} * {K}x{N}x{b} = {M}x{N}x{c}");
+    println!("Generating input matrices...");
     // Generate random matrices
-    let left = generate_matrix::<Float32, M, K>();
-    let right = generate_matrix::<Float16, K, N>();
+    let left = generate_matrix::<A, M, K>();
+    let right = generate_matrix::<B, K, N>();
 
     // Setup
     let device = Device::system_default().expect("No device found");
-    let command_queue = device.new_command_queue();
 
     let cases = [
         (false, false, 1.0, 0.0),
@@ -84,15 +98,14 @@ fn performance() {
     ];
     for (t_left, t_right, alpha, beta) in cases {
         println!("Running with transpose left: {t_left}, transpose right: {t_right}, alpha: {alpha}, beta: {beta}");
-        let mut flops: Vec<f64> = vec![];
+        let command_queue = device.new_command_queue();
+        let command_buffer = command_queue.new_command_buffer();
 
-        let mut total_time = std::time::Duration::new(0, 0);
+        let start = std::time::Instant::now();
         for i in 0..ITERATIONS {
             progress_bar(i, ITERATIONS);
 
-            let start = std::time::Instant::now();
-            let command_buffer = command_queue.new_command_buffer();
-            let _ = encode_gemm(
+            let _: MatrixBuffer<C> = encode_gemm(
                 &device,
                 command_buffer,
                 t_left,
@@ -102,24 +115,22 @@ fn performance() {
                 alpha,
                 beta,
             );
-            command_buffer.commit();
-            command_buffer.wait_until_completed();
-
-            let time = std::time::Instant::now() - start;
-
-            total_time += time;
-
-            // Calculate GFLOPS
-            // C <- alpha * AB + beta * C
-            // Operations = 2(M * N * K)
-            flops.push((M * N * (2 * K + 2)) as f64 / (time.as_secs_f64() * 1e+9f64));
         }
+        command_buffer.commit();
+        command_buffer.wait_until_completed();
+
+        let total_time = start.elapsed();
+
+        // Calculate GFLOPS
+        // C <- alpha * AB + beta * C
+        // Operations = 2(M * N * K)
+        let avg_gflops = (ITERATIONS as u64 * (M * N * (2 * K - 1))) as f64
+            / (total_time.as_secs_f64() * 1e+9f64);
+
         println!(" ✅");
 
-        let avg_gflops = flops.iter().sum::<f64>() / flops.len() as f64;
         println!("Avg GFLOPS: {}", avg_gflops);
         println!("Total time: {:#?}", total_time);
-        println!("Avg time: {:#?}", total_time / ITERATIONS as u32);
         println!()
     }
 }
