@@ -1162,7 +1162,7 @@ pub fn encode_gemm<A, B, C>(
     transpose_right: bool,
     a: &MatrixBuffer<A>,
     b: &MatrixBuffer<B>,
-    c: &MatrixBuffer<C>,
+    c: &mut MatrixBuffer<C>,
     alpha: f64,
     beta: f64,
 ) where

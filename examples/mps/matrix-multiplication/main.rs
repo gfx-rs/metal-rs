@@ -40,10 +40,20 @@ fn correctness() {
 
         let a = generate_matrix::<Float32, M, K>(&device);
         let b = generate_matrix::<Float32, K, N>(&device);
-        let c = generate_matrix::<Float32, K, N>(&device);
+        let mut c = generate_matrix::<Float32, K, N>(&device);
 
         let command_buffer = command_queue.new_command_buffer();
-        encode_gemm(&device, command_buffer, false, false, &a, &b, &c, 1.0, 0.0);
+        encode_gemm(
+            &device,
+            command_buffer,
+            false,
+            false,
+            &a,
+            &b,
+            &mut c,
+            1.0,
+            0.0,
+        );
         command_buffer.commit();
         command_buffer.wait_until_completed();
 
@@ -89,7 +99,7 @@ fn performance() {
     // Generate random matrices
     let a = generate_matrix::<A, M, K>(&device);
     let b = generate_matrix::<B, K, N>(&device);
-    let c = generate_matrix::<C, K, N>(&device);
+    let mut c = generate_matrix::<C, K, N>(&device);
 
     let cases = [
         (false, false, 1.0, 0.0),
@@ -114,7 +124,7 @@ fn performance() {
                 t_right,
                 &a,
                 &b,
-                &c,
+                &mut c,
                 alpha,
                 beta,
             );
