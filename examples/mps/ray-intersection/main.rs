@@ -14,8 +14,8 @@ type Intersection = mps::MPSIntersectionDistancePrimitiveIndexCoordinates;
 fn main() {
     let device = Device::system_default().expect("No device found");
 
-    let library_path =
-        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("examples/mps/shaders.metallib");
+    let library_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("examples/mps/ray-intersection/shaders.metallib");
     let library = device
         .new_library_with_file(library_path)
         .expect("Failed to load shader library");
@@ -67,7 +67,7 @@ fn main() {
     acceleration_structure.set_vertex_buffer(Some(&vertex_buffer));
     acceleration_structure.set_vertex_stride(vertex_stride as u64);
     acceleration_structure.set_index_buffer(Some(&index_buffer));
-    acceleration_structure.set_index_type(mps::MPSDataType::UInt32);
+    acceleration_structure.set_index_type(mps::UInt32);
     acceleration_structure.set_triangle_count(1);
     acceleration_structure.set_usage(mps::MPSAccelerationStructureUsage::None);
     acceleration_structure.rebuild();

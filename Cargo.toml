@@ -1,6 +1,6 @@
 [package]
 name = "metal"
-version = "0.26.0"
+version = "0.27.0"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -29,6 +29,7 @@ block = "0.1.6"
 foreign-types = "0.5"
 dispatch = { version = "0.2", optional = true }
 paste = "1"
+half = "2.3.1"
 
 [dependencies.objc]
 version = "0.2.4"
@@ -76,7 +77,13 @@ name = "compute"
 path = "examples/compute/main.rs"
 
 [[example]]
-name = "mps"
+name = "mps-matrix-multiplication"
+path = "examples/mps/matrix-multiplication/main.rs"
+required-features = ["mps"]
+
+[[example]]
+name = "mps-ray-intersection"
+path = "examples/mps/ray-intersection/main.rs"
 required-features = ["mps"]
 
 [[example]]
