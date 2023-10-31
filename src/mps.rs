@@ -878,7 +878,7 @@ impl MatrixDescriptor {
         }
     }
 
-    fn row_bytes_for_columns(columns: NSUInteger, data_type: NSUInteger) -> NSUInteger {
+    pub fn row_bytes_for_columns(columns: NSUInteger, data_type: NSUInteger) -> NSUInteger {
         unsafe {
             msg_send![
                 class!(MPSMatrixDescriptor),
@@ -889,85 +889,26 @@ impl MatrixDescriptor {
     }
 }
 
-impl<T: MPSDataType> From<&Matrix<T>> for MatrixDescriptor {
-    fn from(matrix: &Matrix<T>) -> Self {
-        let data_type = T::TYPE_ID;
-        // The number of bytes between starting elements of consecutive rows.
-        let row_bytes = MatrixDescriptor::row_bytes_for_columns(matrix.columns, data_type);
-        Self::init_single(matrix.rows, matrix.columns, row_bytes, data_type)
-    }
-}
-
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpsmatrix?language=objc>
 pub enum MPSMatrix {}
 
 foreign_obj_type! {
     type CType = MPSMatrix;
-    pub struct MatrixObject;
+    pub struct Matrix;
     type ParentType = NsObject;
 }
 
-/// Generic matrix for MPSDataTypes.
-#[derive(Debug)]
-pub struct Matrix<T: MPSDataType> {
-    entries: Vec<T::Type>,
-    // row-major order
-    rows: NSUInteger,
-    columns: NSUInteger,
-}
-
-impl<T: MPSDataType> Matrix<T> {
-    pub fn new<E: IntoIterator<Item = T::Type>>(
-        entries: E,
-        rows: NSUInteger,
-        columns: NSUInteger,
-    ) -> Matrix<T> {
-        let entries: Vec<T::Type> = entries.into_iter().collect();
-        assert_eq!(entries.len(), rows as usize * columns as usize);
-        Self {
-            entries,
-            rows,
-            columns,
-        }
-    }
-    pub fn entries(&self) -> &[T::Type] {
-        &self.entries
-    }
-
-    pub fn entry(&self, row: usize, column: usize) -> T::Type {
-        assert!(row < self.rows as usize);
-        assert!(column < self.columns as usize);
-        self.entries[row * self.columns as usize + column]
-    }
-
-    pub fn rows(&self) -> NSUInteger {
-        self.rows
-    }
-
-    pub fn columns(&self) -> NSUInteger {
-        self.columns
-    }
-}
-
-impl<T: MPSDataType> From<MatrixBuffer<T>> for Matrix<T> {
-    fn from(buffer: MatrixBuffer<T>) -> Self {
-        Self::new(buffer.contents(), buffer.rows, buffer.columns)
-    }
-}
-
-impl<T: MPSDataType> Display for Matrix<T> {
+impl<T: MPSDataType> Display for MatrixBuffer<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        assert_eq!(
-            self.entries.len(),
-            self.rows as usize * self.columns as usize
-        );
+        let contents = self.contents();
+        assert_eq!(contents.len(), self.rows as usize * self.columns as usize);
         let mut col = 0;
         for i in 0..(self.rows * self.columns) as usize {
             if col == 0 {
                 write!(f, "|")?;
             }
 
-            write!(f, "{:?}", self.entries.get(i).ok_or(std::fmt::Error)?)?;
+            write!(f, "{:?}", contents.get(i).ok_or(std::fmt::Error)?)?;
 
             if col < self.columns as usize - 1 {
                 write!(f, ", ")?;
@@ -981,13 +922,13 @@ impl<T: MPSDataType> Display for Matrix<T> {
     }
 }
 
-impl MatrixObject {
+impl Matrix {
     fn init_with_device_descriptor(
         device: &DeviceRef,
         descriptor: &MatrixDescriptorRef,
     ) -> Option<Self> {
         unsafe {
-            let matrix: MatrixObject = msg_send![class!(MPSMatrix), alloc];
+            let matrix: Matrix = msg_send![class!(MPSMatrix), alloc];
             let ptr: *mut Object = msg_send![
                 matrix.as_ref(),
                 initWithDevice : device
@@ -1006,7 +947,7 @@ impl MatrixObject {
         descriptor: &MatrixDescriptorRef,
     ) -> Option<Self> {
         unsafe {
-            let matrix: MatrixObject = msg_send![class!(MPSMatrix), alloc];
+            let matrix: Matrix = msg_send![class!(MPSMatrix), alloc];
             let ptr: *mut Object = msg_send![
                 matrix.as_ref(),
                 initWithBuffer : buffer
@@ -1021,7 +962,7 @@ impl MatrixObject {
     }
 }
 
-impl MatrixObjectRef {
+impl MatrixRef {
     pub fn device(&self) -> &DeviceRef {
         unsafe { msg_send![self, device] }
     }
@@ -1150,9 +1091,9 @@ impl MatrixMultiplicationRef {
     pub fn encode_to_command_buffer(
         &self,
         command_buffer: &CommandBufferRef,
-        left_matrix: &MatrixObjectRef,
-        right_matrix: &MatrixObjectRef,
-        result_matrix: &MatrixObjectRef,
+        left_matrix: &MatrixRef,
+        right_matrix: &MatrixRef,
+        result_matrix: &MatrixRef,
     ) {
         unsafe {
             let _: () = msg_send!(
@@ -1194,6 +1135,17 @@ impl<T: MPSDataType> MatrixBuffer<T> {
         }
     }
 
+    pub fn from_buffer(buffer: Buffer, rows: NSUInteger, columns: NSUInteger) -> Self {
+        MatrixBuffer {
+            buffer: buffer.clone(),
+            rows,
+            columns,
+            count: (rows * columns) as usize,
+            allocated_size: buffer.length() as usize,
+            _marker: PhantomData,
+        }
+    }
+
     pub fn count(&self) -> usize {
         self.count
     }
@@ -1208,12 +1160,12 @@ pub fn encode_gemm<A, B, C>(
     command_buffer: &CommandBufferRef,
     transpose_left: bool,
     transpose_right: bool,
-    left: &Matrix<A>,
-    right: &Matrix<B>,
+    a: &MatrixBuffer<A>,
+    b: &MatrixBuffer<B>,
+    c: &MatrixBuffer<C>,
     alpha: f64,
     beta: f64,
-) -> MatrixBuffer<C>
-where
+) where
     A: MPSDataType,
     B: MPSDataType,
     C: MPSDataType,
@@ -1223,31 +1175,17 @@ where
     GEMMSpecification<A, B, C>: Valid,
 {
     let (M, K) = if transpose_left {
-        (left.columns, left.rows)
+        (a.columns, a.rows)
     } else {
-        (left.rows, left.columns)
+        (a.rows, a.columns)
     };
     let (N, B_K) = if transpose_right {
-        (right.rows, right.columns)
+        (b.rows, b.columns)
     } else {
-        (right.columns, right.rows)
+        (b.columns, b.rows)
     };
 
     validate_shapes(M, N, K, B_K);
-
-    // Create descriptors for the matrices.
-    let left_row_bytes = MatrixDescriptor::row_bytes_for_columns(K, A::TYPE_ID);
-    let right_row_bytes = MatrixDescriptor::row_bytes_for_columns(N, B::TYPE_ID);
-    let result_row_bytes = MatrixDescriptor::row_bytes_for_columns(N, C::TYPE_ID);
-
-    // Create buffers
-    let options = MTLResourceOptions::StorageModeShared;
-    let left_buffer =
-        device.new_buffer_with_data(left.entries.as_ptr().cast(), M * left_row_bytes, options);
-    let right_buffer =
-        device.new_buffer_with_data(right.entries.as_ptr().cast(), K * right_row_bytes, options);
-
-    let result_buffer = MatrixBuffer::new(device, M, N, M * result_row_bytes, options);
 
     // Create descriptors
     let left_descriptor = MatrixDescriptor::init_single(M, K, K * A::SIZE, A::TYPE_ID);
@@ -1255,13 +1193,9 @@ where
     let result_descriptor = MatrixDescriptor::init_single(M, N, N * C::SIZE, C::TYPE_ID);
 
     // Create matrix objects
-    let left_matrix =
-        MatrixObject::init_with_buffer_descriptor(&left_buffer, &left_descriptor).unwrap();
-    let right_matrix =
-        MatrixObject::init_with_buffer_descriptor(&right_buffer, &right_descriptor).unwrap();
-    let result_matrix =
-        MatrixObject::init_with_buffer_descriptor(&result_buffer.buffer, &result_descriptor)
-            .unwrap();
+    let left_matrix = Matrix::init_with_buffer_descriptor(&a.buffer, &left_descriptor).unwrap();
+    let right_matrix = Matrix::init_with_buffer_descriptor(&b.buffer, &right_descriptor).unwrap();
+    let result_matrix = Matrix::init_with_buffer_descriptor(&c.buffer, &result_descriptor).unwrap();
 
     // Create kernel
     let matrix_multiplication = MatrixMultiplication::init(
@@ -1283,9 +1217,6 @@ where
         &right_matrix,
         &result_matrix,
     );
-
-    // Return result buffer
-    result_buffer
 }
 
 fn validate_shapes(M: NSUInteger, N: NSUInteger, K: NSUInteger, B_K: NSUInteger) {

@@ -15,12 +15,15 @@ fn main() {
 
 fn correctness() {
     // First verify the correctness of the naive solution
-    let a = Matrix::new([1, 2, 6, 24, 120, 720], 3, 2);
-    let b = Matrix::new([1, 2, 3, 5, 8, 13], 2, 3);
-    let result = matrix_mul::<Int32>(a, b);
+    let m = 3;
+    let n = 3;
+    let k = 2;
+    let a = vec![1, 2, 6, 24, 120, 720];
+    let b = vec![1, 2, 6, 24, 120, 720];
+    let result = matrix_mul::<Int32>(a, b, m, n, k);
     assert_eq!(
-        result.entries(),
-        &[11, 18, 29, 126, 204, 330, 3720, 6000, 9720]
+        result,
+        &[49, 242, 1446, 582, 2892, 17316, 17400, 86640, 519120]
     );
 
     const M: u64 = 100;
@@ -35,25 +38,23 @@ fn correctness() {
     for i in 0..ITERATIONS {
         progress_bar(i, ITERATIONS);
 
-        let left = generate_matrix::<Float32, M, K>();
-        let right = generate_matrix::<Float32, K, N>();
+        let a = generate_matrix::<Float32, M, K>(&device);
+        let b = generate_matrix::<Float32, K, N>(&device);
+        let c = generate_matrix::<Float32, K, N>(&device);
 
         let command_buffer = command_queue.new_command_buffer();
-        let result = encode_gemm(
-            &device,
-            command_buffer,
-            false,
-            false,
-            &left,
-            &right,
-            1.0,
-            0.0,
-        );
+        encode_gemm(&device, command_buffer, false, false, &a, &b, &c, 1.0, 0.0);
         command_buffer.commit();
         command_buffer.wait_until_completed();
 
-        let expected = matrix_mul(left, right);
-        approx_eq(result.contents(), expected.entries().to_vec());
+        let expected = matrix_mul::<Float32>(
+            a.contents(),
+            b.contents(),
+            M as usize,
+            K as usize,
+            N as usize,
+        );
+        approx_eq(c.contents(), expected);
     }
 
     println!(" ✅\n");
@@ -61,7 +62,7 @@ fn correctness() {
 
 fn short_type_name<T>() -> String {
     let name = type_name::<T>();
-    let mut parts = name.split("::");
+    let parts = name.split("::");
     parts.last().unwrap().to_string()
 }
 
@@ -77,17 +78,18 @@ fn performance() {
 
     println!("Performance: ");
 
-    let a = short_type_name::<A>();
-    let b = short_type_name::<B>();
-    let c = short_type_name::<C>();
-    println!("{M}x{K}x{a} * {K}x{N}x{b} = {M}x{N}x{c}");
+    let a_tname = short_type_name::<A>();
+    let b_tname = short_type_name::<B>();
+    let c_tname = short_type_name::<C>();
+    println!("{M}x{K}x{a_tname} * {K}x{N}x{b_tname} = {M}x{N}x{c_tname}");
+
+    let device = Device::system_default().expect("No device found");
+
     println!("Generating input matrices...");
     // Generate random matrices
-    let left = generate_matrix::<A, M, K>();
-    let right = generate_matrix::<B, K, N>();
-
-    // Setup
-    let device = Device::system_default().expect("No device found");
+    let a = generate_matrix::<A, M, K>(&device);
+    let b = generate_matrix::<B, K, N>(&device);
+    let c = generate_matrix::<C, K, N>(&device);
 
     let cases = [
         (false, false, 1.0, 0.0),
@@ -105,13 +107,14 @@ fn performance() {
         for i in 0..ITERATIONS {
             progress_bar(i, ITERATIONS);
 
-            let _: MatrixBuffer<C> = encode_gemm(
+            encode_gemm(
                 &device,
                 command_buffer,
                 t_left,
                 t_right,
-                &left,
-                &right,
+                &a,
+                &b,
+                &c,
                 alpha,
                 beta,
             );
@@ -135,44 +138,54 @@ fn performance() {
     }
 }
 
-fn generate_matrix<T, const ROWS: u64, const COLS: u64>() -> Matrix<T>
+fn generate_matrix<T, const ROWS: u64, const COLS: u64>(device: &Device) -> MatrixBuffer<T>
 where
     T: MPSDataType,
     GEMMInput<T>: Valid,
 {
     let mut rng = thread_rng();
-    Matrix::new(
-        (0..ROWS * COLS).map(|_| T::from_f64(rng.gen())),
-        ROWS as NSUInteger,
-        COLS as NSUInteger,
-    )
+
+    // Create descriptors for the matrices.
+    let row_bytes_for_columns = MatrixDescriptor::row_bytes_for_columns(COLS, T::TYPE_ID);
+
+    // Create buffers
+    let options = MTLResourceOptions::StorageModeShared;
+    let data = (0..ROWS * COLS)
+        .map(|_| T::from_f64(rng.gen()))
+        .collect::<Vec<T::Type>>();
+    let buffer =
+        device.new_buffer_with_data(data.as_ptr().cast(), ROWS * row_bytes_for_columns, options);
+
+    MatrixBuffer::from_buffer(buffer, ROWS, COLS)
 }
 
 // Naive matrix multiplication for testing
-fn matrix_mul<T: MPSDataType>(a: Matrix<T>, b: Matrix<T>) -> Matrix<T>
+fn matrix_mul<T: MPSDataType>(
+    a: Vec<T::Type>,
+    b: Vec<T::Type>,
+    m: usize,
+    n: usize,
+    k: usize,
+) -> Vec<T::Type>
 where
     T::Type: AddAssign + Mul<Output = T::Type> + Copy,
 {
-    assert_eq!(a.columns(), b.rows());
-    let sum_count = a.columns() as usize;
-    let rows = a.rows() as usize;
-    let columns = b.columns() as usize;
-    let size = rows * columns;
+    let size = m * n;
 
-    let mut entries = Vec::with_capacity(size);
+    let mut c = Vec::with_capacity(size);
 
     for idx in 0..size {
-        let i = idx / rows;
-        let j = idx % columns;
+        let i = idx / m;
+        let j = idx % n;
 
         let mut sum = T::from_f64(0.0);
-        for di in 0..sum_count {
-            sum += a.entry(i, di) * b.entry(di, j);
+        for di in 0..k {
+            sum += a[(i * k) + di] * b[(di * n) + j];
         }
-        entries.push(sum);
+        c.push(sum);
     }
 
-    Matrix::new(entries, a.rows(), b.columns())
+    c
 }
 
 fn euclidean_distance<T>(a: Vec<T>, b: Vec<T>) -> f64
