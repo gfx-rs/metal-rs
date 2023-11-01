@@ -34,6 +34,14 @@ impl CommandQueueRef {
         unsafe { msg_send![self, commandBuffer] }
     }
 
+    pub fn new_owned_command_buffer(&self) -> CommandBuffer {
+        unsafe {
+            let buffer: CommandBuffer = msg_send![self, commandBuffer];
+            let () = msg_send![buffer, retain];
+            buffer
+        }
+    }
+
     pub fn new_command_buffer_with_unretained_references(&self) -> &CommandBufferRef {
         unsafe { msg_send![self, commandBufferWithUnretainedReferences] }
     }

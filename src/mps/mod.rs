@@ -6,7 +6,6 @@ use objc::runtime::{BOOL, YES};
 
 use super::*;
 
-pub mod custom_kernels;
 pub mod matrix;
 pub mod raytracing;
 
