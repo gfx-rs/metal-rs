@@ -46,7 +46,7 @@ fn correctness() {
         let command_buffer = command_queue.new_command_buffer();
         encode_gemm(
             &device,
-            command_buffer,
+            &command_buffer,
             false,
             false,
             &a,
@@ -121,7 +121,7 @@ fn performance() {
 
             encode_gemm(
                 &device,
-                command_buffer,
+                &command_buffer,
                 t_left,
                 t_right,
                 &a,

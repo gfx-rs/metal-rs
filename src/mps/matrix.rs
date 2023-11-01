@@ -597,7 +597,7 @@ mod tests {
             let command_buffer = command_queue.new_command_buffer();
             encode_gemm(
                 &device,
-                command_buffer,
+                &command_buffer,
                 false,
                 false,
                 &a,

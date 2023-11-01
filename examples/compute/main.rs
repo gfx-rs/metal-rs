@@ -60,7 +60,7 @@ fn main() {
         encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
         encoder.end_encoding();
 
-        resolve_samples_into_buffer(command_buffer, &counter_sample_buffer, &destination_buffer);
+        resolve_samples_into_buffer(&command_buffer, &counter_sample_buffer, &destination_buffer);
 
         command_buffer.commit();
         command_buffer.wait_until_completed();
