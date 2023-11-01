@@ -69,7 +69,7 @@ foreign_obj_type! {
 }
 
 impl MatrixDescriptor {
-    fn init_single(
+    pub fn init_single(
         rows: NSUInteger,
         columns: NSUInteger,
         row_bytes: NSUInteger,
@@ -171,7 +171,7 @@ impl Matrix {
     //     }
     // }
 
-    fn init_with_buffer_descriptor(
+    pub fn init_with_buffer_descriptor(
         buffer: &BufferRef,
         descriptor: &MatrixDescriptorRef,
     ) -> Option<Self> {
