@@ -559,20 +559,6 @@ foreign_obj_type! {
     pub struct Library;
 }
 
-impl Library {
-    pub fn new(device: &DeviceRef, source: &str, options: &CompileOptionsRef) -> Result<Self, String> {
-        let nssource = crate::nsstring_from_str(source);
-        unsafe {
-            try_objc! { err =>
-                msg_send![device,
-                    newLibraryWithSource : nssource.as_ref()
-                         options : options
-                         error: &mut err
-            ] }
-        }
-    }
-}
-
 impl LibraryRef {
     pub fn device(&self) -> &DeviceRef {
         unsafe { msg_send![self, device] }

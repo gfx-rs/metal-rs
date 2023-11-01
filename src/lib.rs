@@ -196,69 +196,6 @@ macro_rules! foreign_obj_type {
             }
         }
     };
-    {
-        type CType = $raw_ident:ident;
-        pub struct $owned_ident:ident;
-        type ParentType = $parent_ident:ident;
-        nodrop;
-    } => {
-        foreign_obj_type! {
-            type CType = $raw_ident;
-            pub struct $owned_ident;
-            nodrop;
-        }
-
-        impl ::std::ops::Deref for paste!{[<$owned_ident Ref>]} {
-            type Target = paste!{[<$parent_ident Ref>]};
-
-            #[inline]
-            fn deref(&self) -> &Self::Target {
-                unsafe { &*(self as *const Self as *const Self::Target)  }
-            }
-        }
-
-        impl ::std::convert::From<$owned_ident> for $parent_ident {
-            fn from(item: $owned_ident) -> Self {
-                unsafe { Self::from_ptr(::std::mem::transmute(item.into_ptr())) }
-            }
-        }
-    };
-    {
-        type CType = $raw_ident:ident;
-        pub struct $owned_ident:ident;
-        nodrop;
-    } => {
-        foreign_type! {
-            pub unsafe type $owned_ident: Sync + Send {
-                type CType = $raw_ident;
-                // TODO This is not really OK, but somehow the release for Drop
-                // makes the autoreleasepool drop it a second time at the end of the
-                // program leading to a crash.
-                fn drop = crate::obj_nodrop;
-                fn clone = crate::obj_clone;
-            }
-        }
-
-        unsafe impl ::objc::Message for $raw_ident {
-        }
-        unsafe impl ::objc::Message for paste!{[<$owned_ident Ref>]} {
-        }
-
-        impl ::std::fmt::Debug for paste!{[<$owned_ident Ref>]} {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                unsafe {
-                    let string: *mut ::objc::runtime::Object = msg_send![self, debugDescription];
-                    write!(f, "{}", crate::nsstring_as_str(&*string))
-                }
-            }
-        }
-
-        impl ::std::fmt::Debug for $owned_ident {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                ::std::ops::Deref::deref(self).fmt(f)
-            }
-        }
-    };
 }
 
 macro_rules! try_objc {
@@ -673,11 +610,6 @@ pub use {
 #[inline]
 unsafe fn obj_drop<T>(p: *mut T) {
     msg_send![(p as *mut Object), release]
-}
-
-#[inline]
-unsafe fn obj_nodrop<T>(_p: *mut T) {
-    // msg_send![(p as *mut Object), release]
 }
 
 #[inline]

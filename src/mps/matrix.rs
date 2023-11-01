@@ -66,7 +66,6 @@ foreign_obj_type! {
     type CType = MPSMatrixDescriptor;
     pub struct MatrixDescriptor;
     type ParentType = NsObject;
-    nodrop;
 }
 
 impl MatrixDescriptor {
@@ -183,6 +182,8 @@ impl Matrix {
                 initWithBuffer : buffer
                      descriptor: descriptor
             ];
+            // Increase the reference count for Drop to not double free.
+            let () = msg_send![descriptor, retain];
             if ptr.is_null() {
                 None
             } else {
