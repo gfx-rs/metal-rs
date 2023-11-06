@@ -44,7 +44,7 @@ fn correctness() {
         let mut c = generate_matrix::<Float32, K, N>(&device);
 
         let command_buffer = command_queue.new_command_buffer();
-        encode_gemm(
+        encode_gemm_mbuffers(
             &device,
             &command_buffer,
             false,
@@ -119,7 +119,7 @@ fn performance() {
         for i in 0..ITERATIONS {
             progress_bar(i, ITERATIONS);
 
-            encode_gemm(
+            encode_gemm_mbuffers(
                 &device,
                 &command_buffer,
                 t_left,
