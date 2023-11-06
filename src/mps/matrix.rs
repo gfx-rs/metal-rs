@@ -391,6 +391,67 @@ pub fn encode_gemm<A, B, C>(
     command_buffer: &CommandBufferRef,
     transpose_left: bool,
     transpose_right: bool,
+    a: &Buffer,
+    b: &Buffer,
+    c: &mut Buffer,
+    m: NSUInteger,
+    n: NSUInteger,
+    k: NSUInteger,
+    alpha: f64,
+    beta: f64,
+) -> Result<(), String>
+where
+    A: MPSDataType,
+    B: MPSDataType,
+    C: MPSDataType,
+    GEMMInput<A>: Valid,
+    GEMMInput<B>: Valid,
+    GEMMResult<C>: Valid,
+    GEMMSpecification<A, B, C>: Valid,
+{
+    validate_shapes(m, n, k, k);
+
+    // Create descriptors
+    let left_descriptor = MatrixDescriptor::init_single(m, k, k * A::SIZE, A::TYPE_ID);
+    let right_descriptor = MatrixDescriptor::init_single(k, n, n * B::SIZE, B::TYPE_ID);
+    let result_descriptor = MatrixDescriptor::init_single(m, n, n * C::SIZE, C::TYPE_ID);
+
+    // Create matrix objects
+    let left_matrix = Matrix::init_with_buffer_descriptor(&a, &left_descriptor)
+        .ok_or_else(|| "Failed to create left matrix")?;
+    let right_matrix = Matrix::init_with_buffer_descriptor(&b, &right_descriptor)
+        .ok_or_else(|| "Failed to create right matrix")?;
+    let result_matrix = Matrix::init_with_buffer_descriptor(&c, &result_descriptor)
+        .ok_or_else(|| "Failed to create result matrix")?;
+
+    // Create kernel
+    let matrix_multiplication = MatrixMultiplication::init(
+        &device,
+        transpose_left,
+        transpose_right,
+        m,
+        n,
+        k,
+        alpha,
+        beta,
+    )
+    .ok_or_else(|| "Failed to create matrix multiplication kernel")?;
+
+    // Encode kernel to command buffer
+    matrix_multiplication.encode_to_command_buffer(
+        &command_buffer,
+        &left_matrix,
+        &right_matrix,
+        &result_matrix,
+    );
+
+    Ok(())
+}
+pub fn encode_gemm_mbuffers<A, B, C>(
+    device: &DeviceRef,
+    command_buffer: &CommandBufferRef,
+    transpose_left: bool,
+    transpose_right: bool,
     a: &MatrixBuffer<A>,
     b: &MatrixBuffer<B>,
     c: &mut MatrixBuffer<C>,
@@ -419,41 +480,20 @@ where
 
     validate_shapes(M, N, K, B_K);
 
-    // Create descriptors
-    let left_descriptor = MatrixDescriptor::init_single(M, K, K * A::SIZE, A::TYPE_ID);
-    let right_descriptor = MatrixDescriptor::init_single(K, N, N * B::SIZE, B::TYPE_ID);
-    let result_descriptor = MatrixDescriptor::init_single(M, N, N * C::SIZE, C::TYPE_ID);
-
-    // Create matrix objects
-    let left_matrix = Matrix::init_with_buffer_descriptor(&a.buffer, &left_descriptor)
-        .ok_or_else(|| "Failed to create left matrix")?;
-    let right_matrix = Matrix::init_with_buffer_descriptor(&b.buffer, &right_descriptor)
-        .ok_or_else(|| "Failed to create right matrix")?;
-    let result_matrix = Matrix::init_with_buffer_descriptor(&c.buffer, &result_descriptor)
-        .ok_or_else(|| "Failed to create result matrix")?;
-
-    // Create kernel
-    let matrix_multiplication = MatrixMultiplication::init(
-        &device,
+    encode_gemm(
+        device,
+        command_buffer,
         transpose_left,
         transpose_right,
+        &a.buffer,
+        &b.buffer,
+        &mut c.buffer,
         M,
         N,
         K,
         alpha,
         beta,
     )
-    .ok_or_else(|| "Failed to create matrix multiplication kernel")?;
-
-    // Encode kernel to command buffer
-    matrix_multiplication.encode_to_command_buffer(
-        &command_buffer,
-        &left_matrix,
-        &right_matrix,
-        &result_matrix,
-    );
-
-    Ok(())
 }
 
 fn validate_shapes(M: NSUInteger, N: NSUInteger, K: NSUInteger, B_K: NSUInteger) {
@@ -463,14 +503,8 @@ fn validate_shapes(M: NSUInteger, N: NSUInteger, K: NSUInteger, B_K: NSUInteger)
     assert!(M > 0);
     assert!(N > 0);
     assert!(K > 0);
-    assert_eq!(K, B_K);
     // Left column size must equal right row size.
-    assert_eq!(K, N);
-
-    // The left matrix must be larger or equal to result rows * interior columns
-    assert!(M * K >= M * N);
-    // The right matrix must be larger or equal to result columns * interior columns
-    assert!(K * N >= M * N);
+    assert_eq!(K, B_K);
 }
 
 #[cfg(test)]
@@ -595,7 +629,7 @@ mod tests {
             let mut c = generate_matrix::<Float32, K, N>(&device);
 
             let command_buffer = command_queue.new_command_buffer();
-            encode_gemm(
+            encode_gemm_mbuffers(
                 &device,
                 &command_buffer,
                 false,
