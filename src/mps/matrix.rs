@@ -261,8 +261,8 @@ impl MatrixMultiplication {
         result_rows: NSUInteger,
         result_columns: NSUInteger,
         interior_columns: NSUInteger,
-        alpha: f64,
-        beta: f64,
+        alpha: f32,
+        beta: f32,
     ) -> Option<Self> {
         assert!(result_rows > 0);
         assert!(result_columns > 0);
@@ -289,28 +289,28 @@ impl MatrixMultiplication {
         }
     }
 
-    // fn init_simple(
-    //     device: &DeviceRef,
-    //     result_rows: NSUInteger,
-    //     result_columns: NSUInteger,
-    //     interior_columns: NSUInteger,
-    // ) -> Option<Self> {
-    //     unsafe {
-    //         let kernel: MatrixMultiplication = msg_send![class!(MPSMatrixMultiplication), alloc];
-    //         let ptr: *mut Object = msg_send![
-    //             kernel.as_ref(),
-    //             initWithDevice : device
-    //                 resultRows : result_rows
-    //              resultColumns : result_columns
-    //            interiorColumns : interior_columns
-    //         ];
-    //         if ptr.is_null() {
-    //             None
-    //         } else {
-    //             Some(kernel)
-    //         }
-    //     }
-    // }
+    fn init_simple(
+        device: &DeviceRef,
+        result_rows: NSUInteger,
+        result_columns: NSUInteger,
+        interior_columns: NSUInteger,
+    ) -> Option<Self> {
+        unsafe {
+            let kernel: MatrixMultiplication = msg_send![class!(MPSMatrixMultiplication), alloc];
+            let ptr: *mut Object = msg_send![
+                kernel.as_ref(),
+                initWithDevice : device
+                    resultRows : result_rows
+                 resultColumns : result_columns
+               interiorColumns : interior_columns
+            ];
+            if ptr.is_null() {
+                None
+            } else {
+                Some(kernel)
+            }
+        }
+    }
 }
 
 impl MatrixMultiplicationRef {
@@ -335,6 +335,18 @@ impl MatrixMultiplicationRef {
                          resultMatrix : result_matrix
             );
         }
+    }
+    fn batch_start(&self) -> NSUInteger {
+        unsafe { msg_send!(*self, batchStart) }
+    }
+    fn set_batch_start(&self, batchStart: NSUInteger) {
+        unsafe { msg_send!(* self , setBatchStart : batchStart) }
+    }
+    fn batch_size(&self) -> NSUInteger {
+        unsafe { msg_send!(*self, batchSize) }
+    }
+    fn set_batch_size(&self, batchSize: NSUInteger) {
+        unsafe { msg_send!(* self , setBatchSize : batchSize) }
     }
 }
 
@@ -397,8 +409,9 @@ pub fn encode_gemm<A, B, C>(
     m: NSUInteger,
     n: NSUInteger,
     k: NSUInteger,
-    alpha: f64,
-    beta: f64,
+    alpha: f32,
+    beta: f32,
+    batch_size: Option<NSUInteger>,
 ) -> Result<(), String>
 where
     A: MPSDataType,
@@ -425,17 +438,25 @@ where
         .ok_or_else(|| "Failed to create result matrix")?;
 
     // Create kernel
-    let matrix_multiplication = MatrixMultiplication::init(
-        &device,
-        transpose_left,
-        transpose_right,
-        m,
-        n,
-        k,
-        alpha,
-        beta,
-    )
+    let matrix_multiplication = if is_simple_gemm(transpose_left, transpose_right, alpha, beta) {
+        MatrixMultiplication::init_simple(&device, m, n, k)
+    } else {
+        MatrixMultiplication::init(
+            &device,
+            transpose_left,
+            transpose_right,
+            m,
+            n,
+            k,
+            alpha,
+            beta,
+        )
+    }
     .ok_or_else(|| "Failed to create matrix multiplication kernel")?;
+
+    if let Some(size) = batch_size {
+        matrix_multiplication.set_batch_size(size)
+    }
 
     // Encode kernel to command buffer
     matrix_multiplication.encode_to_command_buffer(
@@ -447,6 +468,11 @@ where
 
     Ok(())
 }
+
+fn is_simple_gemm(transpose_left: bool, transpose_right: bool, alpha: f32, beta: f32) -> bool {
+    !transpose_left && !transpose_right && alpha == 1.0 && beta == 0.0
+}
+
 pub fn encode_gemm_mbuffers<A, B, C>(
     device: &DeviceRef,
     command_buffer: &CommandBufferRef,
@@ -455,8 +481,9 @@ pub fn encode_gemm_mbuffers<A, B, C>(
     a: &MatrixBuffer<A>,
     b: &MatrixBuffer<B>,
     c: &mut MatrixBuffer<C>,
-    alpha: f64,
-    beta: f64,
+    alpha: f32,
+    beta: f32,
+    batch_size: Option<NSUInteger>,
 ) -> Result<(), String>
 where
     A: MPSDataType,
@@ -493,6 +520,7 @@ where
         K,
         alpha,
         beta,
+        batch_size,
     )
 }
 
