@@ -54,6 +54,7 @@ fn correctness() {
             &mut c,
             1.0,
             0.0,
+            None,
         )
         .expect("Encoding failed");
         command_buffer.commit();
@@ -104,14 +105,16 @@ fn performance() {
     let mut c = generate_matrix::<C, K, N>(&device);
 
     let cases = [
-        (false, false, 1.0, 0.0),
-        (true, false, 1.0, 0.0),
-        (false, true, 1.0, 0.0),
-        (false, false, 0.5, 0.0),
-        (false, false, 1.0, 0.5),
+        (false, false, 1.0, 0.0, None),
+        (false, false, 1.0, 0.0, Some(32)),
+        (true, false, 1.0, 0.0, None),
+        (false, true, 1.0, 0.0, None),
+        (false, false, 0.5, 0.0, None),
+        (false, false, 1.0, 0.5, None),
     ];
-    for (t_left, t_right, alpha, beta) in cases {
-        println!("Running with transpose left: {t_left}, transpose right: {t_right}, alpha: {alpha}, beta: {beta}");
+    for (t_left, t_right, alpha, beta, batch_size) in cases {
+        println!("Running with transpose left: {t_left}, transpose right: {t_right}, alpha: {alpha}, beta: {beta}, batch_size: {batch_size:?}");
+
         let command_queue = device.new_command_queue();
         let command_buffer = command_queue.new_command_buffer();
 
@@ -129,6 +132,7 @@ fn performance() {
                 &mut c,
                 alpha,
                 beta,
+                batch_size,
             )
             .expect("Encoding failed");
         }
