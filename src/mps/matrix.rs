@@ -261,8 +261,8 @@ impl MatrixMultiplication {
         result_rows: NSUInteger,
         result_columns: NSUInteger,
         interior_columns: NSUInteger,
-        alpha: f32,
-        beta: f32,
+        alpha: f64,
+        beta: f64,
     ) -> Option<Self> {
         assert!(result_rows > 0);
         assert!(result_columns > 0);
@@ -336,16 +336,16 @@ impl MatrixMultiplicationRef {
             );
         }
     }
-    fn batch_start(&self) -> NSUInteger {
+    pub fn batch_start(&self) -> NSUInteger {
         unsafe { msg_send!(*self, batchStart) }
     }
-    fn set_batch_start(&self, batchStart: NSUInteger) {
+    pub fn set_batch_start(&self, batchStart: NSUInteger) {
         unsafe { msg_send!(* self , setBatchStart : batchStart) }
     }
-    fn batch_size(&self) -> NSUInteger {
+    pub fn batch_size(&self) -> NSUInteger {
         unsafe { msg_send!(*self, batchSize) }
     }
-    fn set_batch_size(&self, batchSize: NSUInteger) {
+    pub fn set_batch_size(&self, batchSize: NSUInteger) {
         unsafe { msg_send!(* self , setBatchSize : batchSize) }
     }
 }
