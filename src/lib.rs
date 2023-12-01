@@ -28,6 +28,7 @@ use std::{
     os::raw::c_void,
 };
 
+use core_graphics::color_space::CGColorSpaceRef;
 use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use foreign_types::ForeignType;
 use objc::runtime::{Object, NO, YES};
@@ -543,6 +544,14 @@ impl MetalLayerRef {
                 setWantsExtendedDynamicRangeContent: wants_extended_dynamic_range_content
             ]
         }
+    }
+
+    pub fn colorspace(&self) -> Option<&CGColorSpaceRef> {
+        unsafe { msg_send![self, colorspace] }
+    }
+
+    pub fn set_colorspace(&self, colorspace: Option<&CGColorSpaceRef>) {
+        unsafe { msg_send![self, setColorspace: colorspace] }
     }
 }
 
