@@ -19,10 +19,10 @@ default-target = "x86_64-apple-darwin"
 default = ["link"]
 private = []
 mps = []
-link = []
+link = ["core-graphics-types/link"]
 
 [dependencies]
-core-graphics-types = "0.1"
+core-graphics-types = "0.1.3"
 bitflags = "2"
 log = "0.4"
 block = "0.1.6"
