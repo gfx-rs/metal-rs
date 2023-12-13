@@ -5,7 +5,11 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use block::Block;
+
 use super::NSUInteger;
+
+type DrawablePresentedHandler<'a> = Block<(&'a DrawableRef,), ()>;
 
 /// See <https://developer.apple.com/documentation/metal/mtldrawable>
 pub enum MTLDrawable {}
@@ -22,5 +26,9 @@ impl DrawableRef {
 
     pub fn drawable_id(&self) -> NSUInteger {
         unsafe { msg_send![self, drawableID] }
+    }
+
+    pub fn add_presented_handler(&self, block: &DrawablePresentedHandler) {
+        unsafe { msg_send![self, addPresentedHandler: block] }
     }
 }
