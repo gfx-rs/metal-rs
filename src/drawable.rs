@@ -10,6 +10,7 @@ use block::Block;
 use super::NSUInteger;
 
 type DrawablePresentedHandler<'a> = Block<(&'a DrawableRef,), ()>;
+type CFTimeInterval = f64;
 
 /// See <https://developer.apple.com/documentation/metal/mtldrawable>
 pub enum MTLDrawable {}
@@ -30,5 +31,9 @@ impl DrawableRef {
 
     pub fn add_presented_handler(&self, block: &DrawablePresentedHandler) {
         unsafe { msg_send![self, addPresentedHandler: block] }
+    }
+
+    pub fn presented_time(&self) -> CFTimeInterval {
+        unsafe { msg_send![self, presentedTime] }
     }
 }
