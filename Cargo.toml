@@ -32,7 +32,6 @@ paste = "1"
 
 [dependencies.objc]
 version = "0.2.4"
-features = ["objc_exception"]
 
 [dev-dependencies]
 cocoa = "0.24.0"
