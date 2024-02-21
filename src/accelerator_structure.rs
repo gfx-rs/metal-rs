@@ -204,6 +204,14 @@ impl AccelerationStructureBoundingBoxGeometryDescriptorRef {
     pub fn set_bounding_box_count(&self, count: NSUInteger) {
         unsafe { msg_send![self, setBoundingBoxCount: count] }
     }
+
+    pub fn set_bounding_box_stride(&self, stride: NSUInteger) {
+        unsafe { msg_send![self, setBoundingBoxStride: stride] }
+    }
+
+    pub fn set_bounding_box_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setBoundingBoxBufferOffset: offset] }
+    }
 }
 
 pub enum MTLInstanceAccelerationStructureDescriptor {}
