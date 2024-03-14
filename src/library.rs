@@ -361,6 +361,10 @@ pub enum MTLLanguageVersion {
     V2_3 = 0x20003,
     /// available on macOS 12.0+, iOS 15.0+
     V2_4 = 0x20004,
+    /// available on macOS 13.0+, iOS 16.0+
+    V3_0 = 0x30000,
+    /// available on macOS 14.0+, iOS 17.0+
+    V3_1 = 0x30001,
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlfunctionconstantvalues/>
