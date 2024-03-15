@@ -7,7 +7,6 @@
 
 use super::*;
 use block::{Block, RcBlock};
-use std::mem;
 use std::ptr;
 
 #[cfg(feature = "dispatch_queue")]

@@ -7,11 +7,10 @@
 
 use super::*;
 
-use foreign_types::ForeignType;
-use objc::runtime::{Object, BOOL, NO, YES};
+use objc::runtime::{BOOL, NO, YES};
 
 use std::ffi::CStr;
-use std::os::raw::{c_char, c_void};
+use std::os::raw::c_char;
 use std::ptr;
 
 /// Only available on (macos(10.12), ios(10.0)
