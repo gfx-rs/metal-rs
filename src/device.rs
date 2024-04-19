@@ -10,6 +10,7 @@ use super::*;
 use block::{Block, ConcreteBlock};
 use objc::runtime::{NO, YES};
 
+use crate::iocommandqueue::{IOCommandQueue, IOCommandQueueDescriptorRef, MTLIOCommandQueue};
 use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
 
 /// Available on macOS 10.11+, iOS 8.0+, tvOS 9.0+
@@ -1658,6 +1659,78 @@ impl DeviceRef {
         count: NSUInteger,
     ) -> CommandQueue {
         unsafe { msg_send![self, newCommandQueueWithMaxCommandBufferCount: count] }
+    }
+
+    pub fn new_io_command_queue(
+        &self,
+        descriptor: &IOCommandQueueDescriptorRef,
+    ) -> Result<IOCommandQueue, String> {
+        unsafe {
+            let mut err: *mut Object = ptr::null_mut();
+            let queue: *mut MTLIOCommandQueue = msg_send![self, newIOCommandQueueWithDescriptor:descriptor
+                                                                          error:&mut err];
+
+            if !err.is_null() {
+                let desc: *mut Object = msg_send![err, localizedDescription];
+                let error: *const c_char = msg_send![desc, UTF8String];
+                let message = CStr::from_ptr(error).to_string_lossy().into_owned();
+                if queue.is_null() {
+                    return Err(message);
+                } else {
+                    warn!("Warning: {}", message);
+                }
+            }
+
+            assert!(!queue.is_null());
+            Ok(IOCommandQueue::from_ptr(queue))
+        }
+    }
+
+    pub fn new_io_file_handle(&self, url: &URLRef) -> Result<IOFileHandle, String> {
+        unsafe {
+            let mut err: *mut Object = ptr::null_mut();
+            let handle: *mut MTLIOFileHandle =
+                msg_send![self, newIOFileHandleWithURL:url error:&mut err];
+
+            if !err.is_null() {
+                let desc: *mut Object = msg_send![err, localizedDescription];
+                let error: *const c_char = msg_send![desc, UTF8String];
+                let message = CStr::from_ptr(error).to_string_lossy().into_owned();
+                if handle.is_null() {
+                    return Err(message);
+                } else {
+                    warn!("Warning: {}", message);
+                }
+            }
+
+            assert!(!handle.is_null());
+            Ok(IOFileHandle::from_ptr(handle))
+        }
+    }
+
+    pub fn new_io_file_handle_with_compression(
+        &self,
+        url: &URLRef,
+        compression_method: MTLIOCompressionMethod,
+    ) -> Result<IOFileHandle, String> {
+        unsafe {
+            let mut err: *mut Object = ptr::null_mut();
+            let handle: *mut MTLIOFileHandle = msg_send![self, newIOFileHandleWithURL:url compressionMethod: compression_method error:&mut err];
+
+            if !err.is_null() {
+                let desc: *mut Object = msg_send![err, localizedDescription];
+                let error: *const c_char = msg_send![desc, UTF8String];
+                let message = CStr::from_ptr(error).to_string_lossy().into_owned();
+                if handle.is_null() {
+                    return Err(message);
+                } else {
+                    warn!("Warning: {}", message);
+                }
+            }
+
+            assert!(!handle.is_null());
+            Ok(IOFileHandle::from_ptr(handle))
+        }
     }
 
     pub fn new_default_library(&self) -> Library {
