@@ -7,7 +7,7 @@
 
 use super::*;
 
-use block::{Block, ConcreteBlock};
+use block::Block;
 use objc::runtime::{NO, YES};
 
 use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
@@ -1471,6 +1471,8 @@ pub type dispatch_queue_t = *mut Object;
 #[allow(non_camel_case_types)]
 type dispatch_block_t = *const Block<(), ()>;
 
+const DISPATCH_DATA_DESTRUCTOR_DEFAULT: dispatch_block_t = ptr::null();
+
 #[cfg_attr(
     all(feature = "link", any(target_os = "macos", target_os = "ios")),
     link(name = "System", kind = "dylib")
@@ -1704,12 +1706,20 @@ impl DeviceRef {
 
     pub fn new_library_with_data(&self, library_data: &[u8]) -> Result<Library, String> {
         unsafe {
-            let destructor_block = ConcreteBlock::new(|| {}).copy();
+            // SAFETY:
+            // `library_data` does not necessarily outlive the dispatch data
+            // in which it will be contained (since the dispatch data will be
+            // contained in the MTLLibrary returned by this function).
+            //
+            // To prevent the MTLLibrary from referencing the data outside of
+            // its lifetime, we use DISPATCH_DATA_DESTRUCTOR_DEFAULT as the
+            // destructor block, which will make `dispatch_data_create` copy
+            // the buffer for us automatically.
             let data = dispatch_data_create(
                 library_data.as_ptr() as *const std::ffi::c_void,
                 library_data.len() as crate::c_size_t,
                 &_dispatch_main_q as *const _ as dispatch_queue_t,
-                &*destructor_block.deref(),
+                DISPATCH_DATA_DESTRUCTOR_DEFAULT,
             );
 
             let library: *mut MTLLibrary = try_objc! { err =>
