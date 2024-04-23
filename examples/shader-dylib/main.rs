@@ -10,8 +10,6 @@ use winit::{
     platform::macos::WindowExtMacOS,
 };
 
-use std::mem;
-
 struct App {
     pub _device: Device,
     pub command_queue: CommandQueue,
@@ -22,14 +20,9 @@ struct App {
 }
 
 fn select_device() -> Option<Device> {
-    let devices = Device::all();
-    for device in devices {
-        if device.supports_dynamic_libraries() {
-            return Some(device);
-        }
-    }
-
-    None
+    Device::all()
+        .into_iter()
+        .find(|device| device.supports_dynamic_libraries())
 }
 
 impl App {
@@ -45,7 +38,7 @@ impl App {
         unsafe {
             let view = window.ns_view() as cocoa_id;
             view.setWantsLayer(YES);
-            view.setLayer(mem::transmute(layer.as_ref()));
+            view.setLayer(std::ptr::from_ref(layer.as_ref()).cast_mut().cast());
         }
         let draw_size = window.inner_size();
         layer.set_drawable_size(CGSize::new(draw_size.width as f64, draw_size.height as f64));
@@ -130,12 +123,12 @@ impl App {
         {
             let encoder = command_buffer.new_compute_command_encoder();
             encoder.set_compute_pipeline_state(&self.image_fill_cps);
-            encoder.set_texture(0, Some(&drawable.texture()));
+            encoder.set_texture(0, Some(drawable.texture()));
             encoder.dispatch_threads(threads_per_grid, threads_per_threadgroup);
             encoder.end_encoding();
         }
 
-        command_buffer.present_drawable(&drawable);
+        command_buffer.present_drawable(drawable);
         command_buffer.commit();
     }
 }

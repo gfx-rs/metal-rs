@@ -65,6 +65,12 @@ impl BlitPassSampleBufferAttachmentDescriptor {
     }
 }
 
+impl Default for BlitPassSampleBufferAttachmentDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl BlitPassSampleBufferAttachmentDescriptorRef {
     pub fn sample_buffer(&self) -> &CounterSampleBufferRef {
         unsafe { msg_send![self, sampleBuffer] }

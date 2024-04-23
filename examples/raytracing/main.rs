@@ -4,7 +4,6 @@ use cocoa::{appkit::NSView, base::id as cocoa_id};
 use core_graphics_types::geometry::CGSize;
 use metal::*;
 use objc::{rc::autoreleasepool, runtime::YES};
-use std::mem;
 use winit::{
     event::{Event, WindowEvent},
     event_loop::ControlFlow,
@@ -50,7 +49,7 @@ fn main() {
     unsafe {
         let view = window.ns_view() as cocoa_id;
         view.setWantsLayer(YES);
-        view.setLayer(mem::transmute(layer.as_ref()));
+        view.setLayer(std::ptr::from_ref(layer.as_ref()).cast_mut().cast());
     }
 
     let draw_size = window.inner_size();

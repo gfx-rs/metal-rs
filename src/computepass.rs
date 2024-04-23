@@ -66,6 +66,12 @@ impl ComputePassSampleBufferAttachmentDescriptor {
     }
 }
 
+impl Default for ComputePassSampleBufferAttachmentDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ComputePassSampleBufferAttachmentDescriptorRef {
     pub fn sample_buffer(&self) -> &CounterSampleBufferRef {
         unsafe { msg_send![self, sampleBuffer] }

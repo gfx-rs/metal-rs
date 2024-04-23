@@ -44,7 +44,7 @@ pub trait Geometry {
 pub fn compute_triangle_normal(v0: &Vec3, v1: &Vec3, v2: &Vec3) -> Vec3 {
     let e1 = Vec3::normalize(*v1 - *v0);
     let e2 = Vec3::normalize(*v2 - *v0);
-    return Vec3::cross(e1, e2);
+    Vec3::cross(e1, e2)
 }
 
 #[derive(Default)]
@@ -55,7 +55,7 @@ pub struct Triangle {
 }
 
 pub fn get_managed_buffer_storage_mode() -> MTLResourceOptions {
-    return MTLResourceOptions::StorageModeManaged;
+    MTLResourceOptions::StorageModeManaged
 }
 
 pub struct TriangleGeometry {
@@ -91,6 +91,7 @@ impl TriangleGeometry {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn add_cube_face_with_cube_vertices(
         &mut self,
         cube_vertices: &[Vec3],
@@ -112,10 +113,10 @@ impl TriangleGeometry {
         let first_index = self.indices.len();
         let base_index = self.vertices.len() as u16;
 
-        self.indices.push(base_index + 0);
+        self.indices.push(base_index);
         self.indices.push(base_index + 1);
         self.indices.push(base_index + 2);
-        self.indices.push(base_index + 0);
+        self.indices.push(base_index);
         self.indices.push(base_index + 2);
         self.indices.push(base_index + 3);
 
@@ -164,10 +165,10 @@ impl TriangleGeometry {
             Vec3::new(0.5, 0.5, 0.5),
         ];
 
-        for i in 0..8 {
-            let transformed_vertex = Vec4::from((cube_vertices[i], 1.0));
+        for vertex in &mut cube_vertices {
+            let transformed_vertex = Vec4::from((*vertex, 1.0));
             let transformed_vertex = transform * transformed_vertex;
-            cube_vertices[i] = transformed_vertex.xyz();
+            *vertex = transformed_vertex.xyz();
         }
 
         const CUBE_INDICES: [[u16; 4]; 6] = [
@@ -179,15 +180,15 @@ impl TriangleGeometry {
             [4, 5, 7, 6],
         ];
 
-        for face in 0..6 {
+        for (face, cube) in CUBE_INDICES.iter().enumerate() {
             if face_mask & (1 << face) != 0 {
                 self.add_cube_face_with_cube_vertices(
                     &cube_vertices,
                     colour,
-                    CUBE_INDICES[face][0],
-                    CUBE_INDICES[face][1],
-                    CUBE_INDICES[face][2],
-                    CUBE_INDICES[face][3],
+                    cube[0],
+                    cube[1],
+                    cube[2],
+                    cube[3],
                     inward_normals,
                 );
             }
@@ -416,14 +417,14 @@ impl Geometry for SphereGeometry {
         let descriptor = AccelerationStructureBoundingBoxGeometryDescriptor::descriptor();
         descriptor.set_bounding_box_buffer(Some(self.bounding_box_buffer.as_ref().unwrap()));
         descriptor.set_bounding_box_count(self.spheres.len() as NSUInteger);
-        descriptor.set_primitive_data_buffer(Some(&self.sphere_buffer.as_ref().unwrap()));
+        descriptor.set_primitive_data_buffer(Some(self.sphere_buffer.as_ref().unwrap()));
         descriptor.set_primitive_data_stride(size_of::<Sphere>() as NSUInteger);
         descriptor.set_primitive_data_element_size(size_of::<Sphere>() as NSUInteger);
         From::from(descriptor)
     }
 
     fn get_resources(&self) -> Vec<Resource> {
-        return vec![From::from(self.sphere_buffer.as_ref().unwrap().clone())];
+        vec![From::from(self.sphere_buffer.as_ref().unwrap().clone())]
     }
 
     fn get_intersection_function_name(&self) -> Option<&str> {
@@ -432,7 +433,7 @@ impl Geometry for SphereGeometry {
 }
 
 pub struct GeometryInstance {
-    pub geometry: Arc<dyn Geometry>,
+    pub geometry: Arc<dyn Geometry + Send + Sync>,
     pub transform: Mat4,
     pub mask: u32,
     pub index_in_scene: NSUInteger,

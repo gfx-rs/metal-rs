@@ -62,6 +62,12 @@ impl TextureDescriptor {
     }
 }
 
+impl Default for TextureDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TextureDescriptorRef {
     pub fn texture_type(&self) -> MTLTextureType {
         unsafe { msg_send![self, textureType] }

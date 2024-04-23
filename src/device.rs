@@ -104,7 +104,7 @@ bitflags! {
     }
 }
 
-#[allow(non_camel_case_types)]
+#[allow(non_camel_case_types, clippy::enum_variant_names)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 enum OS {
     iOS,
@@ -711,7 +711,7 @@ impl MTLFeatureSet {
 
     pub fn max_buffer_length(&self) -> u32 {
         if self.os() == OS::macOS && self.os_version() >= 12 {
-            1 * GB
+            GB
         } else {
             256 * MB
         }
@@ -1709,7 +1709,7 @@ impl DeviceRef {
                 library_data.as_ptr() as *const std::ffi::c_void,
                 library_data.len() as crate::c_size_t,
                 &_dispatch_main_q as *const _ as dispatch_queue_t,
-                &*destructor_block.deref(),
+                destructor_block.deref(),
             );
 
             let library: *mut MTLLibrary = try_objc! { err =>
@@ -2105,14 +2105,13 @@ impl DeviceRef {
         unsafe {
             let counter_sets: *mut Object = msg_send![self, counterSets];
             let count: NSUInteger = msg_send![counter_sets, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let csp: *mut MTLCounterSet = msg_send![counter_sets, objectAtIndex: i];
                     let () = msg_send![csp, retain];
                     CounterSet::from_ptr(csp)
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 }

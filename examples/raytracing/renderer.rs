@@ -107,9 +107,9 @@ impl Renderer {
             let resource_buffer_begin_index = resources_stride * geometry_index;
             let resources = geometry.get_resources();
 
-            for argument_index in 0..resources.len() {
+            for (argument_index, resource) in resources.iter().enumerate() {
                 let resource_buffer_index = resource_buffer_begin_index + argument_index;
-                let resource = resources[argument_index].clone();
+                let resource = resource.clone();
                 resource_buffer_data[resource_buffer_index] =
                     if resource.conforms_to_protocol::<MTLBuffer>().unwrap() {
                         let buffer = unsafe { Buffer::from_ptr(transmute(resource.into_ptr())) };
@@ -137,7 +137,7 @@ impl Renderer {
             geometry_descriptor.set_intersection_function_table_offset(i as NSUInteger);
             let geometry_descriptors = Array::from_owned_slice(&[geometry_descriptor]);
             let accel_descriptor = PrimitiveAccelerationStructureDescriptor::descriptor();
-            accel_descriptor.set_geometry_descriptors(&geometry_descriptors);
+            accel_descriptor.set_geometry_descriptors(geometry_descriptors);
             let accel_descriptor: AccelerationStructureDescriptor = From::from(accel_descriptor);
             primitive_acceleration_structures.push(
                 Self::new_acceleration_structure_with_descriptor(
@@ -152,8 +152,7 @@ impl Renderer {
             MTLAccelerationStructureInstanceDescriptor::default();
             scene.geometry_instances.len()
         ];
-        for instance_index in 0..scene.geometry_instances.len() {
-            let instance = scene.geometry_instances[instance_index].as_ref();
+        for (instance_index, instance) in scene.geometry_instances.iter().enumerate() {
             let geometry_index = instance.index_in_scene;
             instance_descriptors[instance_index].acceleration_structure_index =
                 geometry_index as u32;
@@ -164,7 +163,7 @@ impl Renderer {
                     MTLAccelerationStructureInstanceOptions::None
                 };
             instance_descriptors[instance_index].intersection_function_table_offset = 0;
-            instance_descriptors[instance_index].mask = instance.mask as u32;
+            instance_descriptors[instance_index].mask = instance.mask;
             for column in 0..4 {
                 for row in 0..3 {
                     instance_descriptors[instance_index].transformation_matrix[column][row] =
@@ -182,7 +181,7 @@ impl Renderer {
         instance_buffer.did_modify_range(NSRange::new(0, instance_buffer.length()));
 
         let accel_descriptor = InstanceAccelerationStructureDescriptor::descriptor();
-        accel_descriptor.set_instanced_acceleration_structures(&Array::from_owned_slice(
+        accel_descriptor.set_instanced_acceleration_structures(Array::from_owned_slice(
             &primitive_acceleration_structures,
         ));
         accel_descriptor.set_instance_count(scene.geometry_instances.len() as NSUInteger);
@@ -415,7 +414,7 @@ impl Renderer {
             render_encoder.set_fragment_texture(0, Some(&self.accumulation_targets[0]));
             render_encoder.draw_primitives(MTLPrimitiveType::Triangle, 0, 6);
             render_encoder.end_encoding();
-            command_buffer.present_drawable(&drawable);
+            command_buffer.present_drawable(drawable);
         }
         command_buffer.commit();
     }
@@ -440,7 +439,7 @@ impl Renderer {
         );
         command_encoder.build_acceleration_structure(
             &acceleration_structure,
-            &descriptor,
+            descriptor,
             &scratch_buffer,
             0,
         );

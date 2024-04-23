@@ -35,6 +35,12 @@ impl CaptureDescriptor {
     }
 }
 
+impl Default for CaptureDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CaptureDescriptorRef {
     /// See <https://developer.apple.com/documentation/metal/mtlcapturedescriptor/3237248-captureobject>
     pub fn set_capture_device(&self, device: &DeviceRef) {

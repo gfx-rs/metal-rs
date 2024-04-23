@@ -178,6 +178,12 @@ impl FunctionDescriptor {
     }
 }
 
+impl Default for FunctionDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FunctionDescriptorRef {
     pub fn name(&self) -> &str {
         unsafe {
@@ -383,6 +389,12 @@ impl FunctionConstantValues {
     }
 }
 
+impl Default for FunctionConstantValues {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FunctionConstantValuesRef {
     pub fn set_constant_value_at_index(
         &self,
@@ -434,6 +446,12 @@ impl CompileOptions {
             let class = class!(MTLCompileOptions);
             msg_send![class, new]
         }
+    }
+}
+
+impl Default for CompileOptions {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -497,13 +515,12 @@ impl CompileOptionsRef {
         unsafe {
             let libraries: *mut Object = msg_send![self, libraries];
             let count: NSUInteger = msg_send![libraries, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let lib = msg_send![libraries, objectAtIndex: i];
                     DynamicLibrary::from_ptr(lib)
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 
@@ -753,6 +770,12 @@ impl BinaryArchiveDescriptor {
     }
 }
 
+impl Default for BinaryArchiveDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl BinaryArchiveDescriptorRef {
     pub fn url(&self) -> &URLRef {
         unsafe { msg_send![self, url] }
@@ -855,19 +878,24 @@ impl LinkedFunctions {
     }
 }
 
+impl Default for LinkedFunctions {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LinkedFunctionsRef {
     /// Marshal to Rust Vec
     pub fn functions(&self) -> Vec<Function> {
         unsafe {
             let functions: *mut Object = msg_send![self, functions];
             let count: NSUInteger = msg_send![functions, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let f = msg_send![functions, objectAtIndex: i];
                     Function::from_ptr(f)
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 
@@ -882,13 +910,12 @@ impl LinkedFunctionsRef {
         unsafe {
             let functions: *mut Object = msg_send![self, binaryFunctions];
             let count: NSUInteger = msg_send![functions, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let f = msg_send![functions, objectAtIndex: i];
                     Function::from_ptr(f)
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 

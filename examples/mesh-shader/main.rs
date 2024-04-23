@@ -5,7 +5,6 @@ use core_graphics_types::geometry::CGSize;
 
 use metal::*;
 use objc::{rc::autoreleasepool, runtime::YES};
-use std::mem;
 use winit::platform::macos::WindowExtMacOS;
 
 use winit::{
@@ -42,7 +41,7 @@ fn main() {
     unsafe {
         let view = window.ns_view() as cocoa_id;
         view.setWantsLayer(YES);
-        view.setLayer(mem::transmute(layer.as_ref()));
+        view.setLayer(std::ptr::from_ref(layer.as_ref()).cast_mut().cast());
     }
 
     let draw_size = window.inner_size();
@@ -93,11 +92,10 @@ fn main() {
 
                     let render_pass_descriptor = RenderPassDescriptor::new();
 
-                    prepare_render_pass_descriptor(&render_pass_descriptor, drawable.texture());
+                    prepare_render_pass_descriptor(render_pass_descriptor, drawable.texture());
 
                     let command_buffer = command_queue.new_command_buffer();
-                    let encoder =
-                        command_buffer.new_render_command_encoder(&render_pass_descriptor);
+                    let encoder = command_buffer.new_render_command_encoder(render_pass_descriptor);
 
                     encoder.set_render_pipeline_state(&pipeline_state);
                     encoder.draw_mesh_threads(
@@ -108,7 +106,7 @@ fn main() {
 
                     encoder.end_encoding();
 
-                    command_buffer.present_drawable(&drawable);
+                    command_buffer.present_drawable(drawable);
                     command_buffer.commit();
                 }
                 _ => {}

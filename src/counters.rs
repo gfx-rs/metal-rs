@@ -15,6 +15,12 @@ impl CounterSampleBufferDescriptor {
     }
 }
 
+impl Default for CounterSampleBufferDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CounterSampleBufferDescriptorRef {
     pub fn counter_set(&self) -> &CounterSetRef {
         unsafe { msg_send![self, counterSet] }

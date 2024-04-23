@@ -229,6 +229,7 @@ impl RayIntersectorRef {
         unsafe { msg_send![self, setTriangleIntersectionTestType: test_type] }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn encode_intersection_to_command_buffer(
         &self,
         command_buffer: &CommandBufferRef,
@@ -449,13 +450,12 @@ impl InstanceAccelerationStructureRef {
         unsafe {
             let acs: *mut Object = msg_send![self, accelerationStructures];
             let count: NSUInteger = msg_send![acs, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let ac = msg_send![acs, objectAtIndex: i];
                     PolygonAccelerationStructure::from_ptr(ac)
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 

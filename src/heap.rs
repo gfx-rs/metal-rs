@@ -167,6 +167,12 @@ impl HeapDescriptor {
     }
 }
 
+impl Default for HeapDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl HeapDescriptorRef {
     pub fn cpu_cache_mode(&self) -> MTLCPUCacheMode {
         unsafe { msg_send![self, cpuCacheMode] }

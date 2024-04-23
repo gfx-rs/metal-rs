@@ -42,7 +42,7 @@ struct ClearRect {
     pub color: Color,
 }
 
-fn prepare_pipeline_state<'a>(
+fn prepare_pipeline_state(
     device: &DeviceRef,
     library: &LibraryRef,
     vertex_shader: &str,
@@ -104,7 +104,7 @@ fn main() {
     unsafe {
         let view = window.ns_view() as cocoa_id;
         view.setWantsLayer(YES);
-        view.setLayer(mem::transmute(layer.as_ref()));
+        view.setLayer(std::ptr::from_ref(layer.as_ref()).cast_mut().cast());
     }
 
     let draw_size = window.inner_size();
@@ -140,7 +140,7 @@ fn main() {
 
     let mut r = 0.0f32;
 
-    let clear_rect = vec![ClearRect {
+    let clear_rect = [ClearRect {
         rect: Rect {
             x: -1.0,
             y: -1.0,
@@ -197,15 +197,11 @@ fn main() {
                     ];
 
                     unsafe {
-                        std::ptr::copy(
-                            vertex_data.as_ptr(),
-                            p as *mut f32,
-                            (vertex_data.len() * mem::size_of::<f32>()) as usize,
-                        );
+                        std::ptr::copy(vertex_data.as_ptr(), p as *mut f32, vertex_data.len());
                     }
 
                     vbuf.did_modify_range(crate::NSRange::new(
-                        0 as u64,
+                        0_u64,
                         (vertex_data.len() * mem::size_of::<f32>()) as u64,
                     ));
 
@@ -216,11 +212,10 @@ fn main() {
 
                     let render_pass_descriptor = RenderPassDescriptor::new();
 
-                    prepare_render_pass_descriptor(&render_pass_descriptor, drawable.texture());
+                    prepare_render_pass_descriptor(render_pass_descriptor, drawable.texture());
 
                     let command_buffer = command_queue.new_command_buffer();
-                    let encoder =
-                        command_buffer.new_render_command_encoder(&render_pass_descriptor);
+                    let encoder = command_buffer.new_render_command_encoder(render_pass_descriptor);
 
                     encoder.set_scissor_rect(MTLScissorRect {
                         x: 20,
@@ -249,7 +244,7 @@ fn main() {
                     encoder.draw_primitives(MTLPrimitiveType::Triangle, 0, 3);
                     encoder.end_encoding();
 
-                    command_buffer.present_drawable(&drawable);
+                    command_buffer.present_drawable(drawable);
                     command_buffer.commit();
 
                     r += 0.01f32;

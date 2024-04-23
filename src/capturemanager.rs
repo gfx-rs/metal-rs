@@ -79,11 +79,12 @@ impl CaptureManagerRef {
     ///   3. Adding an info.plist file containing the `MetalCaptureEnabled` key set to `YES`
     pub fn start_capture(&self, descriptor: &CaptureDescriptorRef) -> Result<(), String> {
         unsafe {
-            Ok(try_objc! { err =>
+            try_objc! { err =>
                 msg_send![self, startCaptureWithDescriptor: descriptor
                                 error: &mut err]
-            })
+            }
         }
+        Ok(())
     }
 
     pub fn start_capture_with_device(&self, device: &DeviceRef) {

@@ -114,7 +114,7 @@ fn main() {
 
     // Intersect rays with triangles inside acceleration structure
     ray_intersector.encode_intersection_to_command_buffer(
-        &command_buffer,
+        command_buffer,
         mps::MPSIntersectionType::Nearest,
         &ray_buffer,
         0,
@@ -140,9 +140,7 @@ fn create_pipeline(func: &str, library: &LibraryRef, device: &DeviceRef) -> Comp
     let function = library.get_function(func, None).unwrap();
     compute_descriptor.set_compute_function(Some(&function));
 
-    let pipeline = device
+    device
         .new_compute_pipeline_state(&compute_descriptor)
-        .unwrap();
-
-    pipeline
+        .unwrap()
 }

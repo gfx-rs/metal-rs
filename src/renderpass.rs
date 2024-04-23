@@ -166,6 +166,12 @@ impl RenderPassColorAttachmentDescriptor {
     }
 }
 
+impl Default for RenderPassColorAttachmentDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RenderPassColorAttachmentDescriptorRef {
     pub fn clear_color(&self) -> MTLClearColor {
         unsafe { msg_send![self, clearColor] }
@@ -262,6 +268,12 @@ impl RenderPassSampleBufferAttachmentDescriptor {
     pub fn new() -> Self {
         let class = class!(MTLRenderPassSampleBufferAttachmentDescriptor);
         unsafe { msg_send![class, new] }
+    }
+}
+
+impl Default for RenderPassSampleBufferAttachmentDescriptor {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

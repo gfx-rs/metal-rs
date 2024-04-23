@@ -62,6 +62,12 @@ impl SamplerDescriptor {
     }
 }
 
+impl Default for SamplerDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SamplerDescriptorRef {
     pub fn set_min_filter(&self, filter: MTLSamplerMinMagFilter) {
         unsafe { msg_send![self, setMinFilter: filter] }

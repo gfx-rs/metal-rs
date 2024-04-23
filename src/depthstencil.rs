@@ -53,6 +53,12 @@ impl StencilDescriptor {
     }
 }
 
+impl Default for StencilDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl StencilDescriptorRef {
     pub fn stencil_compare_function(&self) -> MTLCompareFunction {
         unsafe { msg_send![self, stencilCompareFunction] }
@@ -117,6 +123,12 @@ impl DepthStencilDescriptor {
             let class = class!(MTLDepthStencilDescriptor);
             msg_send![class, new]
         }
+    }
+}
+
+impl Default for DepthStencilDescriptor {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

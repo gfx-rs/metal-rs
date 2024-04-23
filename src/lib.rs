@@ -353,7 +353,7 @@ where
 
     #[inline]
     fn deref(&self) -> &ArrayRef<T> {
-        unsafe { mem::transmute(self.as_ptr()) }
+        unsafe { &*(self.as_ptr() as *const ArrayRef<T>) }
     }
 }
 
@@ -363,7 +363,7 @@ where
     T::Ref: objc::Message + 'static,
 {
     fn borrow(&self) -> &ArrayRef<T> {
-        unsafe { mem::transmute(self.as_ptr()) }
+        unsafe { &*(self.as_ptr() as *const ArrayRef<T>) }
     }
 }
 
@@ -430,6 +430,12 @@ impl MetalLayer {
             let class = class!(CAMetalLayer);
             msg_send![class, new]
         }
+    }
+}
+
+impl Default for MetalLayer {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

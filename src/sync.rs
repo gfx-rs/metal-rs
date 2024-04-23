@@ -102,7 +102,7 @@ impl SharedEventListener {
     #[cfg(feature = "dispatch")]
     pub fn from_queue(queue: &dispatch::Queue) -> Self {
         unsafe {
-            let raw_queue = std::mem::transmute::<&dispatch::Queue, *const dispatch_queue_t>(queue);
+            let raw_queue: *const dispatch_queue_t = std::ptr::from_ref(queue).cast_mut().cast();
             Self::from_queue_handle(*raw_queue)
         }
     }

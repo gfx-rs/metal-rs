@@ -29,6 +29,12 @@ impl IndirectCommandBufferDescriptor {
     }
 }
 
+impl Default for IndirectCommandBufferDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IndirectCommandBufferDescriptorRef {
     pub fn command_types(&self) -> MTLIndirectCommandType {
         unsafe { msg_send![self, commandTypes] }
@@ -171,6 +177,7 @@ impl IndirectRenderCommandRef {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn draw_indexed_primitives(
         &self,
         primitive_type: MTLPrimitiveType,
@@ -196,6 +203,7 @@ impl IndirectRenderCommandRef {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn draw_patches(
         &self,
         number_of_patch_control_points: NSUInteger,
@@ -225,6 +233,7 @@ impl IndirectRenderCommandRef {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn draw_indexed_patches(
         &self,
         number_of_patch_control_points: NSUInteger,

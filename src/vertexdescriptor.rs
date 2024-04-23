@@ -94,6 +94,12 @@ impl VertexBufferLayoutDescriptor {
     }
 }
 
+impl Default for VertexBufferLayoutDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl VertexBufferLayoutDescriptorRef {
     pub fn stride(&self) -> NSUInteger {
         unsafe { msg_send![self, stride] }
@@ -159,6 +165,12 @@ impl VertexAttributeDescriptor {
             let class = class!(MTLVertexAttributeDescriptor);
             msg_send![class, new]
         }
+    }
+}
+
+impl Default for VertexAttributeDescriptor {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

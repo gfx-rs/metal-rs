@@ -327,6 +327,12 @@ impl IntersectionFunctionTableDescriptor {
     }
 }
 
+impl Default for IntersectionFunctionTableDescriptor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IntersectionFunctionTableDescriptorRef {
     pub fn set_function_count(&self, count: NSUInteger) {
         unsafe { msg_send![self, setFunctionCount: count] }
