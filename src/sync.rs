@@ -136,7 +136,7 @@ impl FenceRef {
     }
 }
 
-bitflags! {
+bitflags::bitflags! {
     /// The render stages at which a synchronization command is triggered.
     ///
     /// Render stages provide finer control for specifying when synchronization must occur,

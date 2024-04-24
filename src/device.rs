@@ -8,6 +8,7 @@
 use super::*;
 
 use block::Block;
+use log::warn;
 use objc::runtime::{NO, YES};
 
 use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
@@ -92,7 +93,7 @@ pub enum MTLDeviceLocation {
     Unspecified = u64::MAX,
 }
 
-bitflags! {
+bitflags::bitflags! {
     #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct PixelFormatCapabilities: u32 {
         const Filter = 1 << 0;
@@ -1430,7 +1431,7 @@ pub enum MTLSparseTextureRegionAlignmentMode {
     Inward = 1,
 }
 
-bitflags! {
+bitflags::bitflags! {
     /// Options that determine how Metal prepares the pipeline.
     #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct MTLPipelineOption: NSUInteger {

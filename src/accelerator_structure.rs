@@ -7,7 +7,7 @@
 
 use super::*;
 
-bitflags! {
+bitflags::bitflags! {
     #[derive(Copy, Clone, Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct MTLAccelerationStructureInstanceOptions: u32 {
         const None = 0;
