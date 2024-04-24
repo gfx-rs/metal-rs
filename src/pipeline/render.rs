@@ -47,7 +47,7 @@ pub enum MTLBlendOperation {
     Max = 4,
 }
 
-bitflags! {
+bitflags::bitflags! {
     /// See <https://developer.apple.com/documentation/metal/mtlcolorwritemask>
     #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct MTLColorWriteMask: NSUInteger {

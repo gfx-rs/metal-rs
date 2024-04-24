@@ -74,7 +74,7 @@ pub enum MTLTriangleFillMode {
     Lines = 1,
 }
 
-bitflags! {
+bitflags::bitflags! {
     /// https://developer.apple.com/documentation/metal/mtlblitoption
     #[allow(non_upper_case_globals)]
     #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
