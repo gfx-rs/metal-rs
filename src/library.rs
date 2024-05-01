@@ -263,8 +263,6 @@ impl FunctionHandleRef {
 }
 
 // TODO:
-// MTLVisibleFunctionTableDescriptor
-// MTLVisibleFunctionTable
 // MTLIntersectionFunctionSignature
 // MTLIntersectionFunctionTableDescriptor
 // MTLIntersectionFunctionTable

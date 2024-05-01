@@ -572,3 +572,51 @@ impl IntersectionFunctionTableRef {
         unsafe { msg_send![self, gpuResourceID] }
     }
 }
+
+// See https://developer.apple.com/documentation/metal/mtlvisiblefunctiontabledescriptor/
+pub enum MTLVisibleFunctionTableDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLVisibleFunctionTableDescriptor;
+    pub struct VisibleFunctionTableDescriptor;
+    type ParentType = NsObject;
+}
+
+impl VisibleFunctionTableDescriptor {
+    pub fn new() -> Self {
+        unsafe {
+            let class = class!(MTLVisibleFunctionTableDescriptor);
+            msg_send![class, new]
+        }
+    }
+}
+
+impl VisibleFunctionTableDescriptorRef {
+    pub fn set_function_count(&self, count: NSUInteger) {
+        unsafe { msg_send![self, setFunctionCount: count] }
+    }
+}
+
+// See https://developer.apple.com/documentation/metal/mtlvisiblefunctiontable
+pub enum MTLVisibleFunctionTable {}
+
+foreign_obj_type! {
+    type CType = MTLVisibleFunctionTable;
+    pub struct VisibleFunctionTable;
+    type ParentType = Resource;
+}
+
+impl VisibleFunctionTableRef {
+    pub fn set_functions(&self, functions: &[&FunctionRef]) {
+        let ns_array = Array::<Function>::from_slice(functions);
+        unsafe { msg_send![self, setFunctions: ns_array] }
+    }
+
+    pub fn set_function(&self, function: &FunctionHandleRef, index: NSUInteger) {
+        unsafe { msg_send![self, setFunction: function atIndex: index] }
+    }
+
+    pub fn gpu_resource_id(&self) -> MTLResourceID {
+        unsafe { msg_send![self, gpuResourceID] }
+    }
+}
