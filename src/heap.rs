@@ -148,6 +148,69 @@ impl HeapRef {
             }
         }
     }
+
+    /// Only available on macOS 13.0+ & iOS 16.0+
+    pub fn new_acceleration_structure_with_descriptor(
+        &self,
+        descriptor: &AccelerationStructureDescriptorRef,
+    ) -> Option<AccelerationStructure> {
+        unsafe {
+            let ptr: *mut MTLAccelerationStructure =
+                msg_send![self, newAccelerationStructureWithDescriptor: descriptor];
+            if !ptr.is_null() {
+                Some(AccelerationStructure::from_ptr(ptr))
+            } else {
+                None
+            }
+        }
+    }
+
+    /// Only available on macOS 13.0+ & iOS 16.0+
+    pub fn new_acceleration_structure_with_descriptor_offset(
+        &self,
+        descriptor: &AccelerationStructureDescriptorRef,
+        offset: u64,
+    ) -> Option<AccelerationStructure> {
+        unsafe {
+            let ptr: *mut MTLAccelerationStructure = msg_send![self, newAccelerationStructureWithDescriptor:descriptor
+                                                                     offset:offset];
+            if !ptr.is_null() {
+                Some(AccelerationStructure::from_ptr(ptr))
+            } else {
+                None
+            }
+        }
+    }
+
+    /// Only available on macOS 13.0+ & iOS 16.0+
+    pub fn new_acceleration_structure_with_size(&self, size: u64) -> Option<AccelerationStructure> {
+        unsafe {
+            let ptr: *mut MTLAccelerationStructure =
+                msg_send![self, newAccelerationStructureWithSize:size];
+            if !ptr.is_null() {
+                Some(AccelerationStructure::from_ptr(ptr))
+            } else {
+                None
+            }
+        }
+    }
+
+    /// Only available on macOS 13.0+ & iOS 16.0+
+    pub fn new_acceleration_structure_with_size_offset(
+        &self,
+        size: u64,
+        offset: u64,
+    ) -> Option<AccelerationStructure> {
+        unsafe {
+            let ptr: *mut MTLAccelerationStructure = msg_send![self, newAccelerationStructureWithSize:size
+                                                                     offset:offset];
+            if !ptr.is_null() {
+                Some(AccelerationStructure::from_ptr(ptr))
+            } else {
+                None
+            }
+        }
+    }
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlheapdescriptor/>
