@@ -26,6 +26,7 @@ pub enum MTLAccelerationStructureInstanceDescriptorType {
     Default = 0,
     UserID = 1,
     Motion = 2,
+    Indirect = 3,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
@@ -47,6 +48,17 @@ pub struct MTLAccelerationStructureUserIDInstanceDescriptor {
     pub intersection_function_table_offset: u32,
     pub acceleration_structure_index: u32,
     pub user_id: u32,
+}
+
+#[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(C)]
+pub struct MTLIndirectAccelerationStructureInstanceDescriptor {
+    pub transformation_matrix: [[f32; 3]; 4],
+    pub options: MTLAccelerationStructureInstanceOptions,
+    pub mask: u32,
+    pub intersection_function_table_offset: u32,
+    pub user_id: u32,
+    pub acceleration_structure_id: u64,
 }
 
 pub enum MTLAccelerationStructureDescriptor {}
@@ -249,6 +261,73 @@ impl InstanceAccelerationStructureDescriptorRef {
 
     pub fn set_instance_descriptor_stride(&self, stride: NSUInteger) {
         unsafe { msg_send![self, setInstanceDescriptorStride: stride] }
+    }
+}
+
+pub enum MTLIndirectInstanceAccelerationStructureDescriptor {}
+
+foreign_obj_type! {
+    type CType = MTLIndirectInstanceAccelerationStructureDescriptor;
+    pub struct IndirectInstanceAccelerationStructureDescriptor;
+    type ParentType = AccelerationStructureDescriptor;
+}
+
+impl IndirectInstanceAccelerationStructureDescriptor {
+    pub fn descriptor() -> Self {
+        unsafe {
+            let class = class!(MTLIndirectInstanceAccelerationStructureDescriptor);
+            msg_send![class, descriptor]
+        }
+    }
+}
+
+impl IndirectInstanceAccelerationStructureDescriptorRef {
+    pub fn set_instance_descriptor_buffer(&self, buffer: &BufferRef) {
+        unsafe { msg_send![self, setInstanceDescriptorBuffer: buffer] }
+    }
+
+    pub fn set_instance_descriptor_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setInstanceDescriptorBufferOffset: offset] }
+    }
+
+    pub fn set_instance_descriptor_stride(&self, stride: NSUInteger) {
+        unsafe { msg_send![self, setInstanceDescriptorStride: stride] }
+    }
+
+    pub fn set_max_instance_count(&self, count: NSUInteger) {
+        unsafe { msg_send![self, setMaxInstanceCount: count] }
+    }
+
+    pub fn set_instance_count_buffer(&self, buffer: &BufferRef) {
+        unsafe { msg_send![self, setInstanceCountBuffer: buffer] }
+    }
+
+    pub fn set_instance_count_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setInstanceCountBufferOffset: offset] }
+    }
+
+    pub fn set_instance_descriptor_type(&self, ty: MTLAccelerationStructureInstanceDescriptorType) {
+        unsafe { msg_send![self, setInstanceDescriptorType: ty] }
+    }
+
+    pub fn set_motion_transform_buffer(&self, buffer: &BufferRef) {
+        unsafe { msg_send![self, setMotionTransformBuffer: buffer] }
+    }
+
+    pub fn set_motion_transform_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setMotionTransformBufferOffset: offset] }
+    }
+
+    pub fn set_max_motion_transform_count(&self, count: NSUInteger) {
+        unsafe { msg_send![self, setMaxMotionTransformCount: count] }
+    }
+
+    pub fn set_motion_transform_count_buffer(&self, buffer: &BufferRef) {
+        unsafe { msg_send![self, setMotionTransformCountBuffer: buffer] }
+    }
+
+    pub fn set_motion_transform_count_buffer_offset(&self, offset: NSUInteger) {
+        unsafe { msg_send![self, setMotionTransformCountBufferOffset: offset] }
     }
 }
 
