@@ -270,11 +270,26 @@ impl AccelerationStructureCommandEncoderRef {
     ) {
         unsafe {
             msg_send![
-            self,
-            buildAccelerationStructure: acceleration_structure
-            descriptor: descriptor
-            scratchBuffer: scratch_buffer
-            scratchBufferOffset: scratch_buffer_offset]
+                self,
+                buildAccelerationStructure: acceleration_structure
+                descriptor: descriptor
+                scratchBuffer: scratch_buffer
+                scratchBufferOffset: scratch_buffer_offset
+            ]
+        }
+    }
+
+    pub fn copy_acceleration_structure(
+        &self,
+        source_acceleration_structure: &AccelerationStructureRef,
+        destination_acceleration_structure: &AccelerationStructureRef,
+    ) {
+        unsafe {
+            msg_send![
+                self,
+                copyAccelerationStructure: source_acceleration_structure
+                toAccelerationStructure: destination_acceleration_structure
+            ]
         }
     }
 
@@ -294,6 +309,24 @@ impl AccelerationStructureCommandEncoderRef {
         }
     }
 
+    pub fn write_compacted_acceleration_structure_size_with_type(
+        &self,
+        acceleration_structure: &AccelerationStructureRef,
+        to_buffer: &BufferRef,
+        offset: NSUInteger,
+        size_data_type: MTLDataType,
+    ) {
+        unsafe {
+            msg_send![
+                self,
+                writeCompactedAccelerationStructureSize: acceleration_structure
+                toBuffer: to_buffer
+                offset: offset
+                sizeDataType: size_data_type
+            ]
+        }
+    }
+
     pub fn copy_and_compact_acceleration_structure(
         &self,
         source: &AccelerationStructureRef,
@@ -304,6 +337,81 @@ impl AccelerationStructureCommandEncoderRef {
                 self,
                 copyAndCompactAccelerationStructure: source
                 toAccelerationStructure: destination
+            ]
+        }
+    }
+
+    pub fn refit_acceleration_structure(
+        &self,
+        source_acceleration_structure: &AccelerationStructureRef,
+        descriptor: &self::AccelerationStructureDescriptorRef,
+        destination_acceleration_structure: &AccelerationStructureRef,
+        scratch_buffer: &BufferRef,
+        scratch_buffer_offset: NSUInteger,
+    ) {
+        unsafe {
+            msg_send![
+                self,
+                refitAccelerationStructure: source_acceleration_structure
+                descriptor: descriptor
+                destination: destination_acceleration_structure
+                scratchBuffer: scratch_buffer
+                scratchBufferOffset: scratch_buffer_offset
+            ]
+        }
+    }
+
+    pub fn update_fence(&self, fence: &FenceRef) {
+        unsafe { msg_send![self, updateFence: fence] }
+    }
+
+    pub fn wait_for_fence(&self, fence: &FenceRef) {
+        unsafe { msg_send![self, waitForFence: fence] }
+    }
+
+    pub fn use_heap(&self, heap: &HeapRef) {
+        unsafe { msg_send![self, useHeap: heap] }
+    }
+
+    pub fn use_heaps(&self, heaps: &[&HeapRef]) {
+        unsafe {
+            msg_send![self,
+                useHeaps: heaps.as_ptr()
+                count: heaps.len() as NSUInteger
+            ]
+        }
+    }
+
+    pub fn use_resource(&self, resource: &ResourceRef, usage: MTLResourceUsage) {
+        unsafe {
+            msg_send![self,
+                useResource: resource
+                usage: usage
+            ]
+        }
+    }
+
+    pub fn use_resources(&self, resources: &[&ResourceRef], usage: MTLResourceUsage) {
+        unsafe {
+            msg_send![self,
+                useResources: resources.as_ptr()
+                count: resources.len() as NSUInteger
+                usage: usage
+            ]
+        }
+    }
+
+    pub fn sample_counters_in_buffer(
+        &self,
+        sample_buffer: &CounterSampleBufferRef,
+        sample_index: NSUInteger,
+        with_barrier: bool,
+    ) {
+        unsafe {
+            msg_send![self,
+                sampleCountersInBuffer: sample_buffer
+                atSampleIndex: sample_index
+                withBarrier: with_barrier
             ]
         }
     }
