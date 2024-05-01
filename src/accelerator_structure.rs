@@ -103,6 +103,12 @@ foreign_obj_type! {
     type ParentType = Resource;
 }
 
+impl AccelerationStructureRef {
+    pub fn gpu_resource_id(&self) -> MTLResourceID {
+        unsafe { msg_send![self, gpuResourceID] }
+    }
+}
+
 pub enum MTLAccelerationStructureGeometryDescriptor {}
 
 foreign_obj_type! {
