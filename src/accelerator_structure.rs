@@ -345,4 +345,37 @@ impl IntersectionFunctionTableRef {
     pub fn set_function(&self, function: &FunctionHandleRef, index: NSUInteger) {
         unsafe { msg_send![self, setFunction: function atIndex: index] }
     }
+
+    pub fn set_functions(&self, functions: &[&FunctionHandleRef], start_index: NSUInteger) {
+        unsafe {
+            msg_send![self, setFunctions: functions.as_ptr() withRange: NSRange { location: start_index, length: functions.len() as _ }]
+        }
+    }
+
+    pub fn set_buffer(&self, index: NSUInteger, buffer: Option<&BufferRef>, offset: NSUInteger) {
+        unsafe { msg_send![self, setBuffer:buffer offset:offset atIndex:index] }
+    }
+
+    pub fn set_buffers(
+        &self,
+        start_index: NSUInteger,
+        data: &[Option<&BufferRef>],
+        offsets: &[NSUInteger],
+    ) {
+        debug_assert_eq!(offsets.len(), data.len());
+        unsafe {
+            msg_send![self,
+                setBuffers: data.as_ptr()
+                offsets: offsets.as_ptr()
+                withRange: NSRange {
+                    location: start_index,
+                    length: data.len() as _,
+                }
+            ]
+        }
+    }
+
+    pub fn gpu_resource_id(&self) -> MTLResourceID {
+        unsafe { msg_send![self, gpuResourceID] }
+    }
 }
