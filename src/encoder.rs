@@ -444,15 +444,14 @@ impl RenderCommandEncoderRef {
         }
     }
 
-
     pub fn set_vertex_visible_function_table(
         &self,
         visible_function_table: Option<&VisibleFunctionTableRef>,
         buffer_index: NSUInteger,
     ) {
         unsafe {
-            msg_send![self, 
-            setVertexVisibleFunctionTable:visible_function_table 
+            msg_send![self,
+            setVertexVisibleFunctionTable:visible_function_table
             atBufferIndex:buffer_index]
         }
     }
@@ -463,9 +462,9 @@ impl RenderCommandEncoderRef {
         buffer_start_index: NSUInteger,
     ) {
         unsafe {
-            msg_send![self, 
+            msg_send![self,
                 setVertexVisibleFunctionTables:visible_function_tables.as_ptr()
-                withBufferRange: NSRange { 
+                withBufferRange: NSRange {
                     location: buffer_start_index,
                     length: visible_function_tables.len() as _,
                 }
@@ -901,8 +900,8 @@ impl RenderCommandEncoderRef {
         buffer_index: NSUInteger,
     ) {
         unsafe {
-            msg_send![self, 
-            setFragmentVisibleFunctionTable:visible_function_table 
+            msg_send![self,
+            setFragmentVisibleFunctionTable:visible_function_table
             atBufferIndex:buffer_index]
         }
     }
@@ -913,9 +912,9 @@ impl RenderCommandEncoderRef {
         buffer_start_index: NSUInteger,
     ) {
         unsafe {
-            msg_send![self, 
+            msg_send![self,
                 setFragmentVisibleFunctionTables:visible_function_tables.as_ptr()
-                withBufferRange: NSRange { 
+                withBufferRange: NSRange {
                     location: buffer_start_index,
                     length: visible_function_tables.len() as _,
                 }
@@ -1657,8 +1656,8 @@ impl ComputeCommandEncoderRef {
         buffer_index: NSUInteger,
     ) {
         unsafe {
-            msg_send![self, 
-            setVisibleFunctionTable:visible_function_table 
+            msg_send![self,
+            setVisibleFunctionTable:visible_function_table
             atBufferIndex:buffer_index]
         }
     }
@@ -1669,9 +1668,9 @@ impl ComputeCommandEncoderRef {
         buffer_start_index: NSUInteger,
     ) {
         unsafe {
-            msg_send![self, 
+            msg_send![self,
                 setVisibleFunctionTables:visible_function_tables.as_ptr()
-                withBufferRange: NSRange { 
+                withBufferRange: NSRange {
                     location: buffer_start_index,
                     length: visible_function_tables.len() as _,
                 }

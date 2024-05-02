@@ -558,13 +558,40 @@ impl IntersectionFunctionTableRef {
         debug_assert_eq!(offsets.len(), data.len());
         unsafe {
             msg_send![self,
-                setBuffers: data.as_ptr()
-                offsets: offsets.as_ptr()
-                withRange: NSRange {
-                    location: start_index,
-                    length: data.len() as _,
-                }
+            setBuffers: data.as_ptr()
+            offsets: offsets.as_ptr()
+            withRange: NSRange {
+                location: start_index,
+                length: data.len() as _,
+            }
             ]
+        }
+    }
+
+    pub fn set_visible_function_table(
+        &self,
+        visible_function_table: Option<&VisibleFunctionTableRef>,
+        buffer_index: NSUInteger,
+    ) {
+        unsafe {
+            msg_send![self,
+            setVisibleFunctionTable:visible_function_table
+            atBufferIndex:buffer_index]
+        }
+    }
+
+    pub fn set_visible_function_tables(
+        &self,
+        visible_function_tables: &[&VisibleFunctionTableRef],
+        buffer_start_index: NSUInteger,
+    ) {
+        unsafe {
+            msg_send![self,
+            setVisibleFunctionTables:visible_function_tables.as_ptr()
+            withBufferRange: NSRange {
+                location: buffer_start_index,
+                length: visible_function_tables.len() as _,
+            }]
         }
     }
 
