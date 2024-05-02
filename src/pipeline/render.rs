@@ -729,10 +729,7 @@ impl RenderPipelineStateRef {
         descriptor: &VisibleFunctionTableDescriptorRef,
         stage: MTLRenderStages,
     ) -> VisibleFunctionTable {
-        unsafe {
-            msg_send![self, newVisibleFunctionTableWithDescriptor: descriptor
-                                                                            stage:stage]
-        }
+        unsafe { msg_send![self, newVisibleFunctionTableWithDescriptor: descriptor stage:stage] }
     }
 }
 

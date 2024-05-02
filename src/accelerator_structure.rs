@@ -573,7 +573,7 @@ impl IntersectionFunctionTableRef {
     }
 }
 
-// See https://developer.apple.com/documentation/metal/mtlvisiblefunctiontabledescriptor/
+/// See <https://developer.apple.com/documentation/metal/mtlvisiblefunctiontabledescriptor>
 pub enum MTLVisibleFunctionTableDescriptor {}
 
 foreign_obj_type! {
@@ -597,7 +597,7 @@ impl VisibleFunctionTableDescriptorRef {
     }
 }
 
-// See https://developer.apple.com/documentation/metal/mtlvisiblefunctiontable
+/// See <https://developer.apple.com/documentation/metal/mtlvisiblefunctiontable>
 pub enum MTLVisibleFunctionTable {}
 
 foreign_obj_type! {
