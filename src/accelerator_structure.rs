@@ -570,8 +570,8 @@ impl IntersectionFunctionTableRef {
 
     pub fn set_visible_function_table(
         &self,
-        visible_function_table: Option<&VisibleFunctionTableRef>,
         buffer_index: NSUInteger,
+        visible_function_table: Option<&VisibleFunctionTableRef>,
     ) {
         unsafe {
             msg_send![self,
@@ -582,8 +582,8 @@ impl IntersectionFunctionTableRef {
 
     pub fn set_visible_function_tables(
         &self,
-        visible_function_tables: &[&VisibleFunctionTableRef],
         buffer_start_index: NSUInteger,
+        visible_function_tables: &[&VisibleFunctionTableRef],
     ) {
         unsafe {
             msg_send![self,
@@ -639,7 +639,7 @@ impl VisibleFunctionTableRef {
         unsafe { msg_send![self, setFunctions: ns_array] }
     }
 
-    pub fn set_function(&self, function: &FunctionHandleRef, index: NSUInteger) {
+    pub fn set_function(&self, index: NSUInteger, function: &FunctionHandleRef) {
         unsafe { msg_send![self, setFunction: function atIndex: index] }
     }
 

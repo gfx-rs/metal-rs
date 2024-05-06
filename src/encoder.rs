@@ -446,8 +446,8 @@ impl RenderCommandEncoderRef {
 
     pub fn set_vertex_visible_function_table(
         &self,
-        visible_function_table: Option<&VisibleFunctionTableRef>,
         buffer_index: NSUInteger,
+        visible_function_table: Option<&VisibleFunctionTableRef>,
     ) {
         unsafe {
             msg_send![self,
@@ -458,8 +458,8 @@ impl RenderCommandEncoderRef {
 
     pub fn set_vertex_visible_function_tables(
         &self,
-        visible_function_tables: &[&VisibleFunctionTableRef],
         buffer_start_index: NSUInteger,
+        visible_function_tables: &[&VisibleFunctionTableRef],
     ) {
         unsafe {
             msg_send![self,
@@ -896,8 +896,8 @@ impl RenderCommandEncoderRef {
 
     pub fn set_fragment_visible_function_table(
         &self,
-        visible_function_table: Option<&VisibleFunctionTableRef>,
         buffer_index: NSUInteger,
+        visible_function_table: Option<&VisibleFunctionTableRef>,
     ) {
         unsafe {
             msg_send![self,
@@ -908,8 +908,8 @@ impl RenderCommandEncoderRef {
 
     pub fn set_fragment_visible_function_tables(
         &self,
-        visible_function_tables: &[&VisibleFunctionTableRef],
         buffer_start_index: NSUInteger,
+        visible_function_tables: &[&VisibleFunctionTableRef],
     ) {
         unsafe {
             msg_send![self,
@@ -1652,8 +1652,8 @@ impl ComputeCommandEncoderRef {
 
     pub fn set_visible_function_table(
         &self,
-        visible_function_table: Option<&VisibleFunctionTableRef>,
         buffer_index: NSUInteger,
+        visible_function_table: Option<&VisibleFunctionTableRef>,
     ) {
         unsafe {
             msg_send![self,
@@ -1664,8 +1664,8 @@ impl ComputeCommandEncoderRef {
 
     pub fn set_visible_function_tables(
         &self,
-        visible_function_tables: &[&VisibleFunctionTableRef],
         buffer_start_index: NSUInteger,
+        visible_function_tables: &[&VisibleFunctionTableRef],
     ) {
         unsafe {
             msg_send![self,
