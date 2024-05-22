@@ -81,7 +81,9 @@ impl PrimitiveAccelerationStructureDescriptor {
     pub fn descriptor() -> Self {
         unsafe {
             let class = class!(MTLPrimitiveAccelerationStructureDescriptor);
-            msg_send![class, descriptor]
+            let ptr: *mut Object = msg_send![class, descriptor];
+            let ptr: *mut Object = msg_send![ptr, retain];
+            Self::from_ptr(ptr as _)
         }
     }
 }
@@ -150,7 +152,9 @@ impl AccelerationStructureTriangleGeometryDescriptor {
     pub fn descriptor() -> Self {
         unsafe {
             let class = class!(MTLAccelerationStructureTriangleGeometryDescriptor);
-            msg_send![class, descriptor]
+            let ptr: *mut Object = msg_send![class, descriptor];
+            let ptr: *mut Object = msg_send![ptr, retain];
+            Self::from_ptr(ptr as _)
         }
     }
 }
@@ -209,7 +213,9 @@ impl AccelerationStructureBoundingBoxGeometryDescriptor {
     pub fn descriptor() -> Self {
         unsafe {
             let class = class!(MTLAccelerationStructureBoundingBoxGeometryDescriptor);
-            msg_send![class, descriptor]
+            let ptr: *mut Object = msg_send![class, descriptor];
+            let ptr: *mut Object = msg_send![ptr, retain];
+            Self::from_ptr(ptr as _)
         }
     }
 }
@@ -236,7 +242,9 @@ impl InstanceAccelerationStructureDescriptor {
     pub fn descriptor() -> Self {
         unsafe {
             let class = class!(MTLInstanceAccelerationStructureDescriptor);
-            msg_send![class, descriptor]
+            let ptr: *mut Object = msg_send![class, descriptor];
+            let ptr: *mut Object = msg_send![ptr, retain];
+            Self::from_ptr(ptr as _)
         }
     }
 }
@@ -282,7 +290,9 @@ impl IndirectInstanceAccelerationStructureDescriptor {
     pub fn descriptor() -> Self {
         unsafe {
             let class = class!(MTLIndirectInstanceAccelerationStructureDescriptor);
-            msg_send![class, descriptor]
+            let ptr: *mut Object = msg_send![class, descriptor];
+            let ptr: *mut Object = msg_send![ptr, retain];
+            Self::from_ptr(ptr as _)
         }
     }
 }
