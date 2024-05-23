@@ -9,7 +9,7 @@ use super::*;
 use block::{Block, RcBlock};
 use std::ptr;
 
-#[cfg(feature = "dispatch_queue")]
+#[cfg(feature = "dispatch")]
 use dispatch;
 
 /// See <https://developer.apple.com/documentation/metal/mtlsharedeventnotificationblock>
