@@ -448,7 +448,7 @@ impl AccelerationStructureCommandEncoderRef {
         &self,
         source_acceleration_structure: &AccelerationStructureRef,
         descriptor: &self::AccelerationStructureDescriptorRef,
-        destination_acceleration_structure: &AccelerationStructureRef,
+        destination_acceleration_structure: Option<&AccelerationStructureRef>,
         scratch_buffer: &BufferRef,
         scratch_buffer_offset: NSUInteger,
     ) {
