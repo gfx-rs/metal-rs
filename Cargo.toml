@@ -28,7 +28,7 @@ mps = []
 link = ["core-graphics-types/link"]
 
 [dependencies]
-core-graphics-types = "0.1.3"
+core-graphics-types = { version = "0.1.3", default-features = false }
 bitflags = "2"
 log = "0.4"
 block = "0.1.6"
