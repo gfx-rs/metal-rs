@@ -1542,6 +1542,14 @@ impl Device {
 }
 
 impl DeviceRef {
+    pub fn architecture_name(&self) -> &str {
+        unsafe {
+            let arch: *const NSObject = msg_send![self, architecture];
+            let name = msg_send![arch, name];
+            crate::nsstring_as_str(name)
+        }
+    }
+
     pub fn name(&self) -> &str {
         unsafe {
             let name = msg_send![self, name];
