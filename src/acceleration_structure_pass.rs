@@ -72,7 +72,7 @@ impl AccelerationStructurePassSampleBufferAttachmentDescriptor {
 }
 
 impl AccelerationStructurePassSampleBufferAttachmentDescriptorRef {
-    pub fn sample_buffer(&self) -> &CounterSampleBufferRef {
+    pub fn sample_buffer(&self) -> Option<&CounterSampleBufferRef> {
         unsafe { msg_send![self, sampleBuffer] }
     }
 
