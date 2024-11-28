@@ -554,6 +554,9 @@ mod drawable;
 mod encoder;
 mod heap;
 mod indirect_encoder;
+mod iocommandbuffer;
+mod iocommandqueue;
+mod iofilehandle;
 mod library;
 #[cfg(feature = "mps")]
 pub mod mps;
@@ -586,6 +589,9 @@ pub use {
     encoder::*,
     heap::*,
     indirect_encoder::*,
+    iocommandbuffer::*,
+    iocommandqueue::*,
+    iofilehandle::*,
     library::*,
     pipeline::*,
     renderpass::*,
@@ -625,6 +631,14 @@ impl URL {
             let ns_str = crate::nsstring_from_str(string);
             let class = class!(NSURL);
             msg_send![class, URLWithString: ns_str]
+        }
+    }
+
+    pub fn new_with_path(path: &str) -> Self {
+        unsafe {
+            let ns_str = crate::nsstring_from_str(path);
+            let class = class!(NSURL);
+            msg_send![class, fileURLWithPath: ns_str]
         }
     }
 }
