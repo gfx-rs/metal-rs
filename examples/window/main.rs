@@ -142,7 +142,7 @@ fn main() {
 
     let mut r = 0.0f32;
 
-    let clear_rect = vec![ClearRect {
+    let clear_rect = [ClearRect {
         rect: Rect {
             x: -1.0,
             y: -1.0,
@@ -202,12 +202,12 @@ fn main() {
                                 std::ptr::copy(
                                     vertex_data.as_ptr(),
                                     p as *mut f32,
-                                    (vertex_data.len() * mem::size_of::<f32>()) as usize,
+                                    (vertex_data.len() * mem::size_of::<f32>()),
                                 );
                             }
 
                             vbuf.did_modify_range(crate::NSRange::new(
-                                0 as u64,
+                                0_u64,
                                 (vertex_data.len() * mem::size_of::<f32>()) as u64,
                             ));
 
@@ -219,13 +219,13 @@ fn main() {
                             let render_pass_descriptor = RenderPassDescriptor::new();
 
                             prepare_render_pass_descriptor(
-                                &render_pass_descriptor,
+                                render_pass_descriptor,
                                 drawable.texture(),
                             );
 
                             let command_buffer = command_queue.new_command_buffer();
                             let encoder =
-                                command_buffer.new_render_command_encoder(&render_pass_descriptor);
+                                command_buffer.new_render_command_encoder(render_pass_descriptor);
 
                             encoder.set_scissor_rect(MTLScissorRect {
                                 x: 20,
@@ -254,7 +254,7 @@ fn main() {
                             encoder.draw_primitives(MTLPrimitiveType::Triangle, 0, 3);
                             encoder.end_encoding();
 
-                            command_buffer.present_drawable(&drawable);
+                            command_buffer.present_drawable(drawable);
                             command_buffer.commit();
 
                             r += 0.01f32;
