@@ -436,10 +436,14 @@ impl CompileOptions {
 }
 
 impl CompileOptionsRef {
+    /// # Safety
+    /// TODO
     pub unsafe fn preprocessor_macros(&self) -> *mut Object {
         msg_send![self, preprocessorMacros]
     }
 
+    /// # Safety
+    /// TODO
     pub unsafe fn set_preprocessor_macros(&self, defines: *mut Object) {
         msg_send![self, setPreprocessorMacros: defines]
     }
@@ -495,13 +499,12 @@ impl CompileOptionsRef {
         unsafe {
             let libraries: *mut Object = msg_send![self, libraries];
             let count: NSUInteger = msg_send![libraries, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let lib = msg_send![libraries, objectAtIndex: i];
                     DynamicLibrary::from_ptr(lib)
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 
@@ -611,13 +614,12 @@ impl LibraryRef {
         unsafe {
             let names: *mut Object = msg_send![self, functionNames];
             let count: NSUInteger = msg_send![names, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let name = msg_send![names, objectAtIndex: i];
                     nsstring_as_str(name).to_string()
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 
@@ -859,13 +861,12 @@ impl LinkedFunctionsRef {
         unsafe {
             let functions: *mut Object = msg_send![self, functions];
             let count: NSUInteger = msg_send![functions, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let f = msg_send![functions, objectAtIndex: i];
                     Function::from_ptr(f)
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 
@@ -880,13 +881,12 @@ impl LinkedFunctionsRef {
         unsafe {
             let functions: *mut Object = msg_send![self, binaryFunctions];
             let count: NSUInteger = msg_send![functions, count];
-            let ret = (0..count)
+            (0..count)
                 .map(|i| {
                     let f = msg_send![functions, objectAtIndex: i];
                     Function::from_ptr(f)
                 })
-                .collect();
-            ret
+                .collect()
         }
     }
 

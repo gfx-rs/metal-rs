@@ -11,8 +11,6 @@ use core_graphics_types::geometry::CGSize;
 
 use objc::{rc::autoreleasepool, runtime::YES};
 
-use std::mem;
-
 // Declare the data structures needed to carry vertex layout to
 // metal shading language(MSL) program. Use #[repr(C)], to make
 // the data structure compatible with C++ type data structure
@@ -20,15 +18,15 @@ use std::mem;
 // based on C++
 #[repr(C)]
 #[derive(Debug)]
-pub struct position(std::ffi::c_float, std::ffi::c_float);
+pub struct Position(std::ffi::c_float, std::ffi::c_float);
 #[repr(C)]
 #[derive(Debug)]
-pub struct color(std::ffi::c_float, std::ffi::c_float, std::ffi::c_float);
+pub struct Color(std::ffi::c_float, std::ffi::c_float, std::ffi::c_float);
 #[repr(C)]
 #[derive(Debug)]
 pub struct AAPLVertex {
-    p: position,
-    c: color,
+    p: Position,
+    c: Color,
 }
 
 fn main() {
@@ -94,7 +92,7 @@ fn main() {
     // Currently, MetalLayer is the only interface that provide
     // layers to carry drawable texture from GPU rendaring through metal
     // library to viewable windows.
-    let layer = MetalLayer::new();
+    let mut layer = MetalLayer::new();
     layer.set_device(&device);
     layer.set_pixel_format(MTLPixelFormat::BGRA8Unorm);
     layer.set_presents_with_transaction(false);
@@ -103,7 +101,7 @@ fn main() {
         if let Ok(RawWindowHandle::AppKit(rw)) = window.window_handle().map(|wh| wh.as_raw()) {
             let view = rw.ns_view.as_ptr() as cocoa_id;
             view.setWantsLayer(YES);
-            view.setLayer(mem::transmute(layer.as_ref()));
+            view.setLayer(<*mut _>::cast(layer.as_mut()));
         }
     }
 
@@ -112,11 +110,10 @@ fn main() {
 
     let vbuf = {
         let vertex_data = create_vertex_points_for_circle();
-        let vertex_data = vertex_data.as_slice();
 
         device.new_buffer_with_data(
-            vertex_data.as_ptr() as *const _,
-            std::mem::size_of_val(vertex_data) as u64,
+            vertex_data.as_ptr().cast(),
+            std::mem::size_of_val(vertex_data.as_slice()) as u64,
             MTLResourceOptions::CPUCacheModeDefaultCache | MTLResourceOptions::StorageModeManaged,
         )
     };
@@ -234,15 +231,15 @@ fn create_vertex_points_for_circle() -> Vec<AAPLVertex> {
         let position_y: f32 = position_y * circle_size;
 
         v.push(AAPLVertex {
-            p: position(position_x, position_y),
-            c: color(0.7, 0.3, 0.5),
+            p: Position(position_x, position_y),
+            c: Color(0.7, 0.3, 0.5),
         });
 
         if (i + 1) % 2 == 0 {
             // For each two points on perimeter, push one point of origin
             v.push(AAPLVertex {
-                p: position(origin_x, origin_y),
-                c: color(0.2, 0.7, 0.4),
+                p: Position(origin_x, origin_y),
+                c: Color(0.2, 0.7, 0.4),
             });
         }
     }
@@ -381,6 +378,5 @@ fn fetch_timestamp_counter_set(device: &Device) -> metal::CounterSet {
 fn microseconds_between_begin(begin: u64, end: u64, gpu_time_span: u64, cpu_time_span: u64) -> f64 {
     let time_span = (end as f64) - (begin as f64);
     let nanoseconds = time_span / (gpu_time_span as f64) * (cpu_time_span as f64);
-    let microseconds = nanoseconds / 1000.0;
-    microseconds
+    nanoseconds / 1000.0
 }
