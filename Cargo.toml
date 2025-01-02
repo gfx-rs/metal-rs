@@ -33,9 +33,7 @@ default = ["link"]
 private = []
 mps = []
 link = ["core-graphics-types/link"]
-
-# No-op feature to let cargo-cfg checking to be happy
-cargo-clippy = []
+cargo-clippy = [] # Workaround for https://github.com/gfx-rs/metal-rs/pull/344#issuecomment-2569042111
 
 [dependencies]
 core-graphics-types = { version = "0.2.0", default-features = false }
