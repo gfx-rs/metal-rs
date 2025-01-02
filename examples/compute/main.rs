@@ -1,5 +1,6 @@
 use metal::*;
 use objc::rc::autoreleasepool;
+use std::mem::size_of;
 use std::path::PathBuf;
 
 const NUM_SAMPLES: u64 = 2;
@@ -18,7 +19,7 @@ fn main() {
 
         let counter_sample_buffer = create_counter_sample_buffer(&device);
         let destination_buffer = device.new_buffer(
-            (std::mem::size_of::<u64>() * NUM_SAMPLES as usize) as u64,
+            (size_of::<u64>() * NUM_SAMPLES as usize) as u64,
             MTLResourceOptions::StorageModeShared,
         );
 
@@ -170,16 +171,16 @@ fn create_input_and_output_buffers(
     let data = vec![1u32; num_elements as usize];
 
     let buffer = device.new_buffer_with_data(
-        unsafe { std::mem::transmute(data.as_ptr()) },
-        (data.len() * std::mem::size_of::<u32>()) as u64,
+        data.as_ptr().cast(),
+        size_of_val(data.as_slice()) as u64,
         MTLResourceOptions::CPUCacheModeDefaultCache,
     );
 
     let sum = {
         let data = [0u32];
         device.new_buffer_with_data(
-            unsafe { std::mem::transmute(data.as_ptr()) },
-            (data.len() * std::mem::size_of::<u32>()) as u64,
+            data.as_ptr().cast(),
+            size_of_val(data.as_slice()) as u64,
             MTLResourceOptions::CPUCacheModeDefaultCache,
         )
     };

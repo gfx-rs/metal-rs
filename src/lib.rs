@@ -8,17 +8,7 @@
 #![allow(deprecated)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
-// Silence clippy warnings as a stopgap to get CI working.
-#![allow(clippy::enum_variant_names)]
-#![allow(clippy::identity_op)]
-#![allow(clippy::let_and_return)]
-#![allow(clippy::missing_safety_doc)]
-#![allow(clippy::missing_transmute_annotations)]
-#![allow(clippy::new_ret_no_self)]
-#![allow(clippy::new_without_default)]
-#![allow(clippy::too_many_arguments)]
-#![allow(clippy::transmute_ptr_to_ref)]
-#![allow(clippy::unit_arg)]
+#![allow(clippy::new_without_default, clippy::new_ret_no_self)]
 
 #[macro_use]
 pub extern crate objc;
@@ -159,7 +149,7 @@ macro_rules! foreign_obj_type {
 
         impl ::std::convert::From<$owned_ident> for $parent_ident {
             fn from(item: $owned_ident) -> Self {
-                unsafe { Self::from_ptr(::std::mem::transmute(item.into_ptr())) }
+                unsafe { Self::from_ptr(item.into_ptr().cast()) }
             }
         }
     };
@@ -360,7 +350,7 @@ where
 
     #[inline]
     fn deref(&self) -> &ArrayRef<T> {
-        unsafe { mem::transmute(self.as_ptr()) }
+        unsafe { &*(self.as_ptr() as *const ArrayRef<T>) }
     }
 }
 
@@ -370,7 +360,7 @@ where
     T::Ref: objc::Message + 'static,
 {
     fn borrow(&self) -> &ArrayRef<T> {
-        unsafe { mem::transmute(self.as_ptr()) }
+        unsafe { &*(self.as_ptr() as *const ArrayRef<T>) }
     }
 }
 
