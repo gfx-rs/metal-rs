@@ -90,6 +90,8 @@ foreign_obj_type! {
 }
 
 impl SharedEventListener {
+    /// # Safety
+    /// TODO
     pub unsafe fn from_queue_handle(queue: dispatch_queue_t) -> Self {
         let listener: SharedEventListener = msg_send![class!(MTLSharedEventListener), alloc];
         let ptr: *mut Object = msg_send![listener.as_ref(), initWithDispatchQueue: queue];

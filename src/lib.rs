@@ -8,6 +8,7 @@
 #![allow(deprecated)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
+#![allow(clippy::new_without_default, clippy::new_ret_no_self)]
 
 #[macro_use]
 pub extern crate objc;
@@ -148,7 +149,7 @@ macro_rules! foreign_obj_type {
 
         impl ::std::convert::From<$owned_ident> for $parent_ident {
             fn from(item: $owned_ident) -> Self {
-                unsafe { Self::from_ptr(::std::mem::transmute(item.into_ptr())) }
+                unsafe { Self::from_ptr(item.into_ptr().cast()) }
             }
         }
     };
@@ -349,7 +350,7 @@ where
 
     #[inline]
     fn deref(&self) -> &ArrayRef<T> {
-        unsafe { mem::transmute(self.as_ptr()) }
+        unsafe { &*(self.as_ptr() as *const ArrayRef<T>) }
     }
 }
 
@@ -359,7 +360,7 @@ where
     T::Ref: objc::Message + 'static,
 {
     fn borrow(&self) -> &ArrayRef<T> {
-        unsafe { mem::transmute(self.as_ptr()) }
+        unsafe { &*(self.as_ptr() as *const ArrayRef<T>) }
     }
 }
 
