@@ -10,11 +10,17 @@ readme = "README.md"
 keywords = ["metal", "graphics", "bindings"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
-exclude = ["guide/**/*", "examples/texture/**/*", "tests/**/*", "Cargo.lock", "target/**/*"]
+exclude = [
+  "guide/**/*",
+  "examples/texture/**/*",
+  "tests/**/*",
+  "Cargo.lock",
+  "target/**/*",
+]
 
 [package.metadata.docs.rs]
 targets = [
-  "aarch64-apple-darwin", # presented first in Docs.rs, keep this here
+  "aarch64-apple-darwin",  # presented first in Docs.rs, keep this here
   "aarch64-apple-ios",
   "aarch64-apple-ios-sim",
   "x86_64-apple-darwin",
@@ -26,6 +32,9 @@ default = ["link"]
 private = []
 mps = []
 link = ["core-graphics-types/link"]
+
+# No-op feature to let cargo-cfg checking to be happy
+cargo-clippy = []
 
 [dependencies]
 core-graphics-types = { version = "0.1.3", default-features = false }
@@ -102,6 +111,4 @@ required-features = ["dispatch"]
 name = "fence"
 
 [workspace]
-members = [
-  "examples/texture",
-]
+members = ["examples/texture"]
