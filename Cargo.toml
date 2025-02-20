@@ -37,7 +37,7 @@ link = ["core-graphics-types/link"]
 cargo-clippy = []
 
 [dependencies]
-core-graphics-types = { version = "0.1.3", default-features = false }
+core-graphics-types = { version = "0.2.0", default-features = false }
 bitflags = "2"
 log = "0.4"
 block = "0.1.6"
