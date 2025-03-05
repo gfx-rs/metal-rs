@@ -13,3 +13,4 @@ Cargo.lock
 .idea
 
 **/*.air
+**/*.air.tmp
