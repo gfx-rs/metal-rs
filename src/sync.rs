@@ -70,11 +70,11 @@ impl SharedEventRef {
         extern "C" fn dtor(_: *mut BlockBase<(&SharedEventRef, u64), ()>) {}
 
         const SIGNATURE: &[u8] = b"v16@?0Q8\0";
-        const SIGNATURE_PTR: *const i8 = &SIGNATURE[0] as *const u8 as *const i8;
+        const SIGNATURE_PTR: *const i8 = SIGNATURE.as_ptr().cast();
         static mut BLOCK_EXTRA: BlockExtra<(&SharedEventRef, u64), ()> = BlockExtra {
-            unknown0: 0 as *mut i32,
-            unknown1: 0 as *mut i32,
-            unknown2: 0 as *mut i32,
+            unknown0: std::ptr::null_mut(),
+            unknown1: std::ptr::null_mut(),
+            unknown2: std::ptr::null_mut(),
             dtor,
             signature: &SIGNATURE_PTR,
         };

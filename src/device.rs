@@ -1729,7 +1729,7 @@ impl DeviceRef {
             // destructor block, which will make `dispatch_data_create` copy
             // the buffer for us automatically.
             let data = dispatch_data_create(
-                library_data.as_ptr() as *const std::ffi::c_void,
+                library_data.as_ptr().cast(),
                 library_data.len() as crate::c_size_t,
                 addr_of_mut!(_dispatch_main_q),
                 DISPATCH_DATA_DESTRUCTOR_DEFAULT,

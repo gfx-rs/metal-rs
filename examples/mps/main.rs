@@ -1,5 +1,4 @@
 use metal::*;
-use std::ffi::c_void;
 use std::mem::size_of;
 
 #[repr(C)]
@@ -49,13 +48,13 @@ fn main() {
     let buffer_opts = MTLResourceOptions::StorageModeManaged;
 
     let vertex_buffer = device.new_buffer_with_data(
-        vertices.as_ptr() as *const c_void,
+        vertices.as_ptr().cast(),
         (vertex_stride * vertices.len()) as u64,
         buffer_opts,
     );
 
     let index_buffer = device.new_buffer_with_data(
-        indices.as_ptr() as *const c_void,
+        indices.as_ptr().cast(),
         size_of_val(indices.as_slice()) as u64,
         buffer_opts,
     );
