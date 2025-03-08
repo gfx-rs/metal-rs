@@ -11,7 +11,12 @@ use block::Block;
 use log::warn;
 use objc::runtime::{NO, YES};
 
-use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
+use std::{
+    ffi::CStr,
+    os::raw::c_char,
+    path::Path,
+    ptr::{self, addr_of_mut},
+};
 
 /// Available on macOS 10.11+, iOS 8.0+, tvOS 9.0+
 ///
@@ -1475,16 +1480,22 @@ type dispatch_block_t = *const Block<(), ()>;
 const DISPATCH_DATA_DESTRUCTOR_DEFAULT: dispatch_block_t = ptr::null();
 
 #[cfg_attr(
-    all(feature = "link", any(target_os = "macos", target_os = "ios", target_os = "visionos")),
+    all(
+        feature = "link",
+        any(target_os = "macos", target_os = "ios", target_os = "visionos")
+    ),
     link(name = "System", kind = "dylib")
 )]
 #[cfg_attr(
-    all(feature = "link", not(any(target_os = "macos", target_os = "ios", target_os = "visionos"))),
+    all(
+        feature = "link",
+        not(any(target_os = "macos", target_os = "ios", target_os = "visionos"))
+    ),
     link(name = "dispatch", kind = "dylib")
 )]
 #[allow(improper_ctypes)]
 extern "C" {
-    static _dispatch_main_q: dispatch_queue_t;
+    static mut _dispatch_main_q: Object;
 
     fn dispatch_data_create(
         buffer: *const std::ffi::c_void,
@@ -1719,7 +1730,7 @@ impl DeviceRef {
             let data = dispatch_data_create(
                 library_data.as_ptr() as *const std::ffi::c_void,
                 library_data.len() as crate::c_size_t,
-                &_dispatch_main_q as *const _ as dispatch_queue_t,
+                addr_of_mut!(_dispatch_main_q),
                 DISPATCH_DATA_DESTRUCTOR_DEFAULT,
             );
 
