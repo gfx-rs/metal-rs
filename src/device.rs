@@ -12,10 +12,9 @@ use log::warn;
 use objc::runtime::{NO, YES};
 
 use std::{
-    ffi::CStr,
-    os::raw::c_char,
+    ffi::{c_char, CStr},
     path::Path,
-    ptr::{self, addr_of_mut},
+    ptr,
 };
 
 /// Available on macOS 10.11+, iOS 8.0+, tvOS 9.0+
@@ -1731,7 +1730,7 @@ impl DeviceRef {
             let data = dispatch_data_create(
                 library_data.as_ptr().cast(),
                 library_data.len() as crate::c_size_t,
-                addr_of_mut!(_dispatch_main_q),
+                ptr::addr_of_mut!(_dispatch_main_q),
                 DISPATCH_DATA_DESTRUCTOR_DEFAULT,
             );
 

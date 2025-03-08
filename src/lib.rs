@@ -17,7 +17,13 @@ pub extern crate foreign_types;
 #[macro_use]
 pub extern crate paste;
 
-use std::{borrow::Borrow, marker::PhantomData, mem, ops::Deref, os::raw::c_void};
+use std::{
+    borrow::Borrow,
+    ffi::{c_char, c_void},
+    marker::PhantomData,
+    mem,
+    ops::Deref,
+};
 
 use core_graphics_types::{base::CGFloat, geometry::CGSize};
 use foreign_types::ForeignType;
@@ -56,7 +62,7 @@ impl NSRange {
 
 fn nsstring_as_str(nsstr: &objc::runtime::Object) -> &str {
     let bytes = unsafe {
-        let bytes: *const std::os::raw::c_char = msg_send![nsstr, UTF8String];
+        let bytes: *const c_char = msg_send![nsstr, UTF8String];
         bytes.cast()
     };
     let len: NSUInteger = unsafe { msg_send![nsstr, length] };
@@ -196,7 +202,7 @@ macro_rules! try_objc {
             let value = $body;
             if !$err_name.is_null() {
                 let desc: *mut Object = msg_send![$err_name, localizedDescription];
-                let compile_error: *const std::os::raw::c_char = msg_send![desc, UTF8String];
+                let compile_error: *const c_char = msg_send![desc, UTF8String];
                 let message = CStr::from_ptr(compile_error).to_string_lossy().into_owned();
                 return Err(message);
             }
