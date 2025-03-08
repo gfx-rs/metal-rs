@@ -9,8 +9,7 @@ use super::*;
 
 use objc::runtime::{BOOL, NO, YES};
 
-use std::ffi::CStr;
-use std::os::raw::c_char;
+use std::ffi::{c_char, CStr};
 use std::ptr;
 
 /// Only available on (macos(10.12), ios(10.0)
