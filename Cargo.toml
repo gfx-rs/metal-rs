@@ -17,6 +17,7 @@ exclude = [
   "Cargo.lock",
   "target/**/*",
 ]
+rust-version = "1.82"
 
 [package.metadata.docs.rs]
 targets = [

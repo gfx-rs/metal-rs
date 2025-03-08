@@ -13,13 +13,13 @@ jobs:
 
     strategy:
       matrix:
-        channel: [stable, nightly]
+        channel: [1.82, stable, nightly]
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Setup rust toolchain
-      uses: dtolnay/rust-toolchain@stable
+      uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.channel }}
 
