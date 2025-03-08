@@ -11,7 +11,11 @@ use block::Block;
 use log::warn;
 use objc::runtime::{NO, YES};
 
-use std::{ffi::CStr, os::raw::c_char, path::Path, ptr};
+use std::{
+    ffi::{c_char, CStr},
+    path::Path,
+    ptr,
+};
 
 /// Available on macOS 10.11+, iOS 8.0+, tvOS 9.0+
 ///
