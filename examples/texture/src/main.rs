@@ -40,8 +40,8 @@ fn main() {
 
     let vertex_data = vertices();
     let vertex_buffer = device.new_buffer_with_data(
-        vertex_data.as_ptr() as *const _,
-        (vertex_data.len() * std::mem::size_of::<TexturedVertex>()) as u64,
+        vertex_data.as_ptr().cast(),
+        size_of_val(vertex_data.as_slice()) as u64,
         MTLResourceOptions::CPUCacheModeDefaultCache | MTLResourceOptions::StorageModeManaged,
     );
 
@@ -225,10 +225,10 @@ fn prepare_pipeline_state(device: &Device, library: &Library) -> RenderPipelineS
 fn update_viewport_size_buffer(viewport_size_buffer: &Buffer, size: (u32, u32)) {
     let contents = viewport_size_buffer.contents();
     let viewport_size: [u32; 2] = [size.0, size.1];
-    let byte_count = (viewport_size.len() * std::mem::size_of::<u32>()) as usize;
+    let byte_count = size_of_val(&viewport_size);
 
     unsafe {
-        std::ptr::copy(viewport_size.as_ptr(), contents as *mut u32, byte_count);
+        std::ptr::copy(viewport_size.as_ptr(), contents.cast(), byte_count);
     }
     viewport_size_buffer.did_modify_range(metal::NSRange::new(0, byte_count as u64));
 }
@@ -247,11 +247,11 @@ fn redraw(
     };
 
     let render_pass_descriptor = RenderPassDescriptor::new();
-    prepare_render_pass_descriptor(&render_pass_descriptor, drawable.texture());
+    prepare_render_pass_descriptor(render_pass_descriptor, drawable.texture());
 
     let command_buffer = command_queue.new_command_buffer();
 
-    let encoder = command_buffer.new_render_command_encoder(&render_pass_descriptor);
+    let encoder = command_buffer.new_render_command_encoder(render_pass_descriptor);
     encoder.set_render_pipeline_state(&pipeline_state);
 
     encoder.set_vertex_buffer(VerticesBufferIdx as u64, Some(vertex_buffer), 0);
