@@ -1,6 +1,6 @@
 [package]
 name = "metal"
-version = "0.31.0"
+version = "0.32.0"
 description = "Rust bindings for Metal"
 documentation = "https://docs.rs/crate/metal"
 homepage = "https://github.com/gfx-rs/metal-rs"
@@ -33,7 +33,8 @@ default = ["link"]
 private = []
 mps = []
 link = ["core-graphics-types/link"]
-cargo-clippy = [] # Workaround for https://github.com/gfx-rs/metal-rs/pull/344#issuecomment-2569042111
+cargo-clippy = [
+] # Workaround for https://github.com/gfx-rs/metal-rs/pull/344#issuecomment-2569042111
 
 [dependencies]
 core-graphics-types = { version = "0.2.0", default-features = false }
