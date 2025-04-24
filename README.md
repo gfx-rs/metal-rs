@@ -1,4 +1,20 @@
 # metal-rs
+
+> [!WARNING]
+> 
+> Use of this crate is deprecated as the [`objc`] ecosystem of mac system bindings are unmaintained. 
+> For new development, please use [`objc2`] and [`objc2-metal`] instead. We will continue to merge basic
+> PRs and keep things maintained, at least as long as it takes to migrate [`wgpu`] to the `objc2` ecosystem [PR 5641].
+
+[`objc`]: https://crates.io/crates/objc
+[`objc2`]: https://crates.io/crates/objc2
+[`objc2-metal`]: https://crates.io/crates/objc2-metal
+[`wgpu`]: https://crates.io/crates/wgpu
+[PR 5641]: https://github.com/gfx-rs/wgpu/pull/5641
+
+-----
+
+
 [![Actions Status](https://github.com/gfx-rs/metal-rs/workflows/ci/badge.svg)](https://github.com/gfx-rs/metal-rs/actions)
 [![Crates.io](https://img.shields.io/crates/v/metal.svg?label=metal)](https://crates.io/crates/metal)
 
