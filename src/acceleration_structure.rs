@@ -79,6 +79,12 @@ foreign_obj_type! {
     type ParentType = NsObject;
 }
 
+impl AccelerationStructureDescriptorRef {
+    pub fn set_usage(&self, usage: MTLAccelerationStructureUsage) {
+        unsafe { msg_send![self, setUsage: usage] }
+    }
+}
+
 pub enum MTLPrimitiveAccelerationStructureDescriptor {}
 
 foreign_obj_type! {
