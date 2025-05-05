@@ -9,6 +9,16 @@ use super::*;
 
 bitflags::bitflags! {
     #[derive(Copy, Clone, Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
+    pub struct MTLAccelerationStructureUsage: u32 {
+        const None = 0;
+        const Refit = (1 << 0);
+        const PreferFastBuild = (1 << 1);
+        const ExtendedLimits = (1 << 2);
+    }
+}
+
+bitflags::bitflags! {
+    #[derive(Copy, Clone, Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct MTLAccelerationStructureInstanceOptions: u32 {
         const None = 0;
         const DisableTriangleCulling = (1 << 0);
