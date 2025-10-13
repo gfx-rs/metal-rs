@@ -251,6 +251,10 @@ impl RenderCommandEncoderRef {
         unsafe { msg_send![self, setScissorRect: rect] }
     }
 
+    pub fn set_scissor_rects(&self, rects: &[MTLScissorRect]) {
+        unsafe { msg_send![self, setScissorRects: rects.as_ptr() count: rects.len()] }
+    }
+
     pub fn set_triangle_fill_mode(&self, mode: MTLTriangleFillMode) {
         unsafe { msg_send![self, setTriangleFillMode: mode] }
     }
