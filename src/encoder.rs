@@ -223,6 +223,10 @@ impl RenderCommandEncoderRef {
         unsafe { msg_send![self, setViewport: viewport] }
     }
 
+    pub fn set_viewports(&self, viewports: &[MTLViewport]) {
+        unsafe { msg_send![self, setViewports: viewports.as_ptr() count: viewports.len() as u64] }
+    }
+
     pub fn set_front_facing_winding(&self, winding: MTLWinding) {
         unsafe { msg_send![self, setFrontFacingWinding: winding] }
     }
@@ -245,6 +249,10 @@ impl RenderCommandEncoderRef {
 
     pub fn set_scissor_rect(&self, rect: MTLScissorRect) {
         unsafe { msg_send![self, setScissorRect: rect] }
+    }
+
+    pub fn set_scissor_rects(&self, rects: &[MTLScissorRect]) {
+        unsafe { msg_send![self, setScissorRects: rects.as_ptr() count: rects.len()] }
     }
 
     pub fn set_triangle_fill_mode(&self, mode: MTLTriangleFillMode) {
