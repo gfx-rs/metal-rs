@@ -223,6 +223,10 @@ impl RenderCommandEncoderRef {
         unsafe { msg_send![self, setViewport: viewport] }
     }
 
+    pub fn set_viewports(&self, viewports: &[MTLViewport]) {
+        unsafe { msg_send![self, setViewports: viewports.as_ptr() count: viewports.len() as u64] }
+    }
+
     pub fn set_front_facing_winding(&self, winding: MTLWinding) {
         unsafe { msg_send![self, setFrontFacingWinding: winding] }
     }
