@@ -75,7 +75,6 @@ fn main() {
         .run(move |event, event_loop| {
             autoreleasepool(|| {
                 event_loop.set_control_flow(ControlFlow::Poll);
-
                 match event {
                     Event::AboutToWait => {
                         window.request_redraw();
