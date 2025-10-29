@@ -85,6 +85,7 @@ pub enum MTLGPUFamily {
     MacCatalyst1 = 4001,
     MacCatalyst2 = 4002,
     Metal3 = 5001,
+    Metal4 = 5002,
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtldevicelocation>
