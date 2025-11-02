@@ -68,4 +68,8 @@ impl BufferRef {
     pub fn gpu_address(&self) -> u64 {
         unsafe { msg_send![self, gpuAddress] }
     }
+
+    pub fn gpu_resource_id(&self) -> MTLResourceID {
+        unsafe { msg_send![self, gpuResourceID] }
+    }
 }
