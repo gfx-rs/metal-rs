@@ -4,6 +4,7 @@
 use std::mem;
 use std::path::PathBuf;
 
+#[allow(deprecated)]
 use cocoa::{appkit::NSView, base::id as cocoa_id};
 use core_graphics_types::geometry::CGSize;
 use objc::{rc::autoreleasepool, runtime::YES};
@@ -187,6 +188,7 @@ fn get_window_layer(window: &Window, device: &Device) -> MetalLayer {
         window.inner_size().height as f64,
     ));
 
+    #[allow(deprecated)]
     unsafe {
         if let Ok(RawWindowHandle::AppKit(rw)) = window.window_handle().map(|wh| wh.as_raw()) {
             let view = rw.ns_view.as_ptr() as cocoa_id;
