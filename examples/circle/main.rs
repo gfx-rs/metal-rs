@@ -6,6 +6,7 @@ use winit::{
     raw_window_handle::{HasWindowHandle, RawWindowHandle},
 };
 
+#[allow(deprecated)]
 use cocoa::{appkit::NSView, base::id as cocoa_id};
 use core_graphics_types::geometry::CGSize;
 
@@ -97,6 +98,7 @@ fn main() {
     layer.set_pixel_format(MTLPixelFormat::BGRA8Unorm);
     layer.set_presents_with_transaction(false);
 
+    #[allow(deprecated)]
     unsafe {
         if let Ok(RawWindowHandle::AppKit(rw)) = window.window_handle().map(|wh| wh.as_raw()) {
             let view = rw.ns_view.as_ptr() as cocoa_id;
