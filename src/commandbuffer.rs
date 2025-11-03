@@ -105,6 +105,11 @@ impl CommandBufferRef {
         unsafe { msg_send![self, addScheduledHandler: block] }
     }
 
+    /// Create a blit command encoder.
+    ///
+    /// Although this method is named with a `new_` prefix, the actual Metal
+    /// method is not, and it returns an object that has been added to the
+    /// autorelease pool.  See <https://github.com/gfx-rs/metal-rs/issues/128>.
     pub fn new_blit_command_encoder(&self) -> &BlitCommandEncoderRef {
         unsafe { msg_send![self, blitCommandEncoder] }
     }
@@ -116,6 +121,11 @@ impl CommandBufferRef {
         unsafe { msg_send![self, blitCommandEncoderWithDescriptor: descriptor] }
     }
 
+    /// Create a compute command encoder.
+    ///
+    /// Although this method is named with a `new_` prefix, the actual Metal
+    /// method is not, and it returns an object that has been added to the
+    /// autorelease pool.  See <https://github.com/gfx-rs/metal-rs/issues/128>.
     pub fn new_compute_command_encoder(&self) -> &ComputeCommandEncoderRef {
         unsafe { msg_send![self, computeCommandEncoder] }
     }
@@ -134,6 +144,11 @@ impl CommandBufferRef {
         unsafe { msg_send![self, computeCommandEncoderWithDescriptor: descriptor] }
     }
 
+    /// Create a render command encoder.
+    ///
+    /// Although this method is named with a `new_` prefix, the actual Metal
+    /// method is not, and it returns an object that has been added to the
+    /// autorelease pool.  See <https://github.com/gfx-rs/metal-rs/issues/128>.
     pub fn new_render_command_encoder(
         &self,
         descriptor: &RenderPassDescriptorRef,
@@ -141,6 +156,11 @@ impl CommandBufferRef {
         unsafe { msg_send![self, renderCommandEncoderWithDescriptor: descriptor] }
     }
 
+    /// Create a parallel render command encoder.
+    ///
+    /// Although this method is named with a `new_` prefix, the actual Metal
+    /// method is not, and it returns an object that has been added to the
+    /// autorelease pool.  See <https://github.com/gfx-rs/metal-rs/issues/128>.
     pub fn new_parallel_render_command_encoder(
         &self,
         descriptor: &RenderPassDescriptorRef,
@@ -148,12 +168,22 @@ impl CommandBufferRef {
         unsafe { msg_send![self, parallelRenderCommandEncoderWithDescriptor: descriptor] }
     }
 
+    /// Create an acceleration structure command encoder.
+    ///
+    /// Although this method is named with a `new_` prefix, the actual Metal
+    /// method is not, and it returns an object that has been added to the
+    /// autorelease pool.  See <https://github.com/gfx-rs/metal-rs/issues/128>.
     pub fn new_acceleration_structure_command_encoder(
         &self,
     ) -> &AccelerationStructureCommandEncoderRef {
         unsafe { msg_send![self, accelerationStructureCommandEncoder] }
     }
 
+    /// Create an acceleration structure command encoder.
+    ///
+    /// Although this method is named with a `new_` prefix, the actual Metal
+    /// method is not, and it returns an object that has been added to the
+    /// autorelease pool.  See <https://github.com/gfx-rs/metal-rs/issues/128>.
     pub fn acceleration_structure_command_encoder_with_descriptor(
         &self,
         descriptor: &AccelerationStructurePassDescriptorRef,

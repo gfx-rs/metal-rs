@@ -577,6 +577,12 @@ impl LibraryRef {
         }
     }
 
+    /// Retrieve a function from the library.
+    ///
+    /// Although this method is named `get_function`, the underlying Metal
+    /// method is named `newFunctionWithName`, and it returns a retained object
+    /// that has not been added to the autorelease pool.
+    /// See <https://github.com/gfx-rs/metal-rs/issues/128>.
     // FIXME: should rename to new_function
     pub fn get_function(
         &self,
