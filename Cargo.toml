@@ -53,7 +53,7 @@ version = "0.2.4"
 cocoa = "0.26.0"
 winit = "0.29"
 sema = "0.1.4"
-png = "0.17"
+png = "0.18"
 glam = "0.30"
 rand = "0.9"
 
