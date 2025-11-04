@@ -45,7 +45,7 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.channel }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
     - name: cargo check
-      run: cargo check --workspace --all-targets --all-features
+      run: cargo --locked check --workspace --all-targets --all-features
 
     - name: Run all tests
-      run: cargo test --workspace --all-features
+      run: cargo --locked test --workspace --all-features

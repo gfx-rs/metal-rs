@@ -44,7 +44,6 @@ block = "0.1.6"
 foreign-types = "0.5"
 dispatch = { version = "0.2", optional = true }
 paste = "1"
-home = ">= 0.5.5, < 0.5.12"
 
 [dependencies.objc]
 version = "0.2.4"
