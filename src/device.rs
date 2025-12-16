@@ -1611,7 +1611,7 @@ impl DeviceRef {
     }
 
     pub fn has_unified_memory(&self) -> bool {
-        unsafe { msg_send![self, hasUnifiedMemory] }
+        unsafe { msg_send_bool![self, hasUnifiedMemory] }
     }
 
     pub fn recommended_max_working_set_size(&self) -> u64 {
