@@ -54,7 +54,7 @@ winit = "0.29"
 sema = "0.1.4"
 png = "0.18"
 glam = "0.31"
-rand = "0.9"
+rand = "0.10"
 
 [[example]]
 name = "window"
