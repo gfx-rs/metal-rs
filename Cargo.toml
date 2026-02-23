@@ -53,7 +53,7 @@ cocoa = "0.26.0"
 winit = "0.29"
 sema = "0.1.4"
 png = "0.18"
-glam = "0.31"
+glam = "0.32"
 rand = "0.9"
 
 [[example]]
