@@ -24,7 +24,7 @@ use std::{
 #[deprecated(
     note = "Since iOS 8.0–16.0 iPadOS 8.0–16.0 macOS 10.11–13.0 Mac Catalyst 13.1–16.0 tvOS 9.0–16.0"
 )]
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLFeatureSet {
     iOS_GPUFamily1_v1 = 0,
@@ -64,7 +64,7 @@ pub enum MTLFeatureSet {
 /// Available on macOS 10.15+, iOS 13.0+
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlgpufamily>
-#[repr(i64)]
+#[repr(isize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[non_exhaustive]
 pub enum MTLGPUFamily {
@@ -88,13 +88,13 @@ pub enum MTLGPUFamily {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtldevicelocation>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDeviceLocation {
     BuiltIn = 0,
     Slot = 1,
     External = 2,
-    Unspecified = u64::MAX,
+    Unspecified = usize::MAX,
 }
 
 bitflags::bitflags! {
@@ -1396,7 +1396,7 @@ impl MTLFeatureSet {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlargumentbufferstier>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLArgumentBuffersTier {
     Tier1 = 0,
@@ -1404,7 +1404,7 @@ pub enum MTLArgumentBuffersTier {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlreadwritetexturetier>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLReadWriteTextureTier {
     TierNone = 0,
@@ -1415,7 +1415,7 @@ pub enum MTLReadWriteTextureTier {
 /// Only available on (macos(11.0), ios(14.0))
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlcountersamplingpoint>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCounterSamplingPoint {
     AtStageBoundary = 0,
@@ -1429,7 +1429,7 @@ pub enum MTLCounterSamplingPoint {
 /// Kinda a long name!
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlsparsetextureregionalignmentmode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLSparseTextureRegionAlignmentMode {
     Outward = 0,

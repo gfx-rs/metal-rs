@@ -9,7 +9,7 @@ use super::*;
 use objc::runtime::{NO, YES};
 
 /// See <https://developer.apple.com/documentation/metal/mtlpurgeablestate>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLPurgeableState {
     KeepCurrent = 1,
@@ -19,7 +19,7 @@ pub enum MTLPurgeableState {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcpucachemode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLCPUCacheMode {
     DefaultCache = 0,
@@ -27,7 +27,7 @@ pub enum MTLCPUCacheMode {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlstoragemode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLStorageMode {
     Shared = 0,
@@ -40,7 +40,7 @@ pub enum MTLStorageMode {
 /// Only available on macos(10.15), ios(13.0)
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlhazardtrackingmode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLHazardTrackingMode {
     Default = 0,

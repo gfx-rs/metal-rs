@@ -410,7 +410,7 @@ impl TriangleAccelerationStructureRef {
 }
 
 /// See <https://developer.apple.com/documentation/metalperformanceshaders/mpstransformtype>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MPSTransformType {
     Float4x4 = 0,

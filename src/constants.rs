@@ -6,7 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 /// See <https://developer.apple.com/documentation/metal/mtlpixelformat>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum MTLPixelFormat {
