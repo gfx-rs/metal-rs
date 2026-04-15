@@ -8,7 +8,7 @@
 use super::NSUInteger;
 
 /// See <https://developer.apple.com/documentation/metal/mtlvertexformat>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVertexFormat {
@@ -67,7 +67,7 @@ pub enum MTLVertexFormat {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlvertexstepfunction>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVertexStepFunction {
     Constant = 0,

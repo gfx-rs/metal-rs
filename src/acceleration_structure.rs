@@ -19,7 +19,7 @@ bitflags::bitflags! {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlaccelerationstructureinstancedescriptortype>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum MTLAccelerationStructureInstanceDescriptorType {

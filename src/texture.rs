@@ -10,7 +10,7 @@ use super::*;
 use objc::runtime::{NO, YES};
 
 /// See <https://developer.apple.com/documentation/metal/mtltexturetype>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum MTLTextureType {
@@ -26,7 +26,7 @@ pub enum MTLTextureType {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtltexturecompressiontype>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum MTLTextureCompressionType {
     Lossless = 0,

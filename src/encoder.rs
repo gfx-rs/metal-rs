@@ -13,7 +13,7 @@ use std::ops::Range;
 pub const COUNTER_DONT_SAMPLE: NSUInteger = NSUInteger::MAX; // #define MTLCounterDontSample ((NSUInteger)-1)
 
 /// See <https://developer.apple.com/documentation/metal/mtlprimitivetype>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLPrimitiveType {
     Point = 0,
@@ -24,7 +24,7 @@ pub enum MTLPrimitiveType {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlindextype>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLIndexType {
@@ -33,7 +33,7 @@ pub enum MTLIndexType {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlvisibilityresultmode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLVisibilityResultMode {
     Disabled = 0,
@@ -42,7 +42,7 @@ pub enum MTLVisibilityResultMode {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlcullmode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCullMode {
     None = 0,
@@ -51,7 +51,7 @@ pub enum MTLCullMode {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlwinding>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLWinding {
     Clockwise = 0,
@@ -59,7 +59,7 @@ pub enum MTLWinding {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtldepthclipmode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDepthClipMode {
     Clip = 0,
@@ -67,7 +67,7 @@ pub enum MTLDepthClipMode {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtltrianglefillmode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLTriangleFillMode {
     Fill = 0,

@@ -10,7 +10,7 @@ use super::*;
 use std::path::Path;
 
 /// See <https://developer.apple.com/documentation/metal/mtlcapturedestination?language=objc>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCaptureDestination {

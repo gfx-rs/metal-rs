@@ -8,7 +8,7 @@
 use super::{depthstencil::MTLCompareFunction, DeviceRef, MTLResourceID, NSUInteger};
 
 /// See <https://developer.apple.com/documentation/metal/mtlsamplerminmagfilter>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLSamplerMinMagFilter {
     Nearest = 0,
@@ -16,7 +16,7 @@ pub enum MTLSamplerMinMagFilter {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlsamplermipfilter>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLSamplerMipFilter {
     NotMipmapped = 0,
@@ -25,7 +25,7 @@ pub enum MTLSamplerMipFilter {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlsampleraddressmode>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLSamplerAddressMode {
     ClampToEdge = 0,
@@ -37,7 +37,7 @@ pub enum MTLSamplerAddressMode {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlsamplerbordercolor>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLSamplerBorderColor {
     TransparentBlack = 0,
