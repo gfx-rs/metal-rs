@@ -10,7 +10,7 @@ use super::*;
 /// Only available on macos(10.15), ios(13.0)
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlheaptype/>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLHeapType {
     Automatic = 0,

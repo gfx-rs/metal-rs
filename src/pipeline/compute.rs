@@ -10,7 +10,7 @@ use super::*;
 use objc::runtime::{NO, YES};
 
 /// See <https://developer.apple.com/documentation/metal/mtlattributeformat>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLAttributeFormat {
@@ -69,7 +69,7 @@ pub enum MTLAttributeFormat {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlstepfunction>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLStepFunction {

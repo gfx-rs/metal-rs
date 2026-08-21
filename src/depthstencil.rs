@@ -9,7 +9,7 @@ use crate::DeviceRef;
 use objc::runtime::{NO, YES};
 
 /// See <https://developer.apple.com/documentation/metal/mtlcomparefunction>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLCompareFunction {
     Never = 0,
@@ -23,7 +23,7 @@ pub enum MTLCompareFunction {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlstenciloperation>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLStencilOperation {
     Keep = 0,

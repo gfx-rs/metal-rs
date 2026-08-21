@@ -14,7 +14,7 @@ pub use self::compute::*;
 pub use self::render::*;
 
 /// See <https://developer.apple.com/documentation/metal/mtlmutability>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLMutability {

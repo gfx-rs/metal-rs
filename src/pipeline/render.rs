@@ -10,7 +10,7 @@ use super::*;
 use objc::runtime::{NO, YES};
 
 /// See <https://developer.apple.com/documentation/metal/mtlblendfactor>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLBlendFactor {
@@ -36,7 +36,7 @@ pub enum MTLBlendFactor {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlblendoperation>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLBlendOperation {
@@ -61,7 +61,7 @@ bitflags::bitflags! {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlprimitivetopologyclass>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLPrimitiveTopologyClass {

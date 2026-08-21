@@ -15,7 +15,7 @@ use std::ptr;
 /// Only available on (macos(10.12), ios(10.0)
 ///
 /// See <https://developer.apple.com/documentation/metal/mtlpatchtype/>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum MTLPatchType {
     None = 0,
@@ -104,7 +104,7 @@ impl AttributeRef {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlfunctiontype/>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLFunctionType {
     Vertex = 1,
@@ -344,7 +344,7 @@ impl FunctionRef {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtllanguageversion/>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub enum MTLLanguageVersion {
     V1_0 = 0x10000,
@@ -410,7 +410,7 @@ impl FunctionConstantValuesRef {
 /// Only available on (macos(11.0), ios(14.0))
 ///
 /// See <https://developer.apple.com/documentation/metal/mtllibrarytype/>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLLibraryType {
     Executable = 0,
@@ -537,7 +537,7 @@ impl CompileOptionsRef {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtllibraryerror/>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLLibraryError {
     Unsupported = 1,
@@ -685,7 +685,7 @@ impl LibraryRef {
 /// Only available on (macos(11.0), ios(14.0))
 ///
 /// See <https://developer.apple.com/documentation/metal/mtldynamiclibraryerror/>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDynamicLibraryError {
     None = 0,

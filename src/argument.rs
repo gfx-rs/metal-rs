@@ -9,7 +9,7 @@ use super::{MTLTextureType, NSUInteger};
 use objc::runtime::{NO, YES};
 
 /// See <https://developer.apple.com/documentation/metal/mtldatatype>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLDataType {
@@ -133,7 +133,7 @@ pub enum MTLDataType {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlargumenttype>
-#[repr(u64)]
+#[repr(usize)]
 #[deprecated(
     note = "Since: iOS 8.0–16.0, iPadOS 8.0–16.0, macOS 10.11–13.0, Mac Catalyst 13.1–16.0, tvOS 9.0–16.0"
 )]
@@ -149,7 +149,7 @@ pub enum MTLArgumentType {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlargumentaccess>
-#[repr(u64)]
+#[repr(usize)]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MTLArgumentAccess {

@@ -8,7 +8,7 @@
 use super::*;
 
 /// See <https://developer.apple.com/documentation/metal/mtlloadaction>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug)]
 pub enum MTLLoadAction {
     DontCare = 0,
@@ -17,7 +17,7 @@ pub enum MTLLoadAction {
 }
 
 /// See <https://developer.apple.com/documentation/metal/mtlstoreaction>
-#[repr(u64)]
+#[repr(usize)]
 #[derive(Copy, Clone, Debug)]
 pub enum MTLStoreAction {
     DontCare = 0,
