@@ -66,6 +66,14 @@ impl CommandBufferRef {
         }
     }
 
+    pub fn gpu_start_time(&self) -> f64 {
+        unsafe { msg_send![self, GPUStartTime] }
+    }
+
+    pub fn gpu_end_time(&self) -> f64 {
+        unsafe { msg_send![self, GPUEndTime] }
+    }
+
     pub fn set_label(&self, label: &str) {
         unsafe {
             let nslabel = crate::nsstring_from_str(label);
