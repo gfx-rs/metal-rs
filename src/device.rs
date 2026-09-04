@@ -1610,6 +1610,11 @@ impl DeviceRef {
         unsafe { msg_send_bool![self, supportsRaytracing] }
     }
 
+    /// Only available on (macos(12.0), ios(15.0))
+    pub fn supports_raytracing_from_render(&self) -> bool {
+        unsafe { msg_send_bool![self, supportsRaytracingFromRender] }
+    }
+
     pub fn has_unified_memory(&self) -> bool {
         unsafe { msg_send_bool![self, hasUnifiedMemory] }
     }
