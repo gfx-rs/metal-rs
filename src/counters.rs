@@ -71,7 +71,11 @@ impl CounterSampleBufferRef {
     pub fn resolve_counter_range(&self, range: crate::NSRange) -> Vec<NSUInteger> {
         let len = range.length as usize;
         let mut data: Vec<NSUInteger> = Vec::with_capacity(len); // allocated, but len remains 0
-        let total_bytes = (len * size_of::<NSUInteger>()) as u64;
+        let total_bytes: u64 = len
+            .checked_mul(size_of::<NSUInteger>())
+            .expect("overflow total_bytes")
+            .try_into()
+            .expect("total_bytes exceeds u64");
         unsafe {
             let ns_data: *mut crate::Object = msg_send![self, resolveCounterRange: range];
             let () = msg_send![ns_data, getBytes: data.as_mut_ptr() length: total_bytes];
