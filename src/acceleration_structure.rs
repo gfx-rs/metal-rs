@@ -9,6 +9,16 @@ use super::*;
 
 bitflags::bitflags! {
     #[derive(Copy, Clone, Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
+    pub struct MTLAccelerationStructureUsage: usize {
+        const None = 0;
+        const Refit = (1 << 0);
+        const PreferFastBuild = (1 << 1);
+        const ExtendedLimits = (1 << 2);
+    }
+}
+
+bitflags::bitflags! {
+    #[derive(Copy, Clone, Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
     pub struct MTLAccelerationStructureInstanceOptions: u32 {
         const None = 0;
         const DisableTriangleCulling = (1 << 0);
@@ -69,6 +79,12 @@ foreign_obj_type! {
     type ParentType = NsObject;
 }
 
+impl AccelerationStructureDescriptorRef {
+    pub fn set_usage(&self, usage: MTLAccelerationStructureUsage) {
+        unsafe { msg_send![self, setUsage: usage] }
+    }
+}
+
 pub enum MTLPrimitiveAccelerationStructureDescriptor {}
 
 foreign_obj_type! {
@@ -123,6 +139,11 @@ impl AccelerationStructureGeometryDescriptorRef {
     pub fn set_opaque(&self, opaque: bool) {
         unsafe { msg_send![self, setOpaque: opaque] }
     }
+
+    pub fn set_allow_duplicate_intersection_function_invocation(&self, allow: bool) {
+        unsafe { msg_send![self, setAllowDuplicateIntersectionFunctionInvocation: allow] }
+    }
+
     pub fn set_primitive_data_buffer(&self, buffer: Option<&BufferRef>) {
         unsafe { msg_send![self, setPrimitiveDataBuffer: buffer] }
     }
