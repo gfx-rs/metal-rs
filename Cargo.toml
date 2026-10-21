@@ -44,6 +44,7 @@ block = "0.1.6"
 foreign-types = "0.5"
 dispatch = { version = "0.2", optional = true }
 paste = "1"
+io-surface = { git = "https://github.com/servo/core-foundation-rs" }
 
 [dependencies.objc]
 version = "0.2.4"

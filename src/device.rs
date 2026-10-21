@@ -1554,6 +1554,14 @@ impl Device {
 }
 
 impl DeviceRef {
+    pub fn architecture_name(&self) -> &str {
+        unsafe {
+            let arch: *const NSObject = msg_send![self, architecture];
+            let name = msg_send![arch, name];
+            crate::nsstring_as_str(name)
+        }
+    }
+
     pub fn name(&self) -> &str {
         unsafe {
             let name = msg_send![self, name];
@@ -1995,6 +2003,19 @@ impl DeviceRef {
 
     pub fn new_texture(&self, descriptor: &TextureDescriptorRef) -> Texture {
         unsafe { msg_send![self, newTextureWithDescriptor: descriptor] }
+    }
+
+    pub fn new_texture_with_descriptor_and_iosurface(
+        &self,
+        descriptor: &TextureDescriptorRef,
+        iosurface: io_surface::IOSurfaceRef,
+        plane: NSUInteger,
+    ) -> Texture {
+        unsafe {
+            msg_send![self, newTextureWithDescriptor:descriptor
+                                           iosurface:iosurface
+                                               plane:plane]
+        }
     }
 
     pub fn new_sampler(&self, descriptor: &SamplerDescriptorRef) -> SamplerState {
